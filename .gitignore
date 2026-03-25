@@ -30,3 +30,6 @@ out/
 # Logs
 *.log
 npm-debug.log*
+
+# Generated output
+output.pptx
