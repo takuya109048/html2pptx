@@ -109,29 +109,27 @@ def _fix_bodyPr(tf):
         bodyPr.append(bodyPr.makeelement(qn("a:noAutofit"), {}))
 
 
-def _set_line_spacing(p, size_pt):
-    """行間をフォントサイズと同値の固定ポイントに設定。
-    Meiryo/Segoe UIのフォントメトリクスによるテキストボックスのはみ出しを防ぐ。
-    """
+def _set_line_spacing(p, size_pt, mult=1.0):
+    """行間を size_pt * mult の固定ポイントに設定。"""
     pPr = p._p.get_or_add_pPr()
     for old in pPr.findall(qn("a:lnSpc")):
         pPr.remove(old)
     lnSpc = _el("lnSpc")
-    spcPts = _el("spcPts", {"val": str(int(size_pt * 100))})
+    spcPts = _el("spcPts", {"val": str(int(size_pt * mult * 100))})
     lnSpc.append(spcPts)
     pPr.append(lnSpc)
 
 
-def text(slide, txt, x, y, w, h, size, bold=False, color="333333"):
+def text(slide, txt, x, y, w, h, size, bold=False, color="333333",
+         anchor=MSO_ANCHOR.MIDDLE):
     box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = box.text_frame
     tf.word_wrap = True
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
-    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.vertical_anchor = anchor
     _fix_bodyPr(tf)
     p = tf.paragraphs[0]
     _add_runs(p, txt, size, bold, color)
-    _set_line_spacing(p, size)
     return box
 
 
@@ -150,19 +148,22 @@ def md_content(slide, items, x, y, w, h, size, color="333333"):
 
     for idx, (item_type, item_text) in enumerate(items):
         p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
-        p.space_after = Pt(6)
+        p.space_after = Pt(4)
 
         pPr = p._p.get_or_add_pPr()
         for tag in (qn("a:buChar"), qn("a:buNone")):
             for old in pPr.findall(tag):
                 pPr.remove(old)
         if item_type == "bullet":
+            # HTML の padding-left: 1.4em ≈ 0.25inch に合わせたハンギングインデント
+            pPr.set("marL", "228600")
+            pPr.set("indent", "-228600")
             pPr.append(pPr.makeelement(qn("a:buChar"), {"char": "\u2022"}))
         else:
             pPr.append(pPr.makeelement(qn("a:buNone"), {}))
 
         _add_runs(p, item_text, size, False, color)
-        _set_line_spacing(p, size)
+        _set_line_spacing(p, size, mult=1.8)
 
     return box
 
@@ -208,11 +209,13 @@ def build(prs, sd):
 
     # ── ヘッダー帯 ──
     rect(slide, H["x"], H["y"], H["w"], H["h"], C["headerBg"])
+    # MIDDLE アンカーの視覚的中心を HTML の flex center に合わせるため y を下方補正
+    # title(24pt): 2.5px ずれ → +0.013in, message(12pt): 8px ずれ → +0.042in
     text(slide, sd["header"]["title"],
-         H["padX"], H["padY"], H["w"] - H["padX"] * 2, 0.45,
+         H["padX"], H["padY"] + 0.013, H["w"] - H["padX"] * 2, 0.45,
          F["title"]["size"], F["title"]["bold"], C["headerText"])
     text(slide, sd["header"]["message"],
-         H["padX"], H["padY"] + 0.45, H["w"] - H["padX"] * 2, 0.3,
+         H["padX"], H["padY"] + 0.45 + 0.042, H["w"] - H["padX"] * 2, 0.3,
          F["message"]["size"], F["message"]["bold"], C["headerText"])
 
     # ── カード ──
@@ -225,9 +228,11 @@ def build(prs, sd):
 
         rect(slide, c["x"], c["y"], c["w"], c["h"], C["surface"], C["border"], 0.5)
 
+        # HTML はブロックフロー（上揃え）なので TOP アンカーを使用
         text(slide, card_title,
              c["x"] + cp["x"], c["y"] + cp["y"], c["w"] - cp["x"] * 2, 0.35,
-             F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"])
+             F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"],
+             anchor=MSO_ANCHOR.TOP)
 
         hline(slide, c["x"] + cp["x"], c["y"] + doy, c["w"] - cp["x"] * 2, C["border"], 1.5)
 
