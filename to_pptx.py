@@ -3,10 +3,15 @@
 slide.html 内の const D = {...} をSingle source of truthとして読み込む。
 Markdownフィールドをパースしてカードタイトル・コンテンツを抽出。
 座標はインチ単位で、PPTX標準16:9 (10" x 5.625") に一致。
+
+使い方:
+  python to_pptx.py              # slide.html → output.pptx
+  python to_pptx.py slide-1card  # slide-1card.html → slide-1card.pptx
 """
 import json
 import os
 import re
+import sys
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import MSO_ANCHOR
@@ -19,13 +24,31 @@ def _el(tag, attrib=None):
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-with open(os.path.join(HERE, "slide.html"), encoding="utf-8") as f:
+_arg = sys.argv[1] if len(sys.argv) > 1 else "template_list_2card"
+_src_name = _arg if _arg.endswith(".html") else _arg + ".html"
+_out_name = os.path.splitext(_src_name)[0] + ".pptx"
+
+with open(os.path.join(HERE, _src_name), encoding="utf-8") as f:
     _html = f.read()
 
-_m = re.search(r'const D = (\{[\s\S]+?\});\s*\n\n\(D =>', _html)
+_m = re.search(r'const D = (\{[\s\S]+?\});\s*\n\nD\.COLORS', _html)
 if not _m:
-    raise ValueError("slide.html 内に const D = {...} が見つかりません")
+    raise ValueError(f"{_src_name} 内に const D = {{...}} が見つかりません")
 D = json.loads(_m.group(1))
+
+# SLIDES: テンプレートリテラル (`...`) を JSON 文字列に変換してパース
+_s = re.search(r'const SLIDES = (\[[\s\S]+?\]); // END_SLIDES', _html)
+if not _s:
+    raise ValueError("slide.html 内に const SLIDES が見つかりません")
+_slides_js = re.sub(r'`([\s\S]*?)`', lambda m: json.dumps(m.group(1)), _s.group(1))
+D["SLIDES"] = json.loads(_slides_js)
+
+# DESIGN: COLORS・FONTS を D にマージ
+_d = re.search(r'const DESIGN = (\{[\s\S]+?\}); // END_DESIGN', _html)
+if not _d:
+    raise ValueError("slide.html 内に const DESIGN が見つかりません")
+_design_json = re.sub(r'\s*//[^\n]*', '', _d.group(1))  # // コメントを除去
+D.update(json.loads(_design_json))
 
 COLORS = D["COLORS"]
 FONTS = D["FONTS"]
@@ -273,7 +296,7 @@ def main():
     prs.slide_height = Inches(D["SLIDE_H"])
     for sd in D["SLIDES"]:
         build(prs, sd)
-    out = os.path.join(HERE, "output.pptx")
+    out = os.path.join(HERE, _out_name)
     prs.save(out)
     print(f"Saved: {out}")
 

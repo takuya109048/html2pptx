@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Presentation Slide</title>
+<title>Presentation Slide (1 Card)</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,6 +32,69 @@
 </div>
 
 <script>
+// =====================================================
+// ここを編集してスライドをカスタマイズしてください
+// =====================================================
+
+// ── テキスト内容 ──────────────────────────────────
+// header.title     ヘッダーの大きいタイトル
+// header.message   ヘッダーの小さいサブタイトル
+// cards[].markdown バッククォート内に Markdown で記述
+//   ##  で始まる行 → カードタイトル（下に区切り線が入る）
+//   -   で始まる行 → 箇条書き
+//   それ以外        → 通常テキスト（段落）
+// page             フッター左端のページ番号表示
+// logo             フッター右端に表示する画像ファイル名
+const SLIDES = [
+  {
+    "header": {
+      "title": "2024年度 事業成果レポート",
+      "message": "主要KPIの達成状況と来期に向けた施策概要"
+    },
+    "cards": [
+      {
+        "markdown": `## 年度総括
+
+- 売上高 1,234,567円（前年比 +12.3%）
+- 顧客数 ABC社含む 456社（新規獲得 87社）
+- ROI: 78.9% / CAGR 5.6%
+- Q4達成率 101.2%（Target: ¥97M）
+- Net Promoter Score: 62pt（業界平均 +18pt）
+- コスト削減額 ¥3,200,000（運用効率化施策による）`
+      }
+    ],
+    "page": "1 / 1",
+    "logo": "logo.png"
+  }
+]; // END_SLIDES
+
+// ── デザイン（色・フォント） ─────────────────────
+// 色は 16進数6桁（# なし）で指定
+// フォントサイズはポイント数（数値）で指定
+const DESIGN = {
+  "COLORS": {
+    "headerBg":   "4A4A4A",  // ヘッダー帯の背景色
+    "headerText": "FFFFFF",  // ヘッダーの文字色
+    "surface":    "F5F5F5",  // カードの背景色
+    "border":     "E0E0E0",  // カード枠線・区切り線の色
+    "text":       "333333",  // 本文テキストの色
+    "textMuted":  "888888",  // フッター（ページ番号）の色
+    "bg":         "FFFFFF"   // スライド全体の背景色
+  },
+  "FONTS": {
+    "family":    "Segoe UI",                        // 欧文フォント名（和文は常に Meiryo）
+    "title":     { "size": 24, "bold": true  },     // ヘッダータイトル
+    "message":   { "size": 12, "bold": false },     // ヘッダーサブタイトル
+    "cardTitle": { "size": 15, "bold": true  },     // カードタイトル
+    "cardBody":  { "size": 11, "bold": false },     // カード本文・箇条書き
+    "footer":    { "size": 10, "bold": false }      // フッターのページ番号
+  }
+}; // END_DESIGN
+
+// =====================================================
+// 以下はテンプレート（通常は編集不要）
+// =====================================================
+
 const W = 10, H = 5.625;
 const px = (inch) => (inch / W * 100) + "%";
 const py = (inch) => (inch / H * 100) + "%";
@@ -39,48 +102,19 @@ const py = (inch) => (inch / H * 100) + "%";
 const D = {
   "SLIDE_W": 10.0,
   "SLIDE_H": 5.625,
-  "COLORS": {
-    "bg": "FFFFFF",
-    "surface": "F5F5F5",
-    "border": "E0E0E0",
-    "text": "333333",
-    "textMuted": "888888",
-    "headerBg": "4A4A4A",
-    "headerText": "FFFFFF"
-  },
-  "FONTS": {
-    "family": "Segoe UI",
-    "title":     { "size": 24, "bold": true },
-    "message":   { "size": 12, "bold": false },
-    "cardTitle": { "size": 15, "bold": true },
-    "cardBody":  { "size": 11, "bold": false },
-    "footer":    { "size": 10, "bold": false }
-  },
   "HEADER": { "x": 0, "y": 0, "w": 10.0, "h": 0.85, "padX": 0.25, "padY": 0.08 },
   "BODY":   { "x": 0.25, "y": 0.95, "w": 9.5, "h": 4.15 },
   "CARDS": [
-    { "x": 0.25,  "y": 0.95, "w": 4.675, "h": 4.15 },
-    { "x": 5.075, "y": 0.95, "w": 4.675, "h": 4.15 }
+    { "x": 0.25, "y": 0.95, "w": 9.5, "h": 4.15 }
   ],
   "CARD_PAD": { "x": 0.2, "y": 0.15 },
   "CARD_DIVIDER_OFFSET_Y": 0.5,
   "FOOTER": { "x": 0, "y": 5.225, "w": 10.0, "h": 0.4, "padX": 0.25 },
-  "LOGO_H": 0.25,
-  "SLIDES": [
-    {
-      "header": {
-        "title": "フォント検証スライド：Meiryo × Segoe UI",
-        "message": "日本語テキストとABC / 123の混在確認 — Font Verification 2024"
-      },
-      "cards": [
-        { "markdown": "## 左カード：実績サマリー\n\n- 売上高 1,234,567円（前年比 +12.3%）\n- 顧客数 ABC社含む 456社\n- ROI: 78.9% / CAGR 5.6%" },
-        { "markdown": "## 右カード：KPI Overview\n\n- Q1売上：¥98,765,432\n- 達成率 101.2%（Target: ¥97M）\n- Net Promoter Score: 62pt" }
-      ],
-      "page": "1 / 1",
-      "logo": "logo.png"
-    }
-  ]
+  "LOGO_H": 0.25
 };
+
+D.COLORS = DESIGN.COLORS;
+D.FONTS  = DESIGN.FONTS;
 
 (D => {
   const slide = document.getElementById("slide");
@@ -123,7 +157,7 @@ const D = {
   `;
   document.head.appendChild(mdStyle);
 
-  D.SLIDES.forEach(sd => {
+  SLIDES.forEach(sd => {
     const L = D.HEADER;
 
     // ── ヘッダー帯 ──
