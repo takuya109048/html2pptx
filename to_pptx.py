@@ -58,15 +58,24 @@ def rgb(hex6):
     return RGBColor.from_string(hex6)
 
 
+def _no_shadow(shape):
+    """シェイプのシャドウ・エフェクトをクリアする"""
+    spPr = shape._element.spPr
+    for old in spPr.findall(qn("a:effectLst")):
+        spPr.remove(old)
+    spPr.append(spPr.makeelement(qn("a:effectLst"), {}))
+
+
 def rect(slide, x, y, w, h, fill, line_color=None, line_w=None):
     shape = slide.shapes.add_shape(1, Inches(x), Inches(y), Inches(w), Inches(h))
     shape.fill.solid()
     shape.fill.fore_color.rgb = rgb(fill)
     if line_color:
         shape.line.color.rgb = rgb(line_color)
-        shape.line.width = Pt(line_w or 0.5)
+        shape.line.width = Pt(line_w or 0.75)
     else:
         shape.line.fill.background()
+    _no_shadow(shape)
     return shape
 
 
@@ -153,6 +162,7 @@ def text(slide, txt, x, y, w, h, size, bold=False, color="333333",
     _fix_bodyPr(tf)
     p = tf.paragraphs[0]
     _add_runs(p, txt, size, bold, color)
+    _no_shadow(box)
     return box
 
 
@@ -188,6 +198,7 @@ def md_content(slide, items, x, y, w, h, size, color="333333"):
         _add_runs(p, item_text, size, False, color)
         _set_line_spacing(p, size, mult=1.8)
 
+    _no_shadow(box)
     return box
 
 
@@ -196,6 +207,7 @@ def hline(slide, x, y, w, color, width_pt=1):
     shape.fill.solid()
     shape.fill.fore_color.rgb = rgb(color)
     shape.line.fill.background()
+    _no_shadow(shape)
     return shape
 
 
@@ -241,6 +253,26 @@ def build(prs, sd):
          H["padX"], H["padY"] + 0.45 + 0.042, H["w"] - H["padX"] * 2, 0.3,
          F["message"]["size"], F["message"]["bold"], C["headerText"])
 
+    # ── 背景ボックス（bg テンプレートのみ） ──
+    if "BG_BOX" in D and "bg" in sd:
+        B = D["BG_BOX"]
+        bp = {"x": B.get("padX", 0.2), "y": B.get("padY", 0.15)}
+        doy = D["CARD_DIVIDER_OFFSET_Y"]
+        bg_title, bg_items = parse_md(sd["bg"]["markdown"])
+        rect(slide, B["x"], B["y"], B["w"], B["h"], C.get("bgBox", "E8EDF2"), C["border"], 0.75)
+        text(slide, bg_title,
+             B["x"] + bp["x"], B["y"] + bp["y"], B["w"] - bp["x"] * 2, 0.35,
+             F.get("bgTitle", F["cardTitle"])["size"],
+             F.get("bgTitle", F["cardTitle"])["bold"], C["text"],
+             anchor=MSO_ANCHOR.TOP)
+        hline(slide, B["x"] + bp["x"], B["y"] + doy, B["w"] - bp["x"] * 2, C["border"], 1.0)
+        if bg_items:
+            md_content(slide, bg_items,
+                       B["x"] + bp["x"], B["y"] + doy + 0.12,
+                       B["w"] - bp["x"] * 2,
+                       B["h"] - doy - bp["y"] - 0.12,
+                       F.get("bgBody", F["cardBody"])["size"], C["text"])
+
     # ── カード ──
     for i, cd in enumerate(sd["cards"]):
         c = D["CARDS"][i]
@@ -249,7 +281,7 @@ def build(prs, sd):
 
         card_title, items = parse_md(cd["markdown"])
 
-        rect(slide, c["x"], c["y"], c["w"], c["h"], C["surface"], C["border"], 0.5)
+        rect(slide, c["x"], c["y"], c["w"], c["h"], C["surface"], C["border"], 0.75)
 
         # HTML はブロックフロー（上揃え）なので TOP アンカーを使用
         text(slide, card_title,
@@ -257,7 +289,7 @@ def build(prs, sd):
              F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"],
              anchor=MSO_ANCHOR.TOP)
 
-        hline(slide, c["x"] + cp["x"], c["y"] + doy, c["w"] - cp["x"] * 2, C["border"], 1.5)
+        hline(slide, c["x"] + cp["x"], c["y"] + doy, c["w"] - cp["x"] * 2, C["border"], 1.0)
 
         if items:
             bx = c["x"] + cp["x"]
@@ -267,7 +299,7 @@ def build(prs, sd):
             md_content(slide, items, bx, by, bw, bh, F["cardBody"]["size"], C["text"])
 
     # ── フッター ──
-    hline(slide, 0, FT["y"], FT["w"], C["border"], 0.5)
+    hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
 
     footer_center_y = FT["y"] + FT["h"] / 2
     page_h = 0.3
@@ -282,12 +314,13 @@ def build(prs, sd):
     # ロゴ：フッター帯の縦方向中心
     logo_path = os.path.join(HERE, sd["logo"])
     if os.path.exists(logo_path):
-        slide.shapes.add_picture(
+        pic = slide.shapes.add_picture(
             logo_path,
             Inches(D["SLIDE_W"] - FT["padX"] - 1.0),
             Inches(footer_center_y - logo_h / 2),
             height=Inches(logo_h),
         )
+        _no_shadow(pic)
 
 
 def main():
