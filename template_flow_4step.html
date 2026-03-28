@@ -129,6 +129,20 @@ D.FONTS  = DESIGN.FONTS;
   const ptToCqw = (pt) => (pt / 720 * 100) + "cqw";
   const pxToCqw = (px) => (px / 960 * 100) + "cqw";
 
+  const mdStyle = document.createElement("style");
+  mdStyle.textContent = `
+    .flow-bullets {
+      padding-left: 1.4em;
+      font-size: ${ptToCqw(D.FONTS.bullet.size)};
+      line-height: 1.8;
+      overflow: hidden;
+      margin: 0;
+      color: #${D.COLORS.text};
+    }
+    .flow-bullets li { margin-bottom: 0.3em; }
+  `;
+  document.head.appendChild(mdStyle);
+
   SLIDES.forEach(sd => {
     const L = D.HEADER;
 
@@ -171,36 +185,19 @@ D.FONTS  = DESIGN.FONTS;
         color: "#" + D.COLORS.stepText,
       }, step.label));
 
-      // 箇条書き
-      step.bullets.forEach((bullet, j) => {
-        const by = D.BULLETS_Y + j * D.BULLET_SPACING;
-        const row = el("div", {
-          left: px(s.x), top: py(by),
-          width: px(s.w * 0.88), height: py(D.BULLET_SPACING),
-          display: "flex", alignItems: "center",
-          gap: pxToCqw(6),
-          overflow: "hidden",
-        });
-
-        const dot = document.createElement("span");
-        dot.style.cssText = `
-          min-width: ${pxToCqw(5)}; width: ${pxToCqw(5)}; height: ${pxToCqw(5)};
-          border-radius: 50%; background: #${D.COLORS.text};
-          flex-shrink: 0;
-        `;
-
-        const span = document.createElement("span");
-        span.textContent = bullet;
-        span.style.fontSize = ptToCqw(D.FONTS.bullet.size);
-        span.style.color = "#" + D.COLORS.text;
-        span.style.whiteSpace = "nowrap";
-        span.style.overflow = "hidden";
-        span.style.textOverflow = "ellipsis";
-
-        row.appendChild(dot);
-        row.appendChild(span);
-        slide.appendChild(row);
+      // 箇条書き（md-card と同一スタイルで統一）
+      const ul = el("ul", {
+        left: px(s.x), top: py(D.BULLETS_Y),
+        width: px(s.w * 0.88),
+        height: py(D.FOOTER.y - D.BULLETS_Y - 0.1),
       });
+      ul.classList.add("flow-bullets");
+      step.bullets.forEach(bullet => {
+        const li = document.createElement("li");
+        li.textContent = bullet;
+        ul.appendChild(li);
+      });
+      slide.appendChild(ul);
     });
 
     // ── フッター ──
