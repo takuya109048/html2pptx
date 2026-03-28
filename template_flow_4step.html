@@ -185,11 +185,20 @@ D.FONTS  = DESIGN.FONTS;
         color: "#" + D.COLORS.stepText,
       }, step.label));
 
-      // 箇条書き（md-card と同一スタイルで統一）
-      const ul = el("ul", {
+      // 箇条書きボックス（カードと同スタイル）
+      const bh = D.FOOTER.y - D.BULLETS_Y - 0.1;
+      slide.appendChild(el("div", {
         left: px(s.x), top: py(D.BULLETS_Y),
-        width: px(s.w * 0.88),
-        height: py(D.FOOTER.y - D.BULLETS_Y - 0.1),
+        width: px(s.w), height: py(bh),
+        background: "#" + D.COLORS.stepFill,
+        border: "1px solid #" + D.COLORS.border,
+        borderRadius: "3px",
+      }));
+
+      // 箇条書き本文
+      const ul = el("ul", {
+        left: px(s.x + 0.1), top: py(D.BULLETS_Y + 0.1),
+        width: px(s.w - 0.2), height: py(bh - 0.2),
       });
       ul.classList.add("flow-bullets");
       step.bullets.forEach(bullet => {
