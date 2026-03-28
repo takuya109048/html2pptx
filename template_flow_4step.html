@@ -173,7 +173,15 @@ D.FONTS  = DESIGN.FONTS;
       const s = D.STEPS[i];
       if (!s) return;
 
-      // 矢印シェイプ
+      // 矢印シェイプ（枠線層 + 塗り層の2レイヤー構成）
+      // clipPath はborderが効かないため、1px分大きい同形状を背面に敷いて枠線を再現する
+      const be = 0.01; // 枠線用の拡張幅（インチ）
+      slide.appendChild(el("div", {
+        left: px(s.x - be), top: py(s.y - be),
+        width: px(s.w + be * 2), height: py(s.h + be * 2),
+        background: "#" + D.COLORS.border,
+        clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
+      }));
       slide.appendChild(el("div", {
         left: px(s.x), top: py(s.y), width: px(s.w), height: py(s.h),
         background: "#" + D.COLORS.stepFill,
