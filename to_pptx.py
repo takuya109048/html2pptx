@@ -211,6 +211,47 @@ def hline(slide, x, y, w, color, width_pt=1):
     return shape
 
 
+def arrow_shape(slide, x, y, w, h, fill_hex):
+    """右向き五角形矢印シェイプ（カスタムジオメトリ）を描画する"""
+    from pptx.oxml import parse_xml
+    x_emu = int(Inches(x))
+    y_emu = int(Inches(y))
+    w_emu = int(Inches(w))
+    h_emu = int(Inches(h))
+    fill = fill_hex.upper()
+
+    # 既存シェイプの最大IDを取得して衝突を避ける
+    ids = [int(e.get("id")) for e in slide.shapes._spTree.iter()
+           if e.get("id") and e.get("id").isdigit()]
+    shape_id = (max(ids) + 1) if ids else 100
+
+    NS_P = "http://schemas.openxmlformats.org/presentationml/2006/main"
+    NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    sp_xml = (
+        f'<p:sp xmlns:p="{NS_P}" xmlns:a="{NS_A}">'
+        f'<p:nvSpPr><p:cNvPr id="{shape_id}" name="Step{shape_id}"/>'
+        '<p:cNvSpPr/><p:nvPr/></p:nvSpPr>'
+        '<p:spPr>'
+        f'<a:xfrm><a:off x="{x_emu}" y="{y_emu}"/>'
+        f'<a:ext cx="{w_emu}" cy="{h_emu}"/></a:xfrm>'
+        '<a:custGeom><a:avLst/><a:gdLst/><a:ahLst/><a:cxnLst/>'
+        '<a:rect l="0" t="0" r="r" b="b"/>'
+        '<a:pathLst><a:path w="100000" h="100000">'
+        '<a:moveTo><a:pt x="0" y="0"/></a:moveTo>'
+        '<a:lnTo><a:pt x="88000" y="0"/></a:lnTo>'
+        '<a:lnTo><a:pt x="100000" y="50000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="88000" y="100000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="0" y="100000"/></a:lnTo>'
+        '<a:close/></a:path></a:pathLst></a:custGeom>'
+        f'<a:solidFill><a:srgbClr val="{fill}"/></a:solidFill>'
+        '<a:ln><a:noFill/></a:ln><a:effectLst/>'
+        '</p:spPr>'
+        '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody>'
+        '</p:sp>'
+    )
+    slide.shapes._spTree.append(parse_xml(sp_xml))
+
+
 def parse_md(md):
     """Markdownをパースして (title, items) を返す。
     items: list of ('bullet'|'para', text)
@@ -323,12 +364,81 @@ def build(prs, sd):
         _no_shadow(pic)
 
 
+def build_flow(prs, sd):
+    """フロー図テンプレート（STEPS）用のビルド関数"""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])  # blank
+    H = D["HEADER"]
+    FT = D["FOOTER"]
+    C = COLORS
+    F = FONTS
+
+    # ── ヘッダー帯 ──
+    rect(slide, H["x"], H["y"], H["w"], H["h"], C["headerBg"])
+    text(slide, sd["header"]["title"],
+         H["padX"], H["padY"] + 0.013, H["w"] - H["padX"] * 2, 0.45,
+         F["title"]["size"], F["title"]["bold"], C["headerText"])
+    text(slide, sd["header"]["message"],
+         H["padX"], H["padY"] + 0.45 + 0.042, H["w"] - H["padX"] * 2, 0.3,
+         F["message"]["size"], F["message"]["bold"], C["headerText"])
+
+    # ── ステップ矢印 ──
+    for i, step in enumerate(sd["steps"]):
+        if i >= len(D["STEPS"]):
+            break
+        s = D["STEPS"][i]
+
+        # 矢印シェイプ
+        arrow_shape(slide, s["x"], s["y"], s["w"], s["h"], C["stepFill"])
+
+        # ラベル（矢印の先端部分を除いた88%幅に中央配置）
+        text(slide, step["label"],
+             s["x"], s["y"], s["w"] * 0.88, s["h"],
+             F["stepLabel"]["size"], F["stepLabel"]["bold"], C["stepText"])
+
+        # 箇条書き
+        for j, bullet in enumerate(step["bullets"]):
+            by = D["BULLETS_Y"] + j * D["BULLET_SPACING"]
+            bh = D["BULLET_SPACING"]
+            bw = s["w"] * 0.88
+            box = slide.shapes.add_textbox(
+                Inches(s["x"]), Inches(by), Inches(bw), Inches(bh))
+            tf = box.text_frame
+            tf.word_wrap = False
+            tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+            tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+            _fix_bodyPr(tf)
+            p = tf.paragraphs[0]
+            _add_runs(p, "\u2022\u2002" + bullet,
+                      F["bullet"]["size"], False, C["text"])
+            _no_shadow(box)
+
+    # ── フッター ──
+    hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
+    footer_center_y = FT["y"] + FT["h"] / 2
+    page_h = 0.3
+    logo_h = D["LOGO_H"]
+    box = text(slide, sd["page"],
+               FT["padX"], footer_center_y - page_h / 2, 2, page_h,
+               F["footer"]["size"], False, C["textMuted"])
+    box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    logo_path = os.path.join(HERE, sd["logo"])
+    if os.path.exists(logo_path):
+        pic = slide.shapes.add_picture(
+            logo_path,
+            Inches(D["SLIDE_W"] - FT["padX"] - 1.0),
+            Inches(footer_center_y - logo_h / 2),
+            height=Inches(logo_h),
+        )
+        _no_shadow(pic)
+
+
 def main():
     prs = Presentation()
     prs.slide_width = Inches(D["SLIDE_W"])
     prs.slide_height = Inches(D["SLIDE_H"])
+    builder = build_flow if "STEPS" in D else build
     for sd in D["SLIDES"]:
-        build(prs, sd)
+        builder(prs, sd)
     out = os.path.join(HERE, _out_name)
     prs.save(out)
     print(f"Saved: {out}")
