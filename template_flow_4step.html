@@ -204,7 +204,7 @@ D.FONTS  = DESIGN.FONTS;
     const F = D.FOOTER;
     slide.appendChild(el("div", {
       left: px(0), top: py(F.y),
-      width: px(F.w), height: pxToCqw(1),
+      width: px(F.w), height: "1px",
       background: "#" + D.COLORS.border,
     }));
     const footerRow = el("div", {
