@@ -133,7 +133,7 @@ D.FONTS  = DESIGN.FONTS;
       line-height: 1.3;
       margin-bottom: 0.4em;
       padding-bottom: 0.2em;
-      border-bottom: 1.5px solid #${D.COLORS.border};
+      border-bottom: ${pxToCqw(1.5)} solid #${D.COLORS.border};
     }
     .md-card p {
       font-size: ${ptToCqw(D.FONTS.cardBody.size)};
@@ -152,7 +152,7 @@ D.FONTS  = DESIGN.FONTS;
       font-size: 0.9em;
       background: #${D.COLORS.border};
       padding: 0.1em 0.3em;
-      border-radius: 2px;
+      border-radius: ${pxToCqw(2)};
     }
   `;
   document.head.appendChild(mdStyle);
@@ -193,8 +193,8 @@ D.FONTS  = DESIGN.FONTS;
       slide.appendChild(el("div", {
         left: px(c.x), top: py(c.y), width: px(c.w), height: py(c.h),
         background: "#" + D.COLORS.surface,
-        border: "1px solid #" + D.COLORS.border,
-        borderRadius: "3px",
+        border: pxToCqw(1) + " solid #" + D.COLORS.border,
+        borderRadius: pxToCqw(3),
       }));
 
       // Markdownコンテンツ
@@ -214,7 +214,7 @@ D.FONTS  = DESIGN.FONTS;
 
     slide.appendChild(el("div", {
       left: px(0), top: py(F.y),
-      width: px(F.w), height: "1px",
+      width: px(F.w), height: pxToCqw(1),
       background: "#" + D.COLORS.border,
     }));
 

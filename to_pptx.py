@@ -1,17 +1,17 @@
-"""slide.html → PPTX (python-pptx)
+"""すべての template_*.html → 一つのPPTX (python-pptx)
 
-slide.html 内の const D = {...} をSingle source of truthとして読み込む。
-Markdownフィールドをパースしてカードタイトル・コンテンツを抽出。
-座標はインチ単位で、PPTX標準16:9 (10" x 5.625") に一致。
+プロジェクト内のすべての template_*.html ファイルを一つの PPTX ファイルに統合。
+各テンプレートの const D {...} から SLIDES データを読み込んで処理。
 
 使い方:
-  python to_pptx.py              # slide.html → output.pptx
-  python to_pptx.py slide-1card  # slide-1card.html → slide-1card.pptx
+  python to_pptx.py              # すべてのテンプレート → all_templates.pptx
+  python to_pptx.py template_bg  # 特定テンプレートのみ → template_bg.pptx
 """
 import json
 import os
 import re
 import sys
+import glob
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import MSO_ANCHOR
@@ -24,34 +24,46 @@ def _el(tag, attrib=None):
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-_arg = sys.argv[1] if len(sys.argv) > 1 else "template_list_2card"
-_src_name = _arg if _arg.endswith(".html") else _arg + ".html"
-_out_name = os.path.splitext(_src_name)[0] + ".pptx"
+# コマンドライン引数で特定テンプレートのみ処理するか、すべて処理するか判定
+_arg = sys.argv[1] if len(sys.argv) > 1 else None
+if _arg and not _arg.endswith(".html"):
+    _arg = _arg + ".html"
 
-with open(os.path.join(HERE, _src_name), encoding="utf-8") as f:
-    _html = f.read()
+def find_template_files():
+    """template_*.html ファイルをすべて検出"""
+    pattern = os.path.join(HERE, "template_*.html")
+    files = sorted(glob.glob(pattern))
 
-_m = re.search(r'const D = (\{[\s\S]+?\});\s*\n\nD\.COLORS', _html)
-if not _m:
-    raise ValueError(f"{_src_name} 内に const D = {{...}} が見つかりません")
-D = json.loads(_m.group(1))
+    # token-monitor.html は除外
+    files = [f for f in files if not f.endswith("token-monitor.html")]
 
-# SLIDES: テンプレートリテラル (`...`) を JSON 文字列に変換してパース
-_s = re.search(r'const SLIDES = (\[[\s\S]+?\]); // END_SLIDES', _html)
-if not _s:
-    raise ValueError("slide.html 内に const SLIDES が見つかりません")
-_slides_js = re.sub(r'`([\s\S]*?)`', lambda m: json.dumps(m.group(1)), _s.group(1))
-D["SLIDES"] = json.loads(_slides_js)
+    return files
 
-# DESIGN: COLORS・FONTS を D にマージ
-_d = re.search(r'const DESIGN = (\{[\s\S]+?\}); // END_DESIGN', _html)
-if not _d:
-    raise ValueError("slide.html 内に const DESIGN が見つかりません")
-_design_json = re.sub(r'\s*//[^\n]*', '', _d.group(1))  # // コメントを除去
-D.update(json.loads(_design_json))
+def extract_design_and_slides(html_content, filename):
+    """HTML から D（デザイン・スライドデータ）を抽出"""
+    D = {}
 
-COLORS = D["COLORS"]
-FONTS = D["FONTS"]
+    # const D = {...} を抽出
+    _m = re.search(r'const D = (\{[\s\S]+?\});\s*\n\nD\.COLORS', html_content)
+    if not _m:
+        raise ValueError(f"{filename} 内に const D = {{...}} が見つかりません")
+    D = json.loads(_m.group(1))
+
+    # SLIDES: テンプレートリテラル (`...`) を JSON 文字列に変換
+    _s = re.search(r'const SLIDES = (\[[\s\S]+?\]); // END_SLIDES', html_content)
+    if not _s:
+        raise ValueError(f"{filename} 内に const SLIDES が見つかりません")
+    _slides_js = re.sub(r'`([\s\S]*?)`', lambda m: json.dumps(m.group(1)), _s.group(1))
+    D["SLIDES"] = json.loads(_slides_js)
+
+    # DESIGN: COLORS・FONTS を D にマージ
+    _d = re.search(r'const DESIGN = (\{[\s\S]+?\}); // END_DESIGN', html_content)
+    if not _d:
+        raise ValueError(f"{filename} 内に const DESIGN が見つかりません")
+    _design_json = re.sub(r'\s*//[^\n]*', '', _d.group(1))
+    D.update(json.loads(_design_json))
+
+    return D
 
 
 def rgb(hex6):
@@ -153,7 +165,8 @@ def _set_line_spacing(p, size_pt, mult=1.0):
 
 
 def text(slide, txt, x, y, w, h, size, bold=False, color="333333",
-         anchor=MSO_ANCHOR.MIDDLE):
+         anchor=MSO_ANCHOR.MIDDLE, align=None):
+    from pptx.enum.text import PP_ALIGN
     box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = box.text_frame
     tf.word_wrap = True
@@ -161,6 +174,8 @@ def text(slide, txt, x, y, w, h, size, bold=False, color="333333",
     tf.vertical_anchor = anchor
     _fix_bodyPr(tf)
     p = tf.paragraphs[0]
+    if align:
+        p.alignment = align
     _add_runs(p, txt, size, bold, color)
     _no_shadow(box)
     return box
@@ -211,14 +226,16 @@ def hline(slide, x, y, w, color, width_pt=1):
     return shape
 
 
-def arrow_shape(slide, x, y, w, h, fill_hex):
-    """右向き五角形矢印シェイプ（カスタムジオメトリ）を描画する"""
+def arrow_shape(slide, x, y, w, h, fill_hex, border_hex="CCCCCC", border_w=0.75):
+    """右向き五角形矢印シェイプ（カスタムジオメトリ）を描画する - 枠線付き"""
     from pptx.oxml import parse_xml
     x_emu = int(Inches(x))
     y_emu = int(Inches(y))
     w_emu = int(Inches(w))
     h_emu = int(Inches(h))
     fill = fill_hex.upper()
+    border = border_hex.upper()
+    border_emu = int(border_w * 12700)  # a:ln w 属性の単位: 1/12700 EMU = 1/100 pt
 
     # 既存シェイプの最大IDを取得して衝突を避ける
     ids = [int(e.get("id")) for e in slide.shapes._spTree.iter()
@@ -244,7 +261,8 @@ def arrow_shape(slide, x, y, w, h, fill_hex):
         '<a:lnTo><a:pt x="0" y="100000"/></a:lnTo>'
         '<a:close/></a:path></a:pathLst></a:custGeom>'
         f'<a:solidFill><a:srgbClr val="{fill}"/></a:solidFill>'
-        '<a:ln><a:noFill/></a:ln><a:effectLst/>'
+        f'<a:ln w="{border_emu}"><a:solidFill><a:srgbClr val="{border}"/></a:solidFill></a:ln>'
+        '<a:effectLst/>'
         '</p:spPr>'
         '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody>'
         '</p:sp>'
@@ -276,7 +294,7 @@ def parse_md(md):
     return title, items
 
 
-def build(prs, sd):
+def build(prs, sd, D, COLORS, FONTS):
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # blank
     H = D["HEADER"]
     FT = D["FOOTER"]
@@ -313,6 +331,55 @@ def build(prs, sd):
                        B["w"] - bp["x"] * 2,
                        B["h"] - doy - bp["y"] - 0.12,
                        F.get("bgBody", F["cardBody"])["size"], C["text"])
+
+    # ── 下矢印（diffuse テンプレートのみ） ──
+    if "ARROW" in D:
+        A = D["ARROW"]
+        arrow_color = C.get("arrow", "6B7A99")
+        shape = slide.shapes.add_shape(1, Inches(A["x"]), Inches(A["y"]), Inches(A["w"]), Inches(A["h"]))
+        shape.fill.solid()
+        shape.fill.fore_color.rgb = rgb(arrow_color)
+        shape.line.fill.background()
+        _no_shadow(shape)
+        # カスタム三角形（下向き）に差し替え
+        from pptx.oxml import parse_xml
+        spPr = shape._element.spPr
+        # custGeom で下向き三角形を定義
+        x_emu = int(Inches(A["x"]))
+        y_emu = int(Inches(A["y"]))
+        w_emu = int(Inches(A["w"]))
+        h_emu = int(Inches(A["h"]))
+        NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+        NS_P = "http://schemas.openxmlformats.org/presentationml/2006/main"
+        ids = [int(e.get("id")) for e in slide.shapes._spTree.iter()
+               if e.get("id") and e.get("id").isdigit()]
+        shape_id = (max(ids) + 1) if ids else 200
+        fill_hex = arrow_color.upper()
+        tri_xml = (
+            f'<p:sp xmlns:p="{NS_P}" xmlns:a="{NS_A}">'
+            f'<p:nvSpPr><p:cNvPr id="{shape_id}" name="Arrow{shape_id}"/>'
+            '<p:cNvSpPr/><p:nvPr/></p:nvSpPr>'
+            '<p:spPr>'
+            f'<a:xfrm><a:off x="{x_emu}" y="{y_emu}"/>'
+            f'<a:ext cx="{w_emu}" cy="{h_emu}"/></a:xfrm>'
+            '<a:custGeom><a:avLst/><a:gdLst/><a:ahLst/><a:cxnLst/>'
+            '<a:rect l="0" t="0" r="r" b="b"/>'
+            '<a:pathLst><a:path w="100000" h="100000">'
+            '<a:moveTo><a:pt x="0" y="0"/></a:moveTo>'
+            '<a:lnTo><a:pt x="100000" y="0"/></a:lnTo>'
+            '<a:lnTo><a:pt x="50000" y="100000"/></a:lnTo>'
+            '<a:close/></a:path></a:pathLst></a:custGeom>'
+            f'<a:solidFill><a:srgbClr val="{fill_hex}"/></a:solidFill>'
+            '<a:ln><a:noFill/></a:ln>'
+            '<a:effectLst/>'
+            '</p:spPr>'
+            '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody>'
+            '</p:sp>'
+        )
+        slide.shapes._spTree.append(parse_xml(tri_xml))
+        # 元の矩形シェイプを削除
+        sp_elem = shape._element
+        sp_elem.getparent().remove(sp_elem)
 
     # ── カード ──
     for i, cd in enumerate(sd["cards"]):
@@ -364,13 +431,20 @@ def build(prs, sd):
         _no_shadow(pic)
 
 
-def build_flow(prs, sd):
+def build_flow(prs, sd, D, COLORS, FONTS):
     """フロー図テンプレート（STEPS）用のビルド関数"""
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # blank
     H = D["HEADER"]
     FT = D["FOOTER"]
     C = COLORS
     F = FONTS
+
+    # ── スライド背景を白に設定 ──
+    from pptx.oxml.ns import qn as _qn
+    bg = slide.background
+    fill = bg.fill
+    fill.solid()
+    fill.fore_color.rgb = rgb(C.get("bg", "FFFFFF"))
 
     # ── ヘッダー帯 ──
     rect(slide, H["x"], H["y"], H["w"], H["h"], C["headerBg"])
@@ -390,27 +464,24 @@ def build_flow(prs, sd):
         # 矢印シェイプ
         arrow_shape(slide, s["x"], s["y"], s["w"], s["h"], C["stepFill"])
 
-        # ラベル（矢印の先端部分を除いた88%幅に中央配置）
+        # ラベル（矢印の先端部分を除いた88%幅に左揃え）
         text(slide, step["label"],
-             s["x"], s["y"], s["w"] * 0.88, s["h"],
+             s["x"] + 0.15, s["y"], s["w"] * 0.88 - 0.15, s["h"],
              F["stepLabel"]["size"], F["stepLabel"]["bold"], C["stepText"])
 
-        # 箇条書き
-        for j, bullet in enumerate(step["bullets"]):
-            by = D["BULLETS_Y"] + j * D["BULLET_SPACING"]
-            bh = D["BULLET_SPACING"]
-            bw = s["w"] * 0.88
-            box = slide.shapes.add_textbox(
-                Inches(s["x"]), Inches(by), Inches(bw), Inches(bh))
-            tf = box.text_frame
-            tf.word_wrap = False
-            tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
-            tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-            _fix_bodyPr(tf)
-            p = tf.paragraphs[0]
-            _add_runs(p, "\u2022\u2002" + bullet,
-                      F["bullet"]["size"], False, C["text"])
-            _no_shadow(box)
+        # 箇条書きボックス（HTMLと同じ高さ: FOOTER.y - BULLETS_Y - 0.1）
+        bullets_y = D["BULLETS_Y"]
+        bh = D["FOOTER"]["y"] - bullets_y - 0.1
+        cp = 0.1  # カードパディング
+        rect(slide, s["x"], bullets_y, s["w"], bh,
+             C.get("surface", "F5F5F5"), C["border"], 0.75)
+
+        # 箇条書きテキスト（md_contentでHTML同様のline-height:1.8）
+        items = [("bullet", b) for b in step["bullets"]]
+        md_content(slide, items,
+                   s["x"] + cp, bullets_y + cp,
+                   s["w"] - cp * 2, bh - cp * 2,
+                   F["bullet"]["size"], C["text"])
 
     # ── フッター ──
     hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
@@ -433,15 +504,60 @@ def build_flow(prs, sd):
 
 
 def main():
+    """すべてのテンプレートを一つの PPTX に統合"""
     prs = Presentation()
-    prs.slide_width = Inches(D["SLIDE_W"])
-    prs.slide_height = Inches(D["SLIDE_H"])
-    builder = build_flow if "STEPS" in D else build
-    for sd in D["SLIDES"]:
-        builder(prs, sd)
-    out = os.path.join(HERE, _out_name)
-    prs.save(out)
-    print(f"Saved: {out}")
+    prs.slide_width = Inches(10.0)
+    prs.slide_height = Inches(5.625)
+
+    # テンプレートファイルを検出
+    if _arg:
+        # 特定テンプレート
+        template_files = [os.path.join(HERE, _arg)]
+        out_name = os.path.splitext(_arg)[0] + ".pptx"
+    else:
+        # すべてのテンプレート
+        template_files = find_template_files()
+        out_name = "all_templates.pptx"
+
+    total_slides = 0
+
+    print(f"[Info] Processing templates: {len(template_files)} files")
+    print("=" * 60)
+
+    for template_path in template_files:
+        template_name = os.path.basename(template_path)
+        print(f"[*] {template_name}...", end=" ")
+
+        try:
+            with open(template_path, encoding="utf-8") as f:
+                html_content = f.read()
+
+            # D（デザイン・スライドデータ）を抽出
+            D = extract_design_and_slides(html_content, template_name)
+
+            # ビルド関数を選択（STEPS があればflow、なければ通常）
+            builder = build_flow if "STEPS" in D else build
+
+            # スライドを追加
+            slides_count = len(D.get("SLIDES", []))
+            for sd in D["SLIDES"]:
+                builder(prs, sd, D, D["COLORS"], D["FONTS"])
+
+            total_slides += slides_count
+            print(f"OK ({slides_count} slides)")
+
+        except Exception as e:
+            print(f"ERROR: {e}")
+            continue
+
+    print("=" * 60)
+    print(f"[Done] Total slides: {total_slides}")
+
+    # PPTX ファイルを保存
+    out_path = os.path.join(HERE, out_name)
+    prs.save(out_path)
+    print(f"[Save] {out_path}")
+    print(f"[Size] {os.path.getsize(out_path) / 1024:.1f} KB")
 
 
 if __name__ == "__main__":
