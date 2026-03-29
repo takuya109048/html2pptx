@@ -186,11 +186,14 @@ D.FONTS  = DESIGN.FONTS;
         left: px(s.x), top: py(s.y), width: px(s.w), height: py(s.h),
         background: "#" + D.COLORS.stepFill,
         clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
+      }));
+      slide.appendChild(el("div", {
+        left: px(s.x), top: py(s.y), width: px(s.w * 0.85), height: py(s.h),
         display: "flex", alignItems: "center", justifyContent: "center",
-        paddingRight: "12%",
         fontSize: ptToCqw(D.FONTS.stepLabel.size),
         fontWeight: D.FONTS.stepLabel.bold ? "700" : "400",
         color: "#" + D.COLORS.stepText,
+        overflow: "hidden", textAlign: "center",
       }, step.label));
 
       // 箇条書きボックス（カードと同スタイル）
