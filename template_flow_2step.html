@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Presentation Slide (Flow 4 Steps)</title>
+<title>Presentation Slide (Flow 2 Steps)</title>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; background: #e8e8e8; }
@@ -55,14 +55,6 @@ const SLIDES = [
       {
         "label": "ステップ2",
         "bullets": ["箇条書き項目", "箇条書き項目", "箇条書き項目"]
-      },
-      {
-        "label": "ステップ3",
-        "bullets": ["箇条書き項目", "箇条書き項目", "箇条書き項目"]
-      },
-      {
-        "label": "ステップ4",
-        "bullets": ["箇条書き項目", "箇条書き項目", "箇条書き項目"]
       }
     ],
     "page": "1 / 1",
@@ -88,7 +80,7 @@ const DESIGN = {
     "family":    "Segoe UI",                        // 欧文フォント名（和文は常に Meiryo）
     "title":     { "size": 24, "bold": true  },     // ヘッダータイトル
     "message":   { "size": 12, "bold": false },     // ヘッダーサブタイトル
-    "stepLabel": { "size": 14, "bold": true  },     // 矢印内ラベル
+    "stepLabel": { "size": 14, "bold": true  },     // 矢印内ラベル（フロー図用）
     "bullet":    { "size": 11, "bold": false },     // 箇条書き本文
     "footer":    { "size": 10, "bold": false }      // フッターのページ番号
   }
@@ -107,12 +99,10 @@ const D = {
   "SLIDE_H": 5.625,
   "HEADER": { "x": 0, "y": 0, "w": 10.0, "h": 0.85, "padX": 0.25, "padY": 0.08 },
   "STEPS": [
-    { "x": 0.25,  "y": 1.1, "w": 2.25, "h": 1.1 },
-    { "x": 2.667, "y": 1.1, "w": 2.25, "h": 1.1 },
-    { "x": 5.083, "y": 1.1, "w": 2.25, "h": 1.1 },
-    { "x": 7.5,   "y": 1.1, "w": 2.25, "h": 1.1 }
+    { "x": 0.25, "y": 1.1, "w": 4.65, "h": 1.1 },
+    { "x": 5.1,  "y": 1.1, "w": 4.65, "h": 1.1 }
   ],
-  "BULLETS_Y": 3.0,
+  "BULLETS_Y": 4.2,
   "BULLET_SPACING": 0.6,
   "FOOTER": { "x": 0, "y": 5.225, "w": 10.0, "h": 0.4, "padX": 0.25 },
   "LOGO_H": 0.25
@@ -174,12 +164,11 @@ D.FONTS  = DESIGN.FONTS;
       if (!s) return;
 
       // 矢印シェイプ（枠線層 + 塗り層の2レイヤー構成）
-      // clipPath はborderが効かないため、拡張版の同形状を背面に敷いて枠線を再現する
-      const be = 0.015; // 枠線用の拡張幅（インチ）
+      const be = 0.015;
       slide.appendChild(el("div", {
         left: px(s.x - be), top: py(s.y - be),
         width: px(s.w + be * 2), height: py(s.h + be * 2),
-        background: "#CCCCCC",  // 他テンプレートのborder色より濃い色で視認性を確保
+        background: "#CCCCCC",
         clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
       }));
       slide.appendChild(el("div", {
@@ -195,7 +184,7 @@ D.FONTS  = DESIGN.FONTS;
 
       // 箇条書きボックス（カードと同スタイル）
       const bh = D.FOOTER.y - D.BULLETS_Y - 0.1;
-      const cp = { x: 0.1, y: 0.1 };  // カードパディング
+      const cp = { x: 0.1, y: 0.1 };
       slide.appendChild(el("div", {
         left: px(s.x), top: py(D.BULLETS_Y),
         width: px(s.w), height: py(bh),
