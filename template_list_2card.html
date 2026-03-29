@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Presentation Slide</title>
+<title>Presentation Slide (2 Cards)</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,23 +47,25 @@
 const SLIDES = [
   {
     "header": {
-      "title": "フォント検証スライド：Meiryo × Segoe UI",
-      "message": "日本語テキストとABC / 123の混在確認 — Font Verification 2024"
+      "title": "スライドタイトル A-01 / Slide Title Placeholder",
+      "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
     },
     "cards": [
       {
-        "markdown": `## 左カード：実績サマリー
+        "markdown": `## 見出し C-01 / Heading
 
-- 売上高 1,234,567円（前年比 +12.3%）
-- 顧客数 ABC社含む 456社
-- ROI: 78.9% / CAGR 5.6%`
+- テキスト項目 D-01（補足: A-01）
+- テキスト項目 D-02（数値: 123）
+- テキスト項目 D-03 / Item XYZ
+- テキスト項目 D-04（英数: ABC）`
       },
       {
-        "markdown": `## 右カード：KPI Overview
+        "markdown": `## 見出し C-02 / Heading
 
-- Q1売上：¥98,765,432
-- 達成率 101.2%（Target: ¥97M）
-- Net Promoter Score: 62pt`
+- テキスト項目 E-01（補足: B-01）
+- テキスト項目 E-02（数値: 456）
+- テキスト項目 E-03 / Item XYZ
+- テキスト項目 E-04（英数: DEF）`
       }
     ],
     "page": "1 / 1",

@@ -32,4 +32,6 @@ out/
 npm-debug.log*
 
 # Generated output
-output.pptx
+*.pptx
+*.pdf
+screenshots/

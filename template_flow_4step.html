@@ -44,25 +44,25 @@
 const SLIDES = [
   {
     "header": {
-      "title": "フロー図",
-      "message": "各ステップの進行フロー"
+      "title": "スライドタイトル A-01 / Slide Title Placeholder",
+      "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
     },
     "steps": [
       {
-        "label": "ステップ1",
-        "bullets": ["箇条書き項目", "箇条書き項目", "箇条書き項目"]
+        "label": "ステップ A / Step-A",
+        "bullets": ["テキスト項目 A-01 / Item", "テキスト項目 A-02（補足 XY）", "テキスト項目 A-03（数値: 123）"]
       },
       {
-        "label": "ステップ2",
-        "bullets": ["箇条書き項目", "箇条書き項目", "箇条書き項目"]
+        "label": "ステップ B / Step-B",
+        "bullets": ["テキスト項目 B-01 / Item", "テキスト項目 B-02（補足 XY）", "テキスト項目 B-03（数値: 456）"]
       },
       {
-        "label": "ステップ3",
-        "bullets": ["箇条書き項目", "箇条書き項目", "箇条書き項目"]
+        "label": "ステップ C / Step-C",
+        "bullets": ["テキスト項目 C-01 / Item", "テキスト項目 C-02（補足 XY）", "テキスト項目 C-03（数値: 789）"]
       },
       {
-        "label": "ステップ4",
-        "bullets": ["箇条書き項目", "箇条書き項目", "箇条書き項目"]
+        "label": "ステップ D / Step-D",
+        "bullets": ["テキスト項目 D-01 / Item", "テキスト項目 D-02（補足 XY）", "テキスト項目 D-03（数値: 012）"]
       }
     ],
     "page": "1 / 1",
@@ -107,10 +107,10 @@ const D = {
   "SLIDE_H": 5.625,
   "HEADER": { "x": 0, "y": 0, "w": 10.0, "h": 0.85, "padX": 0.25, "padY": 0.08 },
   "STEPS": [
-    { "x": 0.25,  "y": 1.1, "w": 2.25, "h": 1.1 },
-    { "x": 2.667, "y": 1.1, "w": 2.25, "h": 1.1 },
-    { "x": 5.083, "y": 1.1, "w": 2.25, "h": 1.1 },
-    { "x": 7.5,   "y": 1.1, "w": 2.25, "h": 1.1 }
+    { "x": 0.25,  "y": 1.1, "w": 2.263, "h": 1.1 },
+    { "x": 2.663, "y": 1.1, "w": 2.263, "h": 1.1 },
+    { "x": 5.075, "y": 1.1, "w": 2.263, "h": 1.1 },
+    { "x": 7.488, "y": 1.1, "w": 2.263, "h": 1.1 }
   ],
   "BULLETS_Y": 2.35,
   "BULLET_SPACING": 0.6,
@@ -186,15 +186,19 @@ D.FONTS  = DESIGN.FONTS;
         left: px(s.x), top: py(s.y), width: px(s.w), height: py(s.h),
         background: "#" + D.COLORS.stepFill,
         clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        paddingRight: "12%",
+      }));
+      slide.appendChild(el("div", {
+        left: px(s.x), top: py(s.y), width: px(s.w * 0.85), height: py(s.h),
+        display: "flex", alignItems: "center", justifyContent: "flex-start",
+        paddingLeft: px(0.15),
         fontSize: ptToCqw(D.FONTS.stepLabel.size),
         fontWeight: D.FONTS.stepLabel.bold ? "700" : "400",
         color: "#" + D.COLORS.stepText,
+        overflow: "hidden", textAlign: "left",
       }, step.label));
 
       // 箇条書きボックス（カードと同スタイル）
-      const bh = D.FOOTER.y - D.BULLETS_Y - 0.1;
+      const bh = 5.10 - D.BULLETS_Y;
       const cp = { x: 0.1, y: 0.1 };  // カードパディング
       slide.appendChild(el("div", {
         left: px(s.x), top: py(D.BULLETS_Y),

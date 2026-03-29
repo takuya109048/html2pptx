@@ -271,27 +271,34 @@ def arrow_shape(slide, x, y, w, h, fill_hex, border_hex="CCCCCC", border_w=0.75)
 
 
 def parse_md(md):
-    """Markdownをパースして (title, items) を返す。
-    items: list of ('bullet'|'para', text)
+    """Markdownをパースしてセクションのリストを返す。
+    戻り値: [(title, items), ...]
+      items: list of ('bullet'|'para', text)
     **bold** / *italic* などのインラインマーカーは除去。
     """
-    title = ""
-    items = []
+    sections = []
+    cur_title = ""
+    cur_items = []
     for line in md.strip().split("\n"):
         s = line.strip()
         if not s:
             continue
         m = re.match(r"^#{1,6}\s+(.*)", s)
         if m:
-            title = re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", m.group(1))
+            if cur_title or cur_items:
+                sections.append((cur_title, cur_items))
+                cur_items = []
+            cur_title = re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", m.group(1))
         elif re.match(r"^[-*+]\s+", s):
             content = re.sub(r"^[-*+]\s+", "", s)
             content = re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", content)
-            items.append(("bullet", content))
+            cur_items.append(("bullet", content))
         else:
             content = re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", s)
-            items.append(("para", content))
-    return title, items
+            cur_items.append(("para", content))
+    if cur_title or cur_items:
+        sections.append((cur_title, cur_items))
+    return sections
 
 
 def build(prs, sd, D, COLORS, FONTS):
@@ -317,7 +324,8 @@ def build(prs, sd, D, COLORS, FONTS):
         B = D["BG_BOX"]
         bp = {"x": B.get("padX", 0.2), "y": B.get("padY", 0.15)}
         doy = D["CARD_DIVIDER_OFFSET_Y"]
-        bg_title, bg_items = parse_md(sd["bg"]["markdown"])
+        bg_sections = parse_md(sd["bg"]["markdown"])
+        bg_title, bg_items = bg_sections[0] if bg_sections else ("", [])
         rect(slide, B["x"], B["y"], B["w"], B["h"], C.get("bgBox", "E8EDF2"), C["border"], 0.75)
         text(slide, bg_title,
              B["x"] + bp["x"], B["y"] + bp["y"], B["w"] - bp["x"] * 2, 0.35,
@@ -387,24 +395,43 @@ def build(prs, sd, D, COLORS, FONTS):
         cp = D["CARD_PAD"]
         doy = D["CARD_DIVIDER_OFFSET_Y"]
 
-        card_title, items = parse_md(cd["markdown"])
+        sections = parse_md(cd["markdown"])
 
         rect(slide, c["x"], c["y"], c["w"], c["h"], C["surface"], C["border"], 0.75)
 
-        # HTML はブロックフロー（上揃え）なので TOP アンカーを使用
-        text(slide, card_title,
-             c["x"] + cp["x"], c["y"] + cp["y"], c["w"] - cp["x"] * 2, 0.35,
-             F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"],
-             anchor=MSO_ANCHOR.TOP)
-
-        hline(slide, c["x"] + cp["x"], c["y"] + doy, c["w"] - cp["x"] * 2, C["border"], 1.0)
-
-        if items:
-            bx = c["x"] + cp["x"]
-            by = c["y"] + doy + 0.12
-            bw = c["w"] - cp["x"] * 2
-            bh = c["h"] - doy - cp["y"] - 0.12
-            md_content(slide, items, bx, by, bw, bh, F["cardBody"]["size"], C["text"])
+        if len(sections) <= 1:
+            # 単一セクション（従来通り）
+            card_title, items = sections[0] if sections else ("", [])
+            text(slide, card_title,
+                 c["x"] + cp["x"], c["y"] + cp["y"], c["w"] - cp["x"] * 2, 0.35,
+                 F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"],
+                 anchor=MSO_ANCHOR.TOP)
+            hline(slide, c["x"] + cp["x"], c["y"] + doy, c["w"] - cp["x"] * 2, C["border"], 1.0)
+            if items:
+                bx = c["x"] + cp["x"]
+                by = c["y"] + doy + 0.12
+                bw = c["w"] - cp["x"] * 2
+                bh = c["h"] - doy - cp["y"] - 0.12
+                md_content(slide, items, bx, by, bw, bh, F["cardBody"]["size"], C["text"])
+        else:
+            # 複数セクション：コンテンツ量から自然な高さを計算して積み上げ
+            item_h_in = (F["cardBody"]["size"] * 1.8 + 4) / 72  # 行間1.8 + space_after 4pt → inch
+            cur_y = c["y"]
+            for j, (sec_title, sec_items) in enumerate(sections):
+                text(slide, sec_title,
+                     c["x"] + cp["x"], cur_y + cp["y"], c["w"] - cp["x"] * 2, 0.35,
+                     F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"],
+                     anchor=MSO_ANCHOR.TOP)
+                hline(slide, c["x"] + cp["x"], cur_y + doy, c["w"] - cp["x"] * 2, C["border"], 1.0)
+                if sec_items:
+                    bx = c["x"] + cp["x"]
+                    by = cur_y + doy + 0.12
+                    bw = c["w"] - cp["x"] * 2
+                    bh = len(sec_items) * item_h_in
+                    md_content(slide, sec_items, bx, by, bw, bh, F["cardBody"]["size"], C["text"])
+                cur_y += doy + 0.12 + len(sec_items) * item_h_in
+                if j < len(sections) - 1:
+                    cur_y += cp["y"]  # セクション間の隙間
 
     # ── フッター ──
     hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
