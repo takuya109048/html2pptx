@@ -40,7 +40,6 @@
 // table.head           ヘッダー行（省略可）
 // table.rows           データ行（2次元配列）
 //                      行数・列数は自由に設定可
-// conclusion.label     結論ボックス左側のラベル
 // conclusion.text      結論ボックスの内容テキスト
 // page                 フッター左端のページ番号表示
 // logo                 フッター右端に表示する画像ファイル名
@@ -60,7 +59,6 @@ const SLIDES = [
       ]
     },
     "conclusion": {
-      "label": "結論",
       "text": "結論テキスト R-01（補足: Z-01）/ Conclusion placeholder text. Sample result XYZ-001."
     },
     "page": "1 / 1",
@@ -110,7 +108,7 @@ const D = {
   "SLIDE_H":          5.625,
   "HEADER":           { "x": 0,    "y": 0,    "w": 10.0, "h": 0.85, "padX": 0.25, "padY": 0.08 },
   "TABLE_BOX":        { "x": 0.25, "y": 0.95, "w": 9.5,  "h": 2.9  },
-  "CONCLUSION_BOX":   { "x": 0.25, "y": 3.95, "w": 9.5,  "h": 0.95, "labelW": 1.2, "padX": 0.2 },
+  "CONCLUSION_BOX":   { "x": 0.25, "y": 3.95, "w": 9.5,  "h": 0.95, "padX": 0.3 },
   "FOOTER":           { "x": 0,    "y": 5.225,"w": 10.0, "h": 0.4,  "padX": 0.25 },
   "LOGO_H":           0.25
 };
@@ -235,25 +233,12 @@ D.FONTS  = DESIGN.FONTS;
 
     // ── 結論ボックス ──
     const CB = D.CONCLUSION_BOX;
-    // 左ラベルストリップ
     slide.appendChild(el("div", {
       left: px(CB.x), top: py(CB.y),
-      width: px(CB.labelW), height: py(CB.h),
-      background: "#" + D.COLORS.tableHead,
-      borderRadius: `${pxToCqw(3)} 0 0 ${pxToCqw(3)}`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      color: "#" + D.COLORS.tableHeadText,
-      fontSize: ptToCqw(D.FONTS.tableHead.size),
-      fontWeight: "700",
-    }, sd.conclusion.label));
-    // 右コンテンツエリア
-    slide.appendChild(el("div", {
-      left: px(CB.x + CB.labelW), top: py(CB.y),
-      width: px(CB.w - CB.labelW), height: py(CB.h),
+      width: px(CB.w), height: py(CB.h),
       background: "#" + D.COLORS.conclusionBg,
       border: `${pxToCqw(1)} solid #${D.COLORS.conclusionBorder}`,
-      borderLeft: "none",
-      borderRadius: `0 ${pxToCqw(3)} ${pxToCqw(3)} 0`,
+      borderRadius: pxToCqw(3),
       display: "flex", alignItems: "center",
       paddingLeft: px(CB.padX),
       paddingRight: px(CB.padX),

@@ -690,7 +690,6 @@ def build_table_slide(prs, sd, D, COLORS, FONTS):
 
 def build_table_conclusion_slide(prs, sd, D, COLORS, FONTS):
     """テーブル＋結論ボックステンプレート用のビルド関数"""
-    from pptx.enum.text import PP_ALIGN
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     H = D["HEADER"]
     FT = D["FOOTER"]
@@ -757,21 +756,11 @@ def build_table_conclusion_slide(prs, sd, D, COLORS, FONTS):
 
     # ── 結論ボックス ──
     CB = D["CONCLUSION_BOX"]
-    label_w = CB["labelW"]
-    pad_x   = CB.get("padX", 0.2)
-    # 左ラベルストリップ
-    rect(slide, CB["x"], CB["y"], label_w, CB["h"], C["tableHead"])
-    text(slide, sd["conclusion"]["label"],
-         CB["x"], CB["y"], label_w, CB["h"],
-         F["tableHead"]["size"], True, C["tableHeadText"],
-         anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-    # 右コンテンツエリア
-    content_x = CB["x"] + label_w
-    content_w = CB["w"] - label_w
-    rect(slide, content_x, CB["y"], content_w, CB["h"],
+    pad_x = CB.get("padX", 0.3)
+    rect(slide, CB["x"], CB["y"], CB["w"], CB["h"],
          C["conclusionBg"], C["conclusionBorder"], 0.75)
     text(slide, sd["conclusion"]["text"],
-         content_x + pad_x, CB["y"], content_w - pad_x * 2, CB["h"],
+         CB["x"] + pad_x, CB["y"], CB["w"] - pad_x * 2, CB["h"],
          F["tableBody"]["size"], False, C["tableText"],
          anchor=MSO_ANCHOR.MIDDLE)
 
