@@ -418,20 +418,21 @@ def build(prs, sd, D, COLORS, FONTS):
             item_h_in = (F["cardBody"]["size"] * 1.8 + 4) / 72  # 行間1.8 + space_after 4pt → inch
             cur_y = c["y"]
             for j, (sec_title, sec_items) in enumerate(sections):
+                # 1つ目はカード上余白、以降は小さい隙間のみ
+                pre_pad = cp["y"] if j == 0 else 0.09
+                sec_doy = pre_pad + 0.35  # タイトル高さ0.35の直後に区切り線
                 text(slide, sec_title,
-                     c["x"] + cp["x"], cur_y + cp["y"], c["w"] - cp["x"] * 2, 0.35,
+                     c["x"] + cp["x"], cur_y + pre_pad, c["w"] - cp["x"] * 2, 0.35,
                      F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"],
                      anchor=MSO_ANCHOR.TOP)
-                hline(slide, c["x"] + cp["x"], cur_y + doy, c["w"] - cp["x"] * 2, C["border"], 1.0)
+                hline(slide, c["x"] + cp["x"], cur_y + sec_doy, c["w"] - cp["x"] * 2, C["border"], 1.0)
                 if sec_items:
                     bx = c["x"] + cp["x"]
-                    by = cur_y + doy + 0.12
+                    by = cur_y + sec_doy + 0.12
                     bw = c["w"] - cp["x"] * 2
                     bh = len(sec_items) * item_h_in
                     md_content(slide, sec_items, bx, by, bw, bh, F["cardBody"]["size"], C["text"])
-                cur_y += doy + 0.12 + len(sec_items) * item_h_in
-                if j < len(sections) - 1:
-                    cur_y += cp["y"]  # セクション間の隙間
+                cur_y += sec_doy + 0.12 + len(sec_items) * item_h_in
 
     # ── フッター ──
     hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
