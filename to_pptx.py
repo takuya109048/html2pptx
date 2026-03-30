@@ -652,9 +652,14 @@ def build_table_slide(prs, sd, D, COLORS, FONTS):
         for i, row in enumerate(rows):
             bg = C["tableRowAlt"] if i % 2 == 1 else C["tableRow"]
             for j, ct in enumerate(row[:num_cols]):
-                _set_table_cell(tbl.cell(i + row_offset, j), ct,
-                                F["tableBody"]["size"], False,
-                                C["tableText"], bg, C["tableBorder"])
+                if j == 0:
+                    _set_table_cell(tbl.cell(i + row_offset, j), ct,
+                                    F["tableHead"]["size"], True,
+                                    C["tableHeadText"], C["tableHead"], C["tableBorder"])
+                else:
+                    _set_table_cell(tbl.cell(i + row_offset, j), ct,
+                                    F["tableBody"]["size"], False,
+                                    C["tableText"], bg, C["tableBorder"])
 
     # ── フッター ──
     hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)

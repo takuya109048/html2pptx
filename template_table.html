@@ -145,8 +145,8 @@ D.FONTS  = DESIGN.FONTS;
       vertical-align: middle;
       overflow: hidden;
     }
-    .slide-table tbody tr:not(.head-row):nth-child(even) td { background: #${D.COLORS.tableRow}; }
-    .slide-table tbody tr:not(.head-row):nth-child(odd)  td { background: #${D.COLORS.tableRowAlt}; }
+    .slide-table tbody tr:not(.head-row):nth-child(even) td:not(.th) { background: #${D.COLORS.tableRow}; }
+    .slide-table tbody tr:not(.head-row):nth-child(odd)  td:not(.th) { background: #${D.COLORS.tableRowAlt}; }
   `;
   document.head.appendChild(tableStyle);
 
@@ -200,8 +200,9 @@ D.FONTS  = DESIGN.FONTS;
     }
     sd.table.rows.forEach(row => {
       const tr = document.createElement("tr");
-      row.forEach(text => {
+      row.forEach((text, j) => {
         const td = document.createElement("td");
+        if (j === 0) td.className = "th";
         td.textContent = text;
         tr.appendChild(td);
       });
