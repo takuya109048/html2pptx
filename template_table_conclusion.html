@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentation Slide (Table + Conclusion)</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #e8e8e8; }
+  .slide-wrapper {
+    width: 100%; height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    overflow: hidden;
+  }
+  .slide {
+    aspect-ratio: 16 / 9;
+    width: min(100vh * 16 / 9, 100vw);
+    max-height: 100vh;
+    position: relative;
+    background: #fff;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+  .slide [data-role] { position: absolute; }
+</style>
+</head>
+<body>
+<div class="slide-wrapper">
+  <div class="slide" id="slide"></div>
+</div>
+
+<script>
+// =====================================================
+// ここを編集してスライドをカスタマイズしてください
+// =====================================================
+
+// ── テキスト内容 ──────────────────────────────────
+// header.title         ヘッダーの大きいタイトル
+// header.message       ヘッダーの小さいサブタイトル
+// table.head           ヘッダー行（省略可）
+// table.rows           データ行（2次元配列）
+//                      行数・列数は自由に設定可
+// conclusion.label     結論ボックス左側のラベル
+// conclusion.text      結論ボックスの内容テキスト
+// page                 フッター左端のページ番号表示
+// logo                 フッター右端に表示する画像ファイル名
+const SLIDES = [
+  {
+    "header": {
+      "title": "スライドタイトル A-01 / Slide Title Placeholder",
+      "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+    },
+    "table": {
+      "head": ["見出し X-01", "見出し X-02", "見出し X-03", "見出し X-04"],
+      "rows": [
+        ["テキスト A-01", "テキスト B-01", "テキスト C-01", "テキスト D-01"],
+        ["テキスト A-02", "テキスト B-02", "テキスト C-02", "テキスト D-02"],
+        ["テキスト A-03", "テキスト B-03", "テキスト C-03", "テキスト D-03"],
+        ["テキスト A-04", "テキスト B-04", "テキスト C-04", "テキスト D-04"]
+      ]
+    },
+    "conclusion": {
+      "label": "結論",
+      "text": "結論テキスト R-01（補足: Z-01）/ Conclusion placeholder text. Sample result XYZ-001."
+    },
+    "page": "1 / 1",
+    "logo": "logo.png"
+  }
+]; // END_SLIDES
+
+// ── デザイン（色・フォント） ─────────────────────
+// 色は 16進数6桁（# なし）で指定
+// フォントサイズはポイント数（数値）で指定
+const DESIGN = {
+  "COLORS": {
+    "headerBg":        "4A4A4A",  // ヘッダー帯の背景色
+    "headerText":      "FFFFFF",  // ヘッダーの文字色
+    "tableHead":       "6B7A99",  // 表ヘッダー行の背景色
+    "tableHeadText":   "FFFFFF",  // 表ヘッダー行の文字色
+    "tableRow":        "FFFFFF",  // 表データ行の背景色（奇数行）
+    "tableRowAlt":     "F5F5F5",  // 表データ行の背景色（偶数行）
+    "tableText":       "333333",  // 表データ行の文字色
+    "tableBorder":     "D0D0D0",  // 表の罫線色
+    "conclusionBg":    "EEF2FF",  // 結論ボックスの背景色
+    "conclusionBorder":"6B7A99",  // 結論ボックスの枠線色
+    "textMuted":       "888888",  // フッター（ページ番号）の色
+    "border":          "E0E0E0",  // フッター区切り線の色
+    "bg":              "FFFFFF"   // スライド全体の背景色
+  },
+  "FONTS": {
+    "family":    "Segoe UI",                        // 欧文フォント名（和文は常に Meiryo）
+    "title":     { "size": 24, "bold": true  },     // ヘッダータイトル
+    "message":   { "size": 12, "bold": false },     // ヘッダーサブタイトル
+    "tableHead": { "size": 12, "bold": true  },     // 表ヘッダー行
+    "tableBody": { "size": 12, "bold": false },     // 表データ行
+    "footer":    { "size": 10, "bold": false }      // フッターのページ番号
+  }
+}; // END_DESIGN
+
+// =====================================================
+// 以下はテンプレート（通常は編集不要）
+// =====================================================
+
+const W = 10, H = 5.625;
+const px = (inch) => (inch / W * 100) + "%";
+const py = (inch) => (inch / H * 100) + "%";
+
+const D = {
+  "SLIDE_W":          10.0,
+  "SLIDE_H":          5.625,
+  "HEADER":           { "x": 0,    "y": 0,    "w": 10.0, "h": 0.85, "padX": 0.25, "padY": 0.08 },
+  "TABLE_BOX":        { "x": 0.25, "y": 0.95, "w": 9.5,  "h": 2.9  },
+  "CONCLUSION_BOX":   { "x": 0.25, "y": 3.95, "w": 9.5,  "h": 0.95, "labelW": 1.2, "padX": 0.2 },
+  "FOOTER":           { "x": 0,    "y": 5.225,"w": 10.0, "h": 0.4,  "padX": 0.25 },
+  "LOGO_H":           0.25
+};
+
+D.COLORS = DESIGN.COLORS;
+D.FONTS  = DESIGN.FONTS;
+
+(D => {
+  const slide = document.getElementById("slide");
+  slide.style.fontFamily = `"${D.FONTS.family}", "Meiryo", sans-serif`;
+
+  const ptToCqw = (pt) => (pt / 720 * 100) + "cqw";
+  const pxToCqw = (px) => (px / 960 * 100) + "cqw";
+
+  const tableStyle = document.createElement("style");
+  tableStyle.textContent = `
+    .slide-table {
+      width: 100%; height: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .slide-table .th {
+      background: #${D.COLORS.tableHead};
+      color: #${D.COLORS.tableHeadText};
+      font-size: ${ptToCqw(D.FONTS.tableHead.size)};
+      font-weight: 700;
+      padding: 0.25em 0.6em;
+      border: ${pxToCqw(1)} solid #${D.COLORS.tableBorder};
+      text-align: left;
+      vertical-align: middle;
+      overflow: hidden;
+    }
+    .slide-table td {
+      color: #${D.COLORS.tableText};
+      font-size: ${ptToCqw(D.FONTS.tableBody.size)};
+      font-weight: 400;
+      padding: 0.25em 0.6em;
+      border: ${pxToCqw(1)} solid #${D.COLORS.tableBorder};
+      text-align: left;
+      vertical-align: middle;
+      overflow: hidden;
+    }
+    .slide-table tbody tr:not(.head-row):nth-child(even) td:not(.th) { background: #${D.COLORS.tableRow}; }
+    .slide-table tbody tr:not(.head-row):nth-child(odd)  td:not(.th) { background: #${D.COLORS.tableRowAlt}; }
+  `;
+  document.head.appendChild(tableStyle);
+
+  SLIDES.forEach(sd => {
+    const L = D.HEADER;
+
+    // ── ヘッダー帯 ──
+    slide.appendChild(el("div", {
+      left: px(L.x), top: py(L.y), width: px(L.w), height: py(L.h),
+      background: "#" + D.COLORS.headerBg,
+    }));
+    slide.appendChild(el("div", {
+      left: px(L.padX), top: py(L.padY),
+      width: px(L.w - L.padX * 2), height: py(0.45),
+      fontSize: ptToCqw(D.FONTS.title.size),
+      fontWeight: D.FONTS.title.bold ? "700" : "400",
+      color: "#" + D.COLORS.headerText,
+      display: "flex", alignItems: "center",
+    }, sd.header.title));
+    slide.appendChild(el("div", {
+      left: px(L.padX), top: py(L.padY + 0.45),
+      width: px(L.w - L.padX * 2), height: py(0.3),
+      fontSize: ptToCqw(D.FONTS.message.size),
+      fontWeight: D.FONTS.message.bold ? "700" : "400",
+      color: "#" + D.COLORS.headerText, opacity: "0.85",
+      display: "flex", alignItems: "center",
+    }, sd.header.message));
+
+    // ── テーブル ──
+    const BOX = D.TABLE_BOX;
+    const wrap = el("div", {
+      left: px(BOX.x), top: py(BOX.y),
+      width: px(BOX.w), height: py(BOX.h),
+      overflow: "hidden",
+    });
+
+    const table = document.createElement("table");
+    table.className = "slide-table";
+
+    const numCols = Math.max(
+      sd.table.head ? sd.table.head.length : 0,
+      ...sd.table.rows.map(r => r.length)
+    );
+    const colgroup = document.createElement("colgroup");
+    const colW = (100 / numCols).toFixed(4) + "%";
+    for (let j = 0; j < numCols; j++) {
+      const col = document.createElement("col");
+      col.style.width = colW;
+      colgroup.appendChild(col);
+    }
+    table.appendChild(colgroup);
+
+    const tbody = document.createElement("tbody");
+    if (sd.table.head && sd.table.head.length > 0) {
+      const tr = document.createElement("tr");
+      tr.className = "head-row";
+      sd.table.head.forEach(text => {
+        const td = document.createElement("td");
+        td.className = "th";
+        td.textContent = text;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+    sd.table.rows.forEach(row => {
+      const tr = document.createElement("tr");
+      row.forEach((text, j) => {
+        const td = document.createElement("td");
+        if (j === 0) td.className = "th";
+        td.textContent = text;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+    slide.appendChild(wrap);
+
+    // ── 結論ボックス ──
+    const CB = D.CONCLUSION_BOX;
+    // 左ラベルストリップ
+    slide.appendChild(el("div", {
+      left: px(CB.x), top: py(CB.y),
+      width: px(CB.labelW), height: py(CB.h),
+      background: "#" + D.COLORS.tableHead,
+      borderRadius: `${pxToCqw(3)} 0 0 ${pxToCqw(3)}`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      color: "#" + D.COLORS.tableHeadText,
+      fontSize: ptToCqw(D.FONTS.tableHead.size),
+      fontWeight: "700",
+    }, sd.conclusion.label));
+    // 右コンテンツエリア
+    slide.appendChild(el("div", {
+      left: px(CB.x + CB.labelW), top: py(CB.y),
+      width: px(CB.w - CB.labelW), height: py(CB.h),
+      background: "#" + D.COLORS.conclusionBg,
+      border: `${pxToCqw(1)} solid #${D.COLORS.conclusionBorder}`,
+      borderLeft: "none",
+      borderRadius: `0 ${pxToCqw(3)} ${pxToCqw(3)} 0`,
+      display: "flex", alignItems: "center",
+      paddingLeft: px(CB.padX),
+      paddingRight: px(CB.padX),
+      color: "#" + D.COLORS.tableText,
+      fontSize: ptToCqw(D.FONTS.tableBody.size),
+    }, sd.conclusion.text));
+
+    // ── フッター ──
+    const F = D.FOOTER;
+    slide.appendChild(el("div", {
+      left: px(0), top: py(F.y),
+      width: px(F.w), height: pxToCqw(1),
+      background: "#" + D.COLORS.border,
+    }));
+    const footerRow = el("div", {
+      left: px(F.padX), top: py(F.y),
+      width: px(F.w - F.padX * 2), height: py(F.h),
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+    });
+    const pageSpan = document.createElement("span");
+    pageSpan.textContent = sd.page;
+    pageSpan.style.fontSize = ptToCqw(D.FONTS.footer.size);
+    pageSpan.style.color = "#" + D.COLORS.textMuted;
+    footerRow.appendChild(pageSpan);
+    const logo = document.createElement("img");
+    logo.src = sd.logo;
+    logo.alt = "Logo";
+    logo.style.height = (D.LOGO_H / D.SLIDE_W * 100) + "cqw";
+    logo.style.width = "auto";
+    logo.style.objectFit = "contain";
+    footerRow.appendChild(logo);
+    slide.appendChild(footerRow);
+  });
+})(D);
+
+function el(tag, styles, text) {
+  const e = document.createElement(tag);
+  e.setAttribute("data-role", "element");
+  Object.assign(e.style, { position: "absolute", ...styles });
+  if (text) e.textContent = text;
+  return e;
+}
+</script>
+</body>
+</html>
