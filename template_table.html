@@ -124,7 +124,7 @@ D.FONTS  = DESIGN.FONTS;
       border-collapse: collapse;
       table-layout: fixed;
     }
-    .slide-table th {
+    .slide-table .th {
       background: #${D.COLORS.tableHead};
       color: #${D.COLORS.tableHeadText};
       font-size: ${ptToCqw(D.FONTS.tableHead.size)};
@@ -145,8 +145,8 @@ D.FONTS  = DESIGN.FONTS;
       vertical-align: middle;
       overflow: hidden;
     }
-    .slide-table tbody tr:nth-child(odd)  td { background: #${D.COLORS.tableRow}; }
-    .slide-table tbody tr:nth-child(even) td { background: #${D.COLORS.tableRowAlt}; }
+    .slide-table tbody tr:not(.head-row):nth-child(even) td { background: #${D.COLORS.tableRow}; }
+    .slide-table tbody tr:not(.head-row):nth-child(odd)  td { background: #${D.COLORS.tableRowAlt}; }
   `;
   document.head.appendChild(tableStyle);
 
@@ -186,19 +186,18 @@ D.FONTS  = DESIGN.FONTS;
     const table = document.createElement("table");
     table.className = "slide-table";
 
-    if (sd.table.head && sd.table.head.length > 0) {
-      const thead = document.createElement("thead");
-      const tr = document.createElement("tr");
-      sd.table.head.forEach(text => {
-        const th = document.createElement("th");
-        th.textContent = text;
-        tr.appendChild(th);
-      });
-      thead.appendChild(tr);
-      table.appendChild(thead);
-    }
-
     const tbody = document.createElement("tbody");
+    if (sd.table.head && sd.table.head.length > 0) {
+      const tr = document.createElement("tr");
+      tr.className = "head-row";
+      sd.table.head.forEach(text => {
+        const td = document.createElement("td");
+        td.className = "th";
+        td.textContent = text;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
     sd.table.rows.forEach(row => {
       const tr = document.createElement("tr");
       row.forEach(text => {

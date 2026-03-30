@@ -575,8 +575,8 @@ def _set_table_cell(cell, cell_text, size, bold, text_color, bg_color, border_co
     NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
 
     tf = cell.text_frame
-    tf.margin_left = tf.margin_right = Pt(3)
-    tf.margin_top = tf.margin_bottom = Pt(2)
+    tf.margin_left = tf.margin_right = Pt(7)
+    tf.margin_top = tf.margin_bottom = Pt(3)
     tf.word_wrap = True
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     _add_runs(tf.paragraphs[0], cell_text, size, bold, text_color)
@@ -633,6 +633,14 @@ def build_table_slide(prs, sd, D, COLORS, FONTS):
             Inches(BOX["w"]), Inches(BOX["h"])
         )
         tbl = tbl_shape.table
+
+        # 列幅・行高を均等に明示設定（HTML の table-layout:fixed と一致させる）
+        col_w = Inches(BOX["w"] / num_cols)
+        row_h = Inches(BOX["h"] / num_rows)
+        for j in range(num_cols):
+            tbl.columns[j].width = col_w
+        for i in range(num_rows):
+            tbl.rows[i].height = row_h
 
         if has_head:
             for j, ct in enumerate(head[:num_cols]):
