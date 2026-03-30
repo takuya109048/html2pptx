@@ -531,6 +531,48 @@ def build_flow(prs, sd, D, COLORS, FONTS):
         _no_shadow(pic)
 
 
+def build_cover(prs, sd, D, COLORS, FONTS):
+    """表紙テンプレート用のビルド関数"""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])  # blank
+
+    # ── 背景画像（最初に追加してz順を最背面に） ──
+    bg_path = os.path.join(HERE, sd["bg"])
+    if os.path.exists(bg_path):
+        slide.shapes.add_picture(
+            bg_path, Inches(0), Inches(0),
+            width=Inches(D["SLIDE_W"]), height=Inches(D["SLIDE_H"])
+        )
+
+    cx = D["CONTENT_X"]
+    cw = D["CONTENT_W"]
+
+    # ── タイトル（\n で明示改行） ──
+    title_lines = sd["title"].split("\n")
+    box = slide.shapes.add_textbox(
+        Inches(cx), Inches(D["TITLE_Y"]),
+        Inches(cw), Inches(D["TITLE_H"])
+    )
+    tf = box.text_frame
+    tf.word_wrap = False
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    _fix_bodyPr(tf)
+    for i, line in enumerate(title_lines):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        _add_runs(p, line, FONTS["title"]["size"], FONTS["title"]["bold"], COLORS["title"])
+        _set_line_spacing(p, FONTS["title"]["size"], mult=1.4)
+    _no_shadow(box)
+
+    # ── 区切り線 ──
+    hline(slide, D["DIVIDER_X"], D["DIVIDER_Y"], D["DIVIDER_W"], COLORS["divider"], 0.75)
+
+    # ── 所属・発表者・日付 ──
+    for item in D["META_ITEMS"]:
+        text(slide, sd[item["key"]],
+             cx, item["y"], cw, 0.35,
+             FONTS["meta"]["size"], FONTS["meta"]["bold"], COLORS["meta"])
+
+
 def main():
     """すべてのテンプレートを一つの PPTX に統合"""
     prs = Presentation()
@@ -563,8 +605,13 @@ def main():
             # D（デザイン・スライドデータ）を抽出
             D = extract_design_and_slides(html_content, template_name)
 
-            # ビルド関数を選択（STEPS があればflow、なければ通常）
-            builder = build_flow if "STEPS" in D else build
+            # ビルド関数を選択
+            if "STEPS" in D:
+                builder = build_flow
+            elif "META_ITEMS" in D:
+                builder = build_cover
+            else:
+                builder = build
 
             # スライドを追加
             slides_count = len(D.get("SLIDES", []))
