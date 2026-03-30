@@ -186,6 +186,20 @@ D.FONTS  = DESIGN.FONTS;
     const table = document.createElement("table");
     table.className = "slide-table";
 
+    // 全列を均等幅に固定
+    const numCols = Math.max(
+      sd.table.head ? sd.table.head.length : 0,
+      ...sd.table.rows.map(r => r.length)
+    );
+    const colgroup = document.createElement("colgroup");
+    const colW = (100 / numCols).toFixed(4) + "%";
+    for (let j = 0; j < numCols; j++) {
+      const col = document.createElement("col");
+      col.style.width = colW;
+      colgroup.appendChild(col);
+    }
+    table.appendChild(colgroup);
+
     const tbody = document.createElement("tbody");
     if (sd.table.head && sd.table.head.length > 0) {
       const tr = document.createElement("tr");
