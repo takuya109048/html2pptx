@@ -569,6 +569,105 @@ def build_flow(prs, sd, D, COLORS, FONTS):
         _no_shadow(pic)
 
 
+def _set_table_cell(cell, cell_text, size, bold, text_color, bg_color, border_color):
+    """テーブルセルのテキスト・背景色・罫線を設定"""
+    from pptx.oxml import parse_xml as _px
+    NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+
+    tf = cell.text_frame
+    tf.margin_left = tf.margin_right = Pt(3)
+    tf.margin_top = tf.margin_bottom = Pt(2)
+    tf.word_wrap = True
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    _add_runs(tf.paragraphs[0], cell_text, size, bold, text_color)
+
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+    for old in tcPr.findall(qn("a:solidFill")):
+        tcPr.remove(old)
+    tcPr.insert(0, _px(
+        f'<a:solidFill xmlns:a="{NS_A}"><a:srgbClr val="{bg_color.upper()}"/></a:solidFill>'
+    ))
+    border_emu = str(int(0.75 * 12700))
+    for edge in ("lnL", "lnR", "lnT", "lnB"):
+        for old in tcPr.findall(qn(f"a:{edge}")):
+            tcPr.remove(old)
+        tcPr.append(_px(
+            f'<a:{edge} xmlns:a="{NS_A}" w="{border_emu}" cap="flat" cmpd="sng" algn="ctr">'
+            f'<a:solidFill><a:srgbClr val="{border_color.upper()}"/></a:solidFill>'
+            f'<a:prstDash val="solid"/></{edge.replace("a:", "a:")}>'
+            .replace(f'</{edge.replace("a:", "a:")}>', f'</a:{edge}>')
+        ))
+
+
+def build_table_slide(prs, sd, D, COLORS, FONTS):
+    """テーブルテンプレート用のビルド関数"""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    H = D["HEADER"]
+    FT = D["FOOTER"]
+    C = COLORS
+    F = FONTS
+
+    # ── ヘッダー帯 ──
+    rect(slide, H["x"], H["y"], H["w"], H["h"], C["headerBg"])
+    text(slide, sd["header"]["title"],
+         H["padX"], H["padY"] + 0.013, H["w"] - H["padX"] * 2, 0.45,
+         F["title"]["size"], F["title"]["bold"], C["headerText"])
+    text(slide, sd["header"]["message"],
+         H["padX"], H["padY"] + 0.45 + 0.042, H["w"] - H["padX"] * 2, 0.3,
+         F["message"]["size"], F["message"]["bold"], C["headerText"])
+
+    # ── テーブル ──
+    BOX = D["TABLE_BOX"]
+    t = sd["table"]
+    head = t.get("head", [])
+    rows = t.get("rows", [])
+    has_head = bool(head)
+    num_cols = max(len(head) if head else 0, max((len(r) for r in rows), default=0))
+    num_rows = len(rows) + (1 if has_head else 0)
+
+    if num_rows > 0 and num_cols > 0:
+        tbl_shape = slide.shapes.add_table(
+            num_rows, num_cols,
+            Inches(BOX["x"]), Inches(BOX["y"]),
+            Inches(BOX["w"]), Inches(BOX["h"])
+        )
+        tbl = tbl_shape.table
+
+        if has_head:
+            for j, ct in enumerate(head[:num_cols]):
+                _set_table_cell(tbl.cell(0, j), ct,
+                                F["tableHead"]["size"], True,
+                                C["tableHeadText"], C["tableHead"], C["tableBorder"])
+
+        row_offset = 1 if has_head else 0
+        for i, row in enumerate(rows):
+            bg = C["tableRowAlt"] if i % 2 == 1 else C["tableRow"]
+            for j, ct in enumerate(row[:num_cols]):
+                _set_table_cell(tbl.cell(i + row_offset, j), ct,
+                                F["tableBody"]["size"], False,
+                                C["tableText"], bg, C["tableBorder"])
+
+    # ── フッター ──
+    hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
+    footer_center_y = FT["y"] + FT["h"] / 2
+    page_h = 0.3
+    logo_h = D["LOGO_H"]
+    box = text(slide, sd["page"],
+               FT["padX"], footer_center_y - page_h / 2, 2, page_h,
+               F["footer"]["size"], False, C["textMuted"])
+    box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    logo_path = os.path.join(HERE, sd["logo"])
+    if os.path.exists(logo_path):
+        pic = slide.shapes.add_picture(
+            logo_path,
+            Inches(D["SLIDE_W"] - FT["padX"] - 1.0),
+            Inches(footer_center_y - logo_h / 2),
+            height=Inches(logo_h),
+        )
+        _no_shadow(pic)
+
+
 def build_cover(prs, sd, D, COLORS, FONTS):
     """表紙テンプレート用のビルド関数"""
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # blank
@@ -648,6 +747,8 @@ def main():
                 builder = build_flow
             elif "META_ITEMS" in D:
                 builder = build_cover
+            elif "TABLE_BOX" in D:
+                builder = build_table_slide
             else:
                 builder = build
 
