@@ -688,6 +688,113 @@ def build_table_slide(prs, sd, D, COLORS, FONTS):
         _no_shadow(pic)
 
 
+def build_bg_table_slide(prs, sd, D, COLORS, FONTS):
+    """背景ボックス＋テーブルテンプレート用のビルド関数"""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    H = D["HEADER"]
+    FT = D["FOOTER"]
+    C = COLORS
+    F = FONTS
+
+    # ── ヘッダー帯 ──
+    rect(slide, H["x"], H["y"], H["w"], H["h"], C["headerBg"])
+    text(slide, sd["header"]["title"],
+         H["padX"], H["padY"] + 0.013, H["w"] - H["padX"] * 2, 0.45,
+         F["title"]["size"], F["title"]["bold"], C["headerText"])
+    text(slide, sd["header"]["message"],
+         H["padX"], H["padY"] + 0.45 + 0.042, H["w"] - H["padX"] * 2, 0.3,
+         F["message"]["size"], F["message"]["bold"], C["headerText"])
+
+    # ── 背景ボックス ──
+    B = D["BG_BOX"]
+    bp = {"x": B.get("padX", 0.2), "y": B.get("padY", 0.15)}
+    doy = D.get("CARD_DIVIDER_OFFSET_Y", 0.45)
+    bg_sections = parse_md(sd["bg"]["markdown"])
+    bg_title, bg_items = bg_sections[0] if bg_sections else ("", [])
+    rect(slide, B["x"], B["y"], B["w"], B["h"], C.get("bgBox", "E8EDF2"), C["border"], 0.75)
+    text(slide, bg_title,
+         B["x"] + bp["x"], B["y"] + bp["y"], B["w"] - bp["x"] * 2, 0.35,
+         F.get("bgTitle", F.get("cardTitle", F["tableHead"]))["size"],
+         F.get("bgTitle", F.get("cardTitle", F["tableHead"]))["bold"],
+         C["text"], anchor=MSO_ANCHOR.TOP)
+    hline(slide, B["x"] + bp["x"], B["y"] + doy, B["w"] - bp["x"] * 2, C["border"], 1.0)
+    if bg_items:
+        md_content(slide, bg_items,
+                   B["x"] + bp["x"], B["y"] + doy + 0.12,
+                   B["w"] - bp["x"] * 2,
+                   B["h"] - doy - bp["y"] - 0.12,
+                   F.get("bgBody", F.get("tableBody", F["tableHead"]))["size"],
+                   C["text"])
+
+    # ── テーブル ──
+    BOX = D["TABLE_BOX"]
+    t = sd["table"]
+    head = t.get("head", [])
+    rows = t.get("rows", [])
+    has_head = bool(head)
+    num_cols = max(len(head) if head else 0, max((len(r) for r in rows), default=0))
+    num_rows = len(rows) + (1 if has_head else 0)
+
+    if num_rows > 0 and num_cols > 0:
+        tbl_shape = slide.shapes.add_table(
+            num_rows, num_cols,
+            Inches(BOX["x"]), Inches(BOX["y"]),
+            Inches(BOX["w"]), Inches(BOX["h"])
+        )
+        tbl = tbl_shape.table
+
+        tbl_pr = tbl._tbl.find(qn("a:tblPr"))
+        if tbl_pr is not None:
+            tbl_pr.attrib.pop("firstRow", None)
+            tbl_pr.attrib.pop("bandRow", None)
+            tbl_pr.attrib.pop("firstCol", None)
+
+        col_w = Inches(BOX["w"] / num_cols)
+        row_h = Inches(BOX["h"] / num_rows)
+        for j in range(num_cols):
+            tbl.columns[j].width = col_w
+        for i in range(num_rows):
+            tbl.rows[i].height = row_h
+
+        if has_head:
+            for j, ct in enumerate(head[:num_cols]):
+                _set_table_cell(tbl.cell(0, j), ct,
+                                F["tableHead"]["size"], True,
+                                C["tableHeadText"], C["tableHead"], C["tableBorder"])
+
+        row_offset = 1 if has_head else 0
+        for i, row in enumerate(rows):
+            bg = C["tableRowAlt"] if i % 2 == 1 else C["tableRow"]
+            for j, ct in enumerate(row[:num_cols]):
+                if j == 0:
+                    _set_table_cell(tbl.cell(i + row_offset, j), ct,
+                                    F["tableHead"]["size"], True,
+                                    C["tableHeadText"], C["tableHead"], C["tableBorder"])
+                else:
+                    _set_table_cell(tbl.cell(i + row_offset, j), ct,
+                                    F["tableBody"]["size"], False,
+                                    C["tableText"], bg, C["tableBorder"])
+
+    # ── フッター ──
+    hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
+    footer_center_y = FT["y"] + FT["h"] / 2
+    page_h = 0.3
+    logo_h = D["LOGO_H"]
+    box = text(slide, sd["page"],
+               FT["padX"], footer_center_y - page_h / 2, 2, page_h,
+               F["footer"]["size"], False, C["textMuted"])
+    box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    logo_path = os.path.join(HERE, sd["logo"])
+    if os.path.exists(logo_path):
+        pic = slide.shapes.add_picture(
+            logo_path,
+            Inches(D["SLIDE_W"] - FT["padX"] - 1.0),
+            Inches(footer_center_y - logo_h / 2),
+            height=Inches(logo_h),
+        )
+        _no_shadow(pic)
+
+
 def build_cover(prs, sd, D, COLORS, FONTS):
     """表紙テンプレート用のビルド関数"""
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # blank
@@ -767,6 +874,8 @@ def main():
                 builder = build_flow
             elif "META_ITEMS" in D:
                 builder = build_cover
+            elif "TABLE_BOX" in D and "BG_BOX" in D:
+                builder = build_bg_table_slide
             elif "TABLE_BOX" in D:
                 builder = build_table_slide
             else:
