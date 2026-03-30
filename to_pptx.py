@@ -634,6 +634,13 @@ def build_table_slide(prs, sd, D, COLORS, FONTS):
         )
         tbl = tbl_shape.table
 
+        # firstRow/bandRow スタイルフラグを除去（組み込みスタイルの干渉防止）
+        tbl_pr = tbl._tbl.find(qn("a:tblPr"))
+        if tbl_pr is not None:
+            tbl_pr.attrib.pop("firstRow", None)
+            tbl_pr.attrib.pop("bandRow", None)
+            tbl_pr.attrib.pop("firstCol", None)
+
         # 列幅・行高を均等に明示設定（HTML の table-layout:fixed と一致させる）
         col_w = Inches(BOX["w"] / num_cols)
         row_h = Inches(BOX["h"] / num_rows)
