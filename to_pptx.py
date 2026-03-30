@@ -210,7 +210,8 @@ def md_content(slide, items, x, y, w, h, size, color="333333"):
         else:
             pPr.append(pPr.makeelement(qn("a:buNone"), {}))
 
-        _add_runs(p, item_text, size, False, color)
+        bold = item_type == "heading"
+        _add_runs(p, item_text, size, bold, color)
         _set_line_spacing(p, size, mult=1.8)
 
     _no_shadow(box)
@@ -389,8 +390,45 @@ def build(prs, sd, D, COLORS, FONTS):
         sp_elem = shape._element
         sp_elem.getparent().remove(sp_elem)
 
+    # ── プレーン2カラム ──
+    if "PLAIN_COLS" in D and "columns" in sd:
+        for i, col in enumerate(sd["columns"]):
+            if i >= len(D["PLAIN_COLS"]):
+                break
+            B = D["PLAIN_COLS"][i]
+            bp = {"x": B.get("padX", 0.25), "y": B.get("padY", 0.15)}
+            sections = parse_md(col["markdown"])
+            all_items = []
+            for sec_title, sec_items in sections:
+                if sec_title:
+                    all_items.append(("heading", sec_title))
+                all_items.extend(sec_items)
+            if all_items:
+                md_content(slide, all_items,
+                           B["x"] + bp["x"], B["y"] + bp["y"],
+                           B["w"] - bp["x"] * 2, B["h"] - bp["y"] * 2,
+                           F["bodyText"]["size"] if "bodyText" in F else F["cardBody"]["size"],
+                           C["text"])
+
+    # ── プレーンボディ ──
+    if "PLAIN_BOX" in D and "body" in sd:
+        B = D["PLAIN_BOX"]
+        bp = {"x": B.get("padX", 0.25), "y": B.get("padY", 0.15)}
+        sections = parse_md(sd["body"]["markdown"])
+        all_items = []
+        for sec_title, sec_items in sections:
+            if sec_title:
+                all_items.append(("heading", sec_title))
+            all_items.extend(sec_items)
+        if all_items:
+            md_content(slide, all_items,
+                       B["x"] + bp["x"], B["y"] + bp["y"],
+                       B["w"] - bp["x"] * 2, B["h"] - bp["y"] * 2,
+                       F["bodyText"]["size"] if "bodyText" in F else F["cardBody"]["size"],
+                       C["text"])
+
     # ── カード ──
-    for i, cd in enumerate(sd["cards"]):
+    for i, cd in enumerate(sd.get("cards", [])):
         c = D["CARDS"][i]
         cp = D["CARD_PAD"]
         doy = D["CARD_DIVIDER_OFFSET_Y"]
