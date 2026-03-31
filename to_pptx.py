@@ -47,7 +47,8 @@ def extract_design_and_slides(html_content, filename):
     _m = re.search(r'const D = (\{[\s\S]+?\});\s*\n\nD\.COLORS', html_content)
     if not _m:
         raise ValueError(f"{filename} 内に const D = {{...}} が見つかりません")
-    D = json.loads(_m.group(1))
+    _d_json = re.sub(r'\s*//[^\n]*', '', _m.group(1))
+    D = json.loads(_d_json)
 
     # SLIDES: テンプレートリテラル (`...`) を JSON 文字列に変換
     _s = re.search(r'const SLIDES = (\[[\s\S]+?\]); // END_SLIDES', html_content)
@@ -181,10 +182,15 @@ def text(slide, txt, x, y, w, h, size, bold=False, color="333333",
     return box
 
 
-def md_content(slide, items, x, y, w, h, size, color="333333"):
+def md_content(slide, items, x, y, w, h, size, color="333333", head_size=None):
     """(type, text) のリストをテキストボックスに描画。
-    type='bullet' → 箇条書き、type='para' → 通常段落
+    type='heading' → 見出し（head_size、太字、上マージンあり）
+    type='bullet'  → 箇条書き
+    type='para'    → 通常段落
     """
+    if head_size is None:
+        head_size = size
+
     box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = box.text_frame
     tf.word_wrap = True
@@ -196,7 +202,15 @@ def md_content(slide, items, x, y, w, h, size, color="333333"):
 
     for idx, (item_type, item_text) in enumerate(items):
         p = tf.paragraphs[0] if idx == 0 else tf.add_paragraph()
-        p.space_after = Pt(4)
+
+        if item_type == "heading":
+            p.space_before = Pt(0) if idx == 0 else Pt(8)  # margin-top: 0.6em 相当
+            p.space_after = Pt(3)
+            item_size = head_size
+        else:
+            p.space_before = Pt(0)
+            p.space_after = Pt(4)
+            item_size = size
 
         pPr = p._p.get_or_add_pPr()
         for tag in (qn("a:buChar"), qn("a:buNone")):
@@ -211,8 +225,8 @@ def md_content(slide, items, x, y, w, h, size, color="333333"):
             pPr.append(pPr.makeelement(qn("a:buNone"), {}))
 
         bold = item_type == "heading"
-        _add_runs(p, item_text, size, bold, color)
-        _set_line_spacing(p, size, mult=1.8)
+        _add_runs(p, item_text, item_size, bold, color)
+        _set_line_spacing(p, item_size, mult=1.4 if item_type == "heading" else 1.8)
 
     _no_shadow(box)
     return box
@@ -328,17 +342,24 @@ def build(prs, sd, D, COLORS, FONTS):
         bg_sections = parse_md(sd["bg"]["markdown"])
         bg_title, bg_items = bg_sections[0] if bg_sections else ("", [])
         rect(slide, B["x"], B["y"], B["w"], B["h"], C.get("bgBox", "E8EDF2"), C["border"], 0.75)
-        text(slide, bg_title,
-             B["x"] + bp["x"], B["y"] + bp["y"], B["w"] - bp["x"] * 2, 0.35,
-             F.get("bgTitle", F["cardTitle"])["size"],
-             F.get("bgTitle", F["cardTitle"])["bold"], C["text"],
-             anchor=MSO_ANCHOR.TOP)
-        hline(slide, B["x"] + bp["x"], B["y"] + doy, B["w"] - bp["x"] * 2, C["border"], 1.0)
-        if bg_items:
+        if bg_title:
+            text(slide, bg_title,
+                 B["x"] + bp["x"], B["y"] + bp["y"], B["w"] - bp["x"] * 2, 0.35,
+                 F.get("bgTitle", F["cardTitle"])["size"],
+                 F.get("bgTitle", F["cardTitle"])["bold"], C["text"],
+                 anchor=MSO_ANCHOR.TOP)
+            hline(slide, B["x"] + bp["x"], B["y"] + doy, B["w"] - bp["x"] * 2, C["border"], 1.0)
+            if bg_items:
+                md_content(slide, bg_items,
+                           B["x"] + bp["x"], B["y"] + doy + 0.12,
+                           B["w"] - bp["x"] * 2,
+                           B["h"] - doy - bp["y"] - 0.12,
+                           F.get("bgBody", F["cardBody"])["size"], C["text"])
+        elif bg_items:
             md_content(slide, bg_items,
-                       B["x"] + bp["x"], B["y"] + doy + 0.12,
+                       B["x"] + bp["x"], B["y"] + bp["y"],
                        B["w"] - bp["x"] * 2,
-                       B["h"] - doy - bp["y"] - 0.12,
+                       B["h"] - bp["y"] * 2,
                        F.get("bgBody", F["cardBody"])["size"], C["text"])
 
     # ── 下矢印（diffuse テンプレートのみ） ──
@@ -408,7 +429,8 @@ def build(prs, sd, D, COLORS, FONTS):
                            B["x"] + bp["x"], B["y"] + bp["y"],
                            B["w"] - bp["x"] * 2, B["h"] - bp["y"] * 2,
                            F["bodyText"]["size"] if "bodyText" in F else F["cardBody"]["size"],
-                           C["text"])
+                           C["text"],
+                           head_size=F["bodyHead"]["size"] if "bodyHead" in F else None)
 
     # ── プレーンボディ ──
     if "PLAIN_BOX" in D and "body" in sd:
@@ -425,7 +447,8 @@ def build(prs, sd, D, COLORS, FONTS):
                        B["x"] + bp["x"], B["y"] + bp["y"],
                        B["w"] - bp["x"] * 2, B["h"] - bp["y"] * 2,
                        F["bodyText"]["size"] if "bodyText" in F else F["cardBody"]["size"],
-                       C["text"])
+                       C["text"],
+                       head_size=F["bodyHead"]["size"] if "bodyHead" in F else None)
 
     # ── カード ──
     for i, cd in enumerate(sd.get("cards", [])):
@@ -471,6 +494,38 @@ def build(prs, sd, D, COLORS, FONTS):
                     bh = len(sec_items) * item_h_in
                     md_content(slide, sec_items, bx, by, bw, bh, F["cardBody"]["size"], C["text"])
                 cur_y += sec_doy + 0.12 + len(sec_items) * item_h_in
+
+    # ── 結論ボックス（converge テンプレートのみ） ──
+    if "CONCLUSION_BOX" in D and "conclusion" in sd:
+        CB = D["CONCLUSION_BOX"]
+        cbp = {"x": CB.get("padX", 0.25), "y": CB.get("padY", 0.15)}
+        acc_w = CB.get("accentW", 0.07)
+        rect(slide, CB["x"], CB["y"], CB["w"], CB["h"],
+             C.get("conclusionBg", "EEF2FF"), C.get("conclusionBorder", "6B7A99"), 1.0)
+        rect(slide, CB["x"], CB["y"], acc_w, CB["h"],
+             C.get("conclusionBorder", "6B7A99"))
+        concl_md = sd["conclusion"].get("markdown", sd["conclusion"].get("text", ""))
+        concl_sections = parse_md(concl_md)
+        concl_title, concl_items = concl_sections[0] if concl_sections else ("", [])
+        text_x = CB["x"] + acc_w + cbp["x"]
+        text_w = CB["w"] - acc_w - cbp["x"] * 2
+        if concl_title:
+            text(slide, concl_title, text_x, CB["y"] + cbp["y"], text_w, 0.35,
+                 F.get("conclTitle", F["cardTitle"])["size"],
+                 F.get("conclTitle", F["cardTitle"])["bold"],
+                 C.get("conclusionText", C["text"]), anchor=MSO_ANCHOR.TOP)
+            if concl_items:
+                md_content(slide, concl_items,
+                           text_x, CB["y"] + cbp["y"] + 0.4,
+                           text_w, CB["h"] - cbp["y"] - 0.4,
+                           F.get("conclBody", F["cardBody"])["size"],
+                           C.get("conclusionText", C["text"]))
+        elif concl_items:
+            md_content(slide, concl_items,
+                       text_x, CB["y"] + cbp["y"],
+                       text_w, CB["h"] - cbp["y"] * 2,
+                       F.get("conclBody", F["cardBody"])["size"],
+                       C.get("conclusionText", C["text"]))
 
     # ── フッター ──
     hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
@@ -756,13 +811,19 @@ def build_table_conclusion_slide(prs, sd, D, COLORS, FONTS):
 
     # ── 結論ボックス ──
     CB = D["CONCLUSION_BOX"]
-    pad_x = CB.get("padX", 0.3)
+    pad_x = CB.get("padX", 0.25)
+    pad_y = CB.get("padY", 0.15)
+    acc_w = CB.get("accentW", 0.07)
     rect(slide, CB["x"], CB["y"], CB["w"], CB["h"],
-         C["conclusionBg"], C["conclusionBorder"], 0.75)
+         C.get("conclusionBg", "EEF2FF"), C.get("conclusionBorder", "6B7A99"), 1.0)
+    rect(slide, CB["x"], CB["y"], acc_w, CB["h"],
+         C.get("conclusionBorder", "6B7A99"))
     text(slide, sd["conclusion"]["text"],
-         CB["x"] + pad_x, CB["y"], CB["w"] - pad_x * 2, CB["h"],
-         F["tableBody"]["size"], False, C["tableText"],
-         anchor=MSO_ANCHOR.MIDDLE)
+         CB["x"] + acc_w + pad_x, CB["y"] + pad_y,
+         CB["w"] - acc_w - pad_x * 2, CB["h"] - pad_y * 2,
+         F.get("conclBody", F["tableBody"])["size"], False,
+         C.get("conclusionText", C["tableText"]),
+         anchor=MSO_ANCHOR.TOP)
 
     # ── フッター ──
     hline(slide, 0, FT["y"], FT["w"], C["border"], 0.75)
@@ -808,17 +869,25 @@ def build_bg_table_slide(prs, sd, D, COLORS, FONTS):
     bg_sections = parse_md(sd["bg"]["markdown"])
     bg_title, bg_items = bg_sections[0] if bg_sections else ("", [])
     rect(slide, B["x"], B["y"], B["w"], B["h"], C.get("bgBox", "E8EDF2"), C["border"], 0.75)
-    text(slide, bg_title,
-         B["x"] + bp["x"], B["y"] + bp["y"], B["w"] - bp["x"] * 2, 0.35,
-         F.get("bgTitle", F.get("cardTitle", F["tableHead"]))["size"],
-         F.get("bgTitle", F.get("cardTitle", F["tableHead"]))["bold"],
-         C["text"], anchor=MSO_ANCHOR.TOP)
-    hline(slide, B["x"] + bp["x"], B["y"] + doy, B["w"] - bp["x"] * 2, C["border"], 1.0)
-    if bg_items:
+    if bg_title:
+        text(slide, bg_title,
+             B["x"] + bp["x"], B["y"] + bp["y"], B["w"] - bp["x"] * 2, 0.35,
+             F.get("bgTitle", F.get("cardTitle", F["tableHead"]))["size"],
+             F.get("bgTitle", F.get("cardTitle", F["tableHead"]))["bold"],
+             C["text"], anchor=MSO_ANCHOR.TOP)
+        hline(slide, B["x"] + bp["x"], B["y"] + doy, B["w"] - bp["x"] * 2, C["border"], 1.0)
+        if bg_items:
+            md_content(slide, bg_items,
+                       B["x"] + bp["x"], B["y"] + doy + 0.12,
+                       B["w"] - bp["x"] * 2,
+                       B["h"] - doy - bp["y"] - 0.12,
+                       F.get("bgBody", F.get("tableBody", F["tableHead"]))["size"],
+                       C["text"])
+    elif bg_items:
         md_content(slide, bg_items,
-                   B["x"] + bp["x"], B["y"] + doy + 0.12,
+                   B["x"] + bp["x"], B["y"] + bp["y"],
                    B["w"] - bp["x"] * 2,
-                   B["h"] - doy - bp["y"] - 0.12,
+                   B["h"] - bp["y"] * 2,
                    F.get("bgBody", F.get("tableBody", F["tableHead"]))["size"],
                    C["text"])
 

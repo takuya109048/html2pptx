@@ -38,7 +38,7 @@
 // ── テキスト内容 ──────────────────────────────────
 // header.title       ヘッダーの大きいタイトル
 // header.message     ヘッダーの小さいサブタイトル
-// bg.markdown        上部背景ボックスの内容（Markdown）
+// bg.markdown        上部背景ボックスの内容（プレーンテキスト。見出し不要）
 // cards[].markdown   カードの内容（Markdown）
 //   ##  で始まる行 → カードタイトル（下に区切り線が入る）
 //   -   で始まる行 → 箇条書き
@@ -52,9 +52,7 @@ const SLIDES = [
       "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
     },
     "bg": {
-      "markdown": `## 背景テキスト BG-01 / Background Heading
-
-サンプル説明テキスト A-01 / Sample description text XYZ-001 goes here as a placeholder.`
+      "markdown": `サンプル説明テキスト A-01 / Sample description text XYZ-001 goes here as a placeholder.`
     },
     "cards": [
       {
@@ -240,9 +238,11 @@ D.FONTS  = DESIGN.FONTS;
       width: px(B.w - B.padX * 2),
       height: py(B.h - B.padY * 2),
       overflow: "hidden",
+      fontSize: ptToCqw(D.FONTS.bgBody.size),
+      lineHeight: "1.8",
+      color: "#" + D.COLORS.text,
     });
-    bgContent.classList.add("md-bg");
-    bgContent.innerHTML = marked.parse(sd.bg.markdown);
+    bgContent.textContent = sd.bg.text;
     slide.appendChild(bgContent);
 
     // ── 下矢印（横長三角形） ──

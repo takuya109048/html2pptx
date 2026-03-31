@@ -80,7 +80,8 @@ const DESIGN = {
     "tableText":       "333333",  // 表データ行の文字色
     "tableBorder":     "D0D0D0",  // 表の罫線色
     "conclusionBg":    "EEF2FF",  // 結論ボックスの背景色
-    "conclusionBorder":"6B7A99",  // 結論ボックスの枠線色
+    "conclusionBorder":"6B7A99",  // 結論ボックスの枠線・左帯色
+    "conclusionText":  "1A2A5A",  // 結論ボックスの文字色
     "textMuted":       "888888",  // フッター（ページ番号）の色
     "border":          "E0E0E0",  // フッター区切り線の色
     "bg":              "FFFFFF"   // スライド全体の背景色
@@ -91,6 +92,7 @@ const DESIGN = {
     "message":   { "size": 12, "bold": false },     // ヘッダーサブタイトル
     "tableHead": { "size": 12, "bold": true  },     // 表ヘッダー行
     "tableBody": { "size": 12, "bold": false },     // 表データ行
+    "conclBody": { "size": 12, "bold": false },     // 結論本文
     "footer":    { "size": 10, "bold": false }      // フッターのページ番号
   }
 }; // END_DESIGN
@@ -108,7 +110,7 @@ const D = {
   "SLIDE_H":          5.625,
   "HEADER":           { "x": 0,    "y": 0,    "w": 10.0, "h": 0.85, "padX": 0.25, "padY": 0.08 },
   "TABLE_BOX":        { "x": 0.25, "y": 0.95, "w": 9.5,  "h": 3.1  },
-  "CONCLUSION_BOX":   { "x": 0.25, "y": 4.15, "w": 9.5,  "h": 0.95, "padX": 0.3 },
+  "CONCLUSION_BOX":   { "x": 0.25, "y": 4.15, "w": 9.5,  "h": 0.95, "padX": 0.25, "padY": 0.15, "accentW": 0.07 },
   "FOOTER":           { "x": 0,    "y": 5.225,"w": 10.0, "h": 0.4,  "padX": 0.25 },
   "LOGO_H":           0.25
 };
@@ -237,14 +239,26 @@ D.FONTS  = DESIGN.FONTS;
       left: px(CB.x), top: py(CB.y),
       width: px(CB.w), height: py(CB.h),
       background: "#" + D.COLORS.conclusionBg,
-      border: `${pxToCqw(1)} solid #${D.COLORS.conclusionBorder}`,
-      borderRadius: pxToCqw(3),
-      display: "flex", alignItems: "center",
-      paddingLeft: px(CB.padX),
-      paddingRight: px(CB.padX),
-      color: "#" + D.COLORS.tableText,
-      fontSize: ptToCqw(D.FONTS.tableBody.size),
-    }, sd.conclusion.text));
+      border: pxToCqw(1.5) + " solid #" + D.COLORS.conclusionBorder,
+      borderRadius: pxToCqw(4),
+    }));
+    slide.appendChild(el("div", {
+      left: px(CB.x), top: py(CB.y),
+      width: px(CB.accentW), height: py(CB.h),
+      background: "#" + D.COLORS.conclusionBorder,
+      borderRadius: pxToCqw(4) + " 0 0 " + pxToCqw(4),
+    }));
+    const conclContent = el("div", {
+      left: px(CB.x + CB.accentW + CB.padX), top: py(CB.y + CB.padY),
+      width: px(CB.w - CB.accentW - CB.padX * 2),
+      height: py(CB.h - CB.padY * 2),
+      overflow: "hidden",
+      fontSize: ptToCqw(D.FONTS.conclBody.size),
+      lineHeight: "1.7",
+      color: "#" + D.COLORS.conclusionText,
+    });
+    conclContent.textContent = sd.conclusion.text;
+    slide.appendChild(conclContent);
 
     // ── フッター ──
     const F = D.FOOTER;

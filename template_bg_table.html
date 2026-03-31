@@ -38,7 +38,7 @@
 // ── テキスト内容 ──────────────────────────────────
 // header.title       ヘッダーの大きいタイトル
 // header.message     ヘッダーの小さいサブタイトル
-// bg.markdown        上部背景ボックスの内容（Markdown）
+// bg.markdown        上部背景ボックスの内容（プレーンテキスト。見出し不要）
 //   ##  で始まる行 → 見出し（下に区切り線が入る）
 //   -   で始まる行 → 箇条書き
 //   それ以外        → 通常テキスト（段落）
@@ -54,9 +54,7 @@ const SLIDES = [
       "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
     },
     "bg": {
-      "markdown": `## 背景テキスト BG-01 / Background Heading
-
-ここには背景説明のサンプルテキストが入ります。説明文 A-01 は補足情報を表します。Sample description text XYZ-001 / placeholder content goes here.`
+      "markdown": `ここには背景説明のサンプルテキストが入ります。説明文 A-01 は補足情報を表します。Sample description text XYZ-001 / placeholder content goes here.`
     },
     "table": {
       "head": ["見出し X-01", "見出し X-02", "見出し X-03", "見出し X-04"],
@@ -114,8 +112,8 @@ const D = {
   "SLIDE_W":   10.0,
   "SLIDE_H":   5.625,
   "HEADER":    { "x": 0,    "y": 0,    "w": 10.0, "h": 0.85, "padX": 0.25, "padY": 0.08 },
-  "BG_BOX":    { "x": 0.25, "y": 0.95, "w": 9.5,  "h": 1.3,  "padX": 0.2,  "padY": 0.15 },
-  "TABLE_BOX": { "x": 0.25, "y": 2.35, "w": 9.5,  "h": 2.75 },
+  "BG_BOX":    { "x": 0.25, "y": 0.95, "w": 9.5,  "h": 0.95, "padX": 0.2,  "padY": 0.15 },
+  "TABLE_BOX": { "x": 0.25, "y": 2.0,  "w": 9.5,  "h": 3.1  },
   "FOOTER":    { "x": 0,    "y": 5.225,"w": 10.0, "h": 0.4,  "padX": 0.25 },
   "LOGO_H":    0.25
 };
@@ -224,9 +222,11 @@ D.FONTS  = DESIGN.FONTS;
       width: px(B.w - B.padX * 2),
       height: py(B.h - B.padY * 2),
       overflow: "hidden",
+      fontSize: ptToCqw(D.FONTS.bgBody.size),
+      lineHeight: "1.8",
+      color: "#" + D.COLORS.text,
     });
-    bgContent.classList.add("md-bg");
-    bgContent.innerHTML = marked.parse(sd.bg.markdown);
+    bgContent.textContent = sd.bg.text;
     slide.appendChild(bgContent);
 
     // ── テーブル ──

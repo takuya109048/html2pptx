@@ -100,7 +100,12 @@
       "Bash(grep -n \"Project Alpha\" *.html)",
       "Bash(grep -rn \"2024年度 事業成果レポート\\\\|フロー図\\\\|フォント検証\" *.html)",
       "Bash(grep -l \"Project Alpha\" template_*.html)",
-      "Bash(grep -rl \"カード見出し\" template_*.html)"
+      "Bash(grep -rl \"カード見出し\" template_*.html)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash(find /c -name node.exe)",
+      "Bash(netstat -ano)",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object OwningProcess | ForEach-Object { Stop-Process -Id $_OwningProcess -Force }\")",
+      "Bash(taskkill //F //FI \"IMAGENAME eq node.exe\")"
     ]
   }
 }
