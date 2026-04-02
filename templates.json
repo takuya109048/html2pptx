@@ -1,0 +1,281 @@
+{
+  "cover": {
+    "name": "表紙",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "layout": "cover",
+        "title":       "タイトル A-01\n/ Title Placeholder",
+        "affiliation": "所属 X-01 / Affiliation",
+        "presenter":   "発表者 Y-01 / Presenter Name",
+        "date":        "Date Z-01 / 2026-00-00",
+        "bg":          "background.png"
+      }
+    ]
+  },
+  "table_conclusion": {
+    "name": "テーブル＋結論",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [0.75, 0.25],
+        "grid": [
+          [
+            {
+              "type": "table",
+              "head": ["見出し X-01", "見出し X-02", "見出し X-03", "見出し X-04"],
+              "rows": [
+                ["テキスト A-01", "テキスト B-01", "テキスト C-01", "テキスト D-01"],
+                ["テキスト A-02", "テキスト B-02", "テキスト C-02", "テキスト D-02"],
+                ["テキスト A-03", "テキスト B-03", "テキスト C-03", "テキスト D-03"],
+                ["テキスト A-04", "テキスト B-04", "テキスト C-04", "テキスト D-04"]
+              ]
+            }
+          ],
+          [
+            {
+              "type": "conclusion",
+              "markdown": "結論テキスト R-01（補足: Z-01）/ Conclusion placeholder text. Sample result XYZ-001."
+            }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "table": {
+    "name": "テーブル",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "table",
+              "head": ["見出し X-01", "見出し X-02", "見出し X-03", "見出し X-04"],
+              "rows": [
+                ["テキスト A-01", "テキスト B-01", "テキスト C-01", "テキスト D-01"],
+                ["テキスト A-02", "テキスト B-02", "テキスト C-02", "テキスト D-02"],
+                ["テキスト A-03", "テキスト B-03", "テキスト C-03", "テキスト D-03"],
+                ["テキスト A-04", "テキスト B-04", "テキスト C-04", "テキスト D-04"],
+                ["テキスト A-05", "テキスト B-05", "テキスト C-05", "テキスト D-05"]
+              ]
+            }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "list_3card": {
+    "name": "横並び3カード",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "plain_1col": {
+    "name": "1カラムテキスト",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            { "type": "plain", "markdown": "## 見出し C-01 / Heading\n\nテキスト段落 A-01 / Paragraph text ABC-001 goes here as a placeholder. サンプルテキスト XYZ-123 を使用しています。\n\n- 項目テキスト B-01（補足: A-01 / Item text）\n- 項目テキスト B-02（数値: 123）\n- 項目テキスト B-03 / Item XYZ-789" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "plain_2col": {
+    "name": "2カラムテキスト",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            { "type": "plain", "markdown": "## 見出し C-01 / Heading\n\nテキスト段落 A-01 / Paragraph text ABC-001 goes here as a placeholder. サンプルテキスト XYZ-123 を使用しています。\n\n- 項目テキスト B-01（補足: A-01 / Item text）\n- 項目テキスト B-02（数値: 123）\n- 項目テキスト B-03 / Item XYZ-789" },
+            { "type": "plain", "markdown": "## 見出し C-02 / Heading\n\nテキスト段落 A-02 / Paragraph text DEF-002 goes here as a placeholder. サンプルテキスト GHI-456 を使用しています。\n\n- 項目テキスト B-04（補足: B-01 / Item text）\n- 項目テキスト B-05（数値: 456）\n- 項目テキスト B-06 / Item XYZ-012" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "flow_3step": {
+    "name": "フロー（3ステップ）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [0.28, 0.72],
+        "grid": [
+          [
+            { "type": "step_head", "label": "ステップ A / Step-A" },
+            { "type": "step_head", "label": "ステップ B / Step-B" },
+            { "type": "step_head", "label": "ステップ C / Step-C" }
+          ],
+          [
+            { "type": "card", "markdown": "- テキスト項目 A-01 / Item\n- テキスト項目 A-02（補足 XY）\n- テキスト項目 A-03（数値: 123）" },
+            { "type": "card", "markdown": "- テキスト項目 B-01 / Item\n- テキスト項目 B-02（補足 XY）\n- テキスト項目 B-03（数値: 456）" },
+            { "type": "card", "markdown": "- テキスト項目 C-01 / Item\n- テキスト項目 C-02（補足 XY）\n- テキスト項目 C-03（数値: 789）" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "flow_4step": {
+    "name": "フロー（4ステップ）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [0.28, 0.72],
+        "grid": [
+          [
+            { "type": "step_head", "label": "ステップ A / Step-A" },
+            { "type": "step_head", "label": "ステップ B / Step-B" },
+            { "type": "step_head", "label": "ステップ C / Step-C" },
+            { "type": "step_head", "label": "ステップ D / Step-D" }
+          ],
+          [
+            { "type": "card", "markdown": "- テキスト項目 A-01 / Item\n- テキスト項目 A-02（補足 XY）\n- テキスト項目 A-03（数値: 123）" },
+            { "type": "card", "markdown": "- テキスト項目 B-01 / Item\n- テキスト項目 B-02（補足 XY）\n- テキスト項目 B-03（数値: 456）" },
+            { "type": "card", "markdown": "- テキスト項目 C-01 / Item\n- テキスト項目 C-02（補足 XY）\n- テキスト項目 C-03（数値: 789）" },
+            { "type": "card", "markdown": "- テキスト項目 D-01 / Item\n- テキスト項目 D-02（補足 XY）\n- テキスト項目 D-03（数値: 012）" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "diffuse_3card": {
+    "name": "拡散（背景→3カード）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [0.25, 0.08, 0.67],
+        "grid": [
+          [
+            { "type": "section", "span": 3, "markdown": "サンプル説明テキスト A-01 / Sample description text XYZ-001 goes here as a placeholder." }
+          ],
+          [
+            { "type": "arrow", "span": 3 }
+          ],
+          [
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ\n- テキスト項目 D-04（英数: ABC）" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ\n- テキスト項目 E-04（英数: DEF）" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ\n- テキスト項目 F-04（英数: GHI）" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "converge_3card": {
+    "name": "収束（3カード→結論）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [0.65, 0.08, 0.27],
+        "grid": [
+          [
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ\n- テキスト項目 D-04（英数: ABC）" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ\n- テキスト項目 E-04（英数: DEF）" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ\n- テキスト項目 F-04（英数: GHI）" }
+          ],
+          [
+            { "type": "arrow", "span": 3 }
+          ],
+          [
+            { "type": "conclusion", "span": 3, "markdown": "結論テキスト R-01（補足: Z-01）/ Conclusion placeholder text. Sample result XYZ-001." }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "bg_3card": {
+    "name": "背景ボックス＋横並び3カード",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [0.25, 0.75],
+        "grid": [
+          [
+            { "type": "section", "span": 3, "markdown": "ここには背景説明のサンプルテキストが入ります。説明文 A-01 は補足情報を表します。Sample description text XYZ-001 / placeholder content goes here." }
+          ],
+          [
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ\n- テキスト項目 D-04（英数: ABC）" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ\n- テキスト項目 E-04（英数: DEF）" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ\n- テキスト項目 F-04（英数: GHI）" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  }
+}
