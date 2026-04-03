@@ -90,9 +90,9 @@
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ" }
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
           ]
         ],
         "page": "1 / 1",
@@ -132,7 +132,7 @@
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            { "type": "plain", "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**）\n- 箇条書き 第2項目（`コード`）" },
+            { "type": "plain", "markdown": "## 目次 / Table of Contents\n\n1. **第1章 はじめに** ← *現在地*\n   1. 背景と課題\n   2. 目的と範囲\n2. 第2章 分析結果\n   1. データ概要\n   2. ~~旧手法~~ → 新手法\n3. 第3章 まとめ\n   1. 結論（`参照: p.12`）" },
             { "type": "plain", "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。\n\n1. 番号リスト 第1項目\n   1. サブ第2レベル（*斜体*）\n2. 番号リスト 第2項目（~~取り消し~~）" }
           ]
         ],
@@ -158,9 +158,9 @@
             { "type": "step_head", "label": "ステップ C / Step-C" }
           ],
           [
-            { "type": "card", "markdown": "- テキスト項目 A-01 / Item\n- テキスト項目 A-02（補足 XY）\n- テキスト項目 A-03（数値: 123）" },
-            { "type": "card", "markdown": "- テキスト項目 B-01 / Item\n- テキスト項目 B-02（補足 XY）\n- テキスト項目 B-03（数値: 456）" },
-            { "type": "card", "markdown": "- テキスト項目 C-01 / Item\n- テキスト項目 C-02（補足 XY）\n- テキスト項目 C-03（数値: 789）" }
+            { "type": "card", "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "- **太字 bold** 第1項目 B-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "- **太字 bold** 第1項目 C-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
           ]
         ],
         "page": "1 / 1",
@@ -186,10 +186,10 @@
             { "type": "step_head", "label": "ステップ D / Step-D" }
           ],
           [
-            { "type": "card", "markdown": "- テキスト項目 A-01 / Item\n- テキスト項目 A-02（補足 XY）\n- テキスト項目 A-03（数値: 123）" },
-            { "type": "card", "markdown": "- テキスト項目 B-01 / Item\n- テキスト項目 B-02（補足 XY）\n- テキスト項目 B-03（数値: 456）" },
-            { "type": "card", "markdown": "- テキスト項目 C-01 / Item\n- テキスト項目 C-02（補足 XY）\n- テキスト項目 C-03（数値: 789）" },
-            { "type": "card", "markdown": "- テキスト項目 D-01 / Item\n- テキスト項目 D-02（補足 XY）\n- テキスト項目 D-03（数値: 012）" }
+            { "type": "card", "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "- **太字 bold** 第1項目 B-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "- **太字 bold** 第1項目 C-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
           ]
         ],
         "page": "1 / 1",
@@ -209,15 +209,15 @@
         "rowHeightRatios": [0.25, 0.08, 0.67],
         "grid": [
           [
-            { "type": "section", "span": 3, "markdown": "**太字テキスト bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用ブロック blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目（**太字**と*斜体*）\n  - ネスト第2レベル（`コード`）\n- 箇条書き 第2項目（~~取り消し~~）" }
+            { "type": "section", "span": 3, "markdown": "**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n> 引用ブロック blockquote。根拠・重要情報の強調に使用。" }
           ],
           [
             { "type": "arrow", "span": 3 }
           ],
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ\n- テキスト項目 D-04（英数: ABC）" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ\n- テキスト項目 E-04（英数: DEF）" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ\n- テキスト項目 F-04（英数: GHI）" }
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
           ]
         ],
         "page": "1 / 1",
@@ -237,9 +237,9 @@
         "rowHeightRatios": [0.65, 0.08, 0.27],
         "grid": [
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ\n- テキスト項目 D-04（英数: ABC）" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ\n- テキスト項目 E-04（英数: DEF）" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ\n- テキスト項目 F-04（英数: GHI）" }
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
           ],
           [
             { "type": "arrow", "span": 3 }
@@ -322,12 +322,12 @@
         "rowHeightRatios": [0.25, 0.75],
         "grid": [
           [
-            { "type": "section", "span": 3, "markdown": "**太字テキスト bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用ブロック blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目（**太字**と*斜体*）\n  - ネスト第2レベル（`コード`）\n- 箇条書き 第2項目（~~取り消し~~）" }
+            { "type": "section", "span": 3, "markdown": "**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n> 引用ブロック blockquote。根拠・重要情報の強調に使用。" }
           ],
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ\n- テキスト項目 D-04（英数: ABC）" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- テキスト項目 E-01（補足: B-01）\n- テキスト項目 E-02（数値: 456）\n- テキスト項目 E-03 / Item XYZ\n- テキスト項目 E-04（英数: DEF）" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- テキスト項目 F-01（補足: C-01）\n- テキスト項目 F-02（数値: 789）\n- テキスト項目 F-03 / Item XYZ\n- テキスト項目 F-04（英数: GHI）" }
+            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
+            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
           ]
         ],
         "page": "1 / 1",
