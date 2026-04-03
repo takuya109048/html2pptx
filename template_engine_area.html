@@ -457,13 +457,50 @@ const D = (() => {
           box.innerHTML = marked.parse(cell.markdown || "");
           slide.appendChild(box);
 
-          // 隣接セル間の縦仕切り線
-          if (col + span < numCols) {
+          // 隣接セル間の縦仕切り線（隣が image の場合はボーダーが既にあるので描かない）
+          const cellIdx = cells.indexOf(cell);
+          const nextCell = cells[cellIdx + 1];
+          if (col + span < numCols && !(nextCell && nextCell.type === "image")) {
             slide.appendChild(el("div", {
               left: D.px(cx + cw + gap / 2), top: D.py(cy),
               width: "1px", height: D.py(ch),
               background: "#" + D.COLORS.border,
             }));
+          }
+
+        } else if (cell.type === "image") {
+          const src = cell.src || "";
+          const label = cell.label || "画像 / Image";
+          const gridN = cell.gridN || 3;
+
+          // 外枠
+          slide.appendChild(el("div", {
+            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
+            background: "#" + D.COLORS.surface,
+            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
+            overflow: "hidden",
+          }));
+
+          if (src) {
+            const img = document.createElement("img");
+            img.src = src;
+            img.setAttribute("data-role", "element");
+            Object.assign(img.style, {
+              position: "absolute",
+              left: D.px(cx), top: D.py(cy),
+              width: D.px(cw), height: D.py(ch),
+              objectFit: "cover",
+            });
+            slide.appendChild(img);
+          } else {
+            // 中央ラベル
+            slide.appendChild(el("div", {
+              left: D.px(cx), top: D.py(cy),
+              width: D.px(cw), height: D.py(ch),
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: ptToCqw(D.FONTS.bodyText.size),
+              color: "#" + D.COLORS.textMuted,
+            }, label));
           }
 
         } else if (cell.type === "card") {

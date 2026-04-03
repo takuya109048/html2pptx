@@ -39,7 +39,7 @@
           [
             {
               "type": "conclusion",
-              "markdown": "結論テキスト R-01（補足: Z-01）/ Conclusion placeholder text. Sample result XYZ-001."
+              "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。"
             }
           ]
         ],
@@ -112,7 +112,7 @@
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            { "type": "plain", "markdown": "## 見出し C-01 / Heading\n\nテキスト段落 A-01 / Paragraph text ABC-001 goes here as a placeholder. サンプルテキスト XYZ-123 を使用しています。\n\n- 項目テキスト B-01（補足: A-01 / Item text）\n- 項目テキスト B-02（数値: 123）\n- 項目テキスト B-03 / Item XYZ-789" }
+            { "type": "plain", "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**と*斜体*）\n- 箇条書き 第2項目（`コード`と~~取り消し~~）\n\n1. 番号リスト 第1項目\n2. 番号リスト 第2項目" }
           ]
         ],
         "page": "1 / 1",
@@ -132,8 +132,8 @@
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            { "type": "plain", "markdown": "## 見出し C-01 / Heading\n\nテキスト段落 A-01 / Paragraph text ABC-001 goes here as a placeholder. サンプルテキスト XYZ-123 を使用しています。\n\n- 項目テキスト B-01（補足: A-01 / Item text）\n- 項目テキスト B-02（数値: 123）\n- 項目テキスト B-03 / Item XYZ-789" },
-            { "type": "plain", "markdown": "## 見出し C-02 / Heading\n\nテキスト段落 A-02 / Paragraph text DEF-002 goes here as a placeholder. サンプルテキスト GHI-456 を使用しています。\n\n- 項目テキスト B-04（補足: B-01 / Item text）\n- 項目テキスト B-05（数値: 456）\n- 項目テキスト B-06 / Item XYZ-012" }
+            { "type": "plain", "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**）\n- 箇条書き 第2項目（`コード`）" },
+            { "type": "plain", "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。\n\n1. 番号リスト 第1項目\n   1. サブ第2レベル（*斜体*）\n2. 番号リスト 第2項目（~~取り消し~~）" }
           ]
         ],
         "page": "1 / 1",
@@ -209,7 +209,7 @@
         "rowHeightRatios": [0.25, 0.08, 0.67],
         "grid": [
           [
-            { "type": "section", "span": 3, "markdown": "サンプル説明テキスト A-01 / Sample description text XYZ-001 goes here as a placeholder." }
+            { "type": "section", "span": 3, "markdown": "**太字テキスト bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用ブロック blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目（**太字**と*斜体*）\n  - ネスト第2レベル（`コード`）\n- 箇条書き 第2項目（~~取り消し~~）" }
           ],
           [
             { "type": "arrow", "span": 3 }
@@ -245,7 +245,64 @@
             { "type": "arrow", "span": 3 }
           ],
           [
-            { "type": "conclusion", "span": 3, "markdown": "結論テキスト R-01（補足: Z-01）/ Conclusion placeholder text. Sample result XYZ-001." }
+            { "type": "conclusion", "span": 3, "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。" }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "image_conclusion": {
+    "name": "画像＋結論",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [0.77, 0.23],
+        "grid": [
+          [
+            {
+              "type": "image",
+              "label": "画像 / Image"
+            }
+          ],
+          [
+            {
+              "type": "conclusion",
+              "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み。`参照 XYZ-001`。  \n> 根拠・引用を引用スタイルで記載。"
+            }
+          ]
+        ],
+        "page": "1 / 1",
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "plain_image": {
+    "name": "テキスト＋画像",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "スライドタイトル A-01 / Slide Title Placeholder",
+          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "plain",
+              "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**と*斜体*）\n- 箇条書き 第2項目（`コード`と~~取り消し~~）\n\n1. 番号リスト 第1項目\n2. 番号リスト 第2項目"
+            },
+            {
+              "type": "image",
+              "label": "画像 / Image",
+              "gridN": 3
+            }
           ]
         ],
         "page": "1 / 1",
@@ -265,7 +322,7 @@
         "rowHeightRatios": [0.25, 0.75],
         "grid": [
           [
-            { "type": "section", "span": 3, "markdown": "ここには背景説明のサンプルテキストが入ります。説明文 A-01 は補足情報を表します。Sample description text XYZ-001 / placeholder content goes here." }
+            { "type": "section", "span": 3, "markdown": "**太字テキスト bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用ブロック blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目（**太字**と*斜体*）\n  - ネスト第2レベル（`コード`）\n- 箇条書き 第2項目（~~取り消し~~）" }
           ],
           [
             { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- テキスト項目 D-01（補足: A-01）\n- テキスト項目 D-02（数値: 123）\n- テキスト項目 D-03 / Item XYZ\n- テキスト項目 D-04（英数: ABC）" },

@@ -1,19 +1,265 @@
-# プロジェクト設定
+# CLAUDE.md
 
-## 言語
-- 日本語で応答すること
+このファイルはClaude Codeがこのプロジェクトで作業する際のガイダンスを定義します。
+プロジェクトルートに配置し、Claude Codeが自動的に読み込みます。
 
-## コーディング規約
-- シンプルで読みやすいコードを書く
-- 過剰な抽象化を避ける
-- 変数名・関数名は意図が明確な命名にする
-- 不要なコメントは書かない（コード自体が説明的であること）
-- 既存のコードスタイルに合わせる
+---
 
-## Git
-- コミットメッセージは日本語でもOK
-- 意味のある単位でコミットする
+## プロジェクト概要
 
-## その他
-- ファイル作成は必要最小限にする
-- 既存ファイルの編集を優先する
+<!-- TODO: プロジェクトの目的・概要を記載 -->
+<!-- 例: このリポジトリは〇〇を目的としたPythonアプリケーションです -->
+
+---
+
+## 開発環境
+
+### Pythonバージョン・パッケージ管理
+
+<!-- TODO: 使用するツールに合わせてコメントを外す -->
+
+```bash
+# パッケージ管理 (いずれか1つを選択)
+# uv sync                          # uv を使う場合（推奨）
+# pip install -r requirements.txt  # pip を使う場合
+# poetry install                   # Poetry を使う場合
+```
+
+- Python: `3.11+`  <!-- TODO: バージョンを確認して修正 -->
+- パッケージ管理: `uv` / `pip` / `poetry`  <!-- TODO: 使用するものだけ残す -->
+
+### よく使うコマンド
+
+```bash
+# 開発サーバー / アプリ起動
+# python -m uvicorn app.main:app --reload   # FastAPI
+# python manage.py runserver                # Django
+# python src/main.py                        # スクリプト
+
+# テスト
+pytest                                          # 全テスト実行
+pytest tests/unit/                              # ユニットテストのみ
+pytest -k "test_login"                          # 特定テストのみ
+pytest --cov=src --cov-report=term-missing      # カバレッジ付き
+
+# Lint / フォーマット
+ruff check .          # lint
+ruff format .         # フォーマット
+mypy src/             # 型チェック
+```
+
+---
+
+## Agent Skills
+
+### Skill: Pythonコード生成・開発支援
+
+**トリガー**: 以下の依頼があれば必ずこのスキルの手順に従うこと。
+- 新しいモジュール・クラス・関数の作成
+- 既存コードのリファクタリング・最適化
+- バグ修正・デバッグ支援
+- テストコードの生成
+- 型アノテーションの追加・修正
+
+---
+
+#### Step 1: 実装前の確認
+
+コードを書き始める前に必ず行うこと:
+
+1. `src/` 以下に同様の処理が既にないか `grep` で調査する
+2. `requirements.txt` / `pyproject.toml` で利用可能なライブラリを確認する
+3. 既存コードのスタイル（型アノテーション有無、docstringスタイル等）に合わせる
+
+---
+
+#### Step 2: コーディング規約
+
+**スタイル**:
+- フォーマッター: `ruff format`（Black互換）
+- Linter: `ruff check`
+- 型チェック: `mypy`（strict推奨）
+- 1行の最大文字数: 88文字
+
+**命名規則**:
+| 対象 | 規則 | 例 |
+|------|------|----|
+| 変数・関数 | `snake_case` | `get_user_by_id` |
+| クラス | `PascalCase` | `UserRepository` |
+| 定数 | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| プライベート | `_` プレフィックス | `_internal_state` |
+| 型エイリアス | `PascalCase` | `UserId = NewType("UserId", int)` |
+
+**型アノテーション**:
+```python
+# 必ず付ける。Anyは極力使わない
+def fetch_users(limit: int, offset: int = 0) -> list[User]:
+    ...
+
+# 戻り値がない場合
+def send_notification(message: str) -> None:
+    ...
+
+# Optional より X | None を使う（Python 3.10+）
+def find_user(user_id: int) -> User | None:
+    ...
+```
+
+**docstring**: Google スタイルを使用する
+```python
+def calculate_discount(price: float, rate: float) -> float:
+    """割引後の価格を計算する。
+
+    Args:
+        price: 元の価格（税抜）
+        rate: 割引率（0.0〜1.0）
+
+    Returns:
+        割引後の価格
+
+    Raises:
+        ValueError: rate が 0〜1 の範囲外の場合
+    """
+    if not 0.0 <= rate <= 1.0:
+        raise ValueError(f"rate must be between 0 and 1, got {rate}")
+    return price * (1 - rate)
+```
+
+---
+
+#### Step 3: エラーハンドリング
+
+```python
+# NG: 広すぎるexcept
+try:
+    result = process()
+except Exception:
+    pass  # サイレント失敗は厳禁
+
+# OK: 具体的な例外を捕捉し、ログを残す
+import logging
+logger = logging.getLogger(__name__)
+
+try:
+    result = process()
+except ValueError as e:
+    logger.error("Invalid input: %s", e)
+    raise
+except httpx.TimeoutException:
+    logger.warning("Request timed out, retrying...")
+    raise RetryableError("upstream timeout") from None
+```
+
+カスタム例外はプロジェクト共通の基底クラスを継承する:
+```python
+# src/exceptions.py に定義
+class AppError(Exception):
+    """アプリケーション共通の基底例外"""
+
+class NotFoundError(AppError):
+    """リソースが見つからない場合"""
+
+class ValidationError(AppError):
+    """入力値が不正な場合"""
+```
+
+---
+
+#### Step 4: テストコード生成
+
+**ファイル構成**:
+```
+tests/
+├── unit/          # 外部依存なし・高速
+├── integration/   # DB・外部APIを含む
+└── conftest.py    # 共通フィクスチャ
+```
+
+**テスト名**: `test_<対象>_<条件>_<期待結果>` 形式
+```python
+# pytest + AAA パターン
+def test_calculate_discount_valid_rate_returns_discounted_price():
+    # Arrange
+    price = 1000.0
+    rate = 0.1
+
+    # Act
+    result = calculate_discount(price, rate)
+
+    # Assert
+    assert result == 900.0
+
+
+def test_calculate_discount_rate_over_1_raises_value_error():
+    with pytest.raises(ValueError, match="rate must be between 0 and 1"):
+        calculate_discount(1000.0, 1.5)
+```
+
+**外部依存はモックする**:
+```python
+from unittest.mock import AsyncMock, patch
+
+async def test_fetch_user_not_found_raises_not_found_error():
+    with patch("src.repository.UserRepository.find") as mock_find:
+        mock_find.return_value = None
+
+        with pytest.raises(NotFoundError):
+            await get_user_service(user_id=999)
+```
+
+**カバレッジ目標**: 単体テスト 80% 以上（`pytest --cov` で確認）
+
+---
+
+#### Step 5: リファクタリング方針
+
+1. **変更前にテストを実行**し、全パスを確認する
+2. **1コミット1変更**: リファクタリングと機能追加を混在させない
+3. **段階的に変更**: 一度に全部書き直さず、小さく変えてはテストする
+4. 変更後は `ruff check .` と `mypy src/` を実行してエラーがないことを確認する
+
+---
+
+#### Step 6: デバッグ支援
+
+バグ修正の手順:
+
+1. エラーメッセージ・トレースバックをそのままコピーして提示する
+2. 最小再現コードを特定する
+3. 修正は最小限の変更にとどめる（関係ない改善は別PRで）
+4. 修正後、同種のバグが他の箇所にないか確認する
+5. 原因と修正内容をコミットメッセージに記載する
+
+---
+
+## ディレクトリ構成
+
+<!-- TODO: 実際の構成に合わせて更新 -->
+
+```
+.
+├── CLAUDE.md
+├── pyproject.toml       # パッケージ設定・依存関係
+├── src/
+│   ├── __init__.py
+│   ├── main.py          # エントリポイント
+│   ├── models/          # データモデル・スキーマ
+│   ├── services/        # ビジネスロジック
+│   ├── repositories/    # DB・外部APIアクセス
+│   └── exceptions.py    # カスタム例外
+├── tests/
+│   ├── conftest.py
+│   ├── unit/
+│   └── integration/
+└── .env.example         # 環境変数のサンプル（実値は .env に）
+```
+
+---
+
+## セキュリティ・注意事項
+
+- **APIキー・パスワードは絶対にコードに書かない** → `.env` を使い `.gitignore` に追加する
+- 外部入力は必ず `pydantic` 等でバリデーションする
+- SQLクエリは必ずパラメータバインドを使う（文字列結合でのSQL組み立て禁止）
+- 300行を超える実装は先に設計をユーザーと確認してから書く
+- 既存の公開APIのシグネチャを変更する前にユーザーに確認する

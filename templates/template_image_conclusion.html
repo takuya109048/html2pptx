@@ -37,37 +37,18 @@ const SLIDES = [
       "title": "スライドタイトル A-01 / Slide Title Placeholder",
       "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
     },
-    "rowHeightRatios": [
-      0.28,
-      0.72
-    ],
+    "rowHeightRatios": [0.77, 0.23],
     "grid": [
       [
         {
-          "type": "step_head",
-          "label": "ステップ A / Step-A"
-        },
-        {
-          "type": "step_head",
-          "label": "ステップ B / Step-B"
-        },
-        {
-          "type": "step_head",
-          "label": "ステップ C / Step-C"
+          "type": "image",
+          "label": "画像 / Image"
         }
       ],
       [
         {
-          "type": "card",
-          "markdown": "- テキスト項目 A-01 / Item\n- テキスト項目 A-02（補足 XY）\n- テキスト項目 A-03（数値: 123）"
-        },
-        {
-          "type": "card",
-          "markdown": "- テキスト項目 B-01 / Item\n- テキスト項目 B-02（補足 XY）\n- テキスト項目 B-03（数値: 456）"
-        },
-        {
-          "type": "card",
-          "markdown": "- テキスト項目 C-01 / Item\n- テキスト項目 C-02（補足 XY）\n- テキスト項目 C-03（数値: 789）"
+          "type": "conclusion",
+          "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み。`参照 XYZ-001`。  \n> 根拠・引用を引用スタイルで記載。"
         }
       ]
     ],
@@ -107,74 +88,23 @@ const DESIGN = {
   },
   "FONTS": {
     "family": "Segoe UI",
-    "title": {
-      "size": 24,
-      "bold": true
-    },
-    "message": {
-      "size": 12,
-      "bold": false
-    },
-    "bgTitle": {
-      "size": 13,
-      "bold": true
-    },
-    "bgBody": {
-      "size": 12,
-      "bold": false
-    },
-    "bodyHead": {
-      "size": 12,
-      "bold": true
-    },
-    "bodyText": {
-      "size": 12,
-      "bold": false
-    },
-    "cardTitle": {
-      "size": 14,
-      "bold": true
-    },
-    "cardBody": {
-      "size": 11,
-      "bold": false
-    },
-    "tableHead": {
-      "size": 12,
-      "bold": true
-    },
-    "tableBody": {
-      "size": 12,
-      "bold": false
-    },
-    "stepLabel": {
-      "size": 14,
-      "bold": true
-    },
-    "bullet": {
-      "size": 12,
-      "bold": false
-    },
-    "conclTitle": {
-      "size": 13,
-      "bold": true
-    },
-    "conclBody": {
-      "size": 12,
-      "bold": false
-    },
-    "coverTitle": {
-      "size": 28,
-      "bold": true
-    },
-    "coverMeta": {
-      "size": 16,
-      "bold": false
-    },
-    "footer": {
-      "size": 10,
-      "bold": false
-    }
+    "title": { "size": 24, "bold": true },
+    "message": { "size": 12, "bold": false },
+    "bgTitle": { "size": 13, "bold": true },
+    "bgBody": { "size": 12, "bold": false },
+    "bodyHead": { "size": 12, "bold": true },
+    "bodyText": { "size": 12, "bold": false },
+    "cardTitle": { "size": 14, "bold": true },
+    "cardBody": { "size": 11, "bold": false },
+    "tableHead": { "size": 12, "bold": true },
+    "tableBody": { "size": 12, "bold": false },
+    "stepLabel": { "size": 14, "bold": true },
+    "bullet": { "size": 12, "bold": false },
+    "conclTitle": { "size": 13, "bold": true },
+    "conclBody": { "size": 12, "bold": false },
+    "coverTitle": { "size": 28, "bold": true },
+    "coverMeta": { "size": 16, "bold": false },
+    "footer": { "size": 10, "bold": false }
   },
   "LAYOUT": {
     "slideW": 10.0,
@@ -352,49 +282,6 @@ const D = (() => {
 
   SLIDES.forEach(sd => {
 
-    // ── カバーレイアウト ──────────────────────────────
-    if (sd.layout === "cover") {
-      const bgImg = document.createElement("img");
-      bgImg.src = sd.bg || "";
-      bgImg.setAttribute("data-role", "element");
-      Object.assign(bgImg.style, {
-        position: "absolute", left: "0", top: "0",
-        width: "100%", height: "100%", objectFit: "cover",
-      });
-      slide.appendChild(bgImg);
-
-      const cx = 0.5, cw = 5.5;
-      const titleY = 1.36, titleH = 1.35;
-      const divY = 2.81, divW = 4.0;
-      const metaY = 3.01, metaSpacing = 0.35;
-
-      slide.appendChild(el("div", {
-        left: D.px(cx), top: D.py(titleY),
-        width: D.px(cw), height: D.py(titleH),
-        display: "flex", alignItems: "center",
-        fontSize: ptToCqw(D.FONTS.coverTitle.size), fontWeight: "700",
-        color: "#" + D.COLORS.coverTitle,
-        lineHeight: "1.4", whiteSpace: "pre-wrap", wordWrap: "break-word",
-      }, sd.title));
-
-      slide.appendChild(el("div", {
-        left: D.px(cx), top: D.py(divY),
-        width: D.px(divW), height: "1px",
-        background: "#" + D.COLORS.coverDivider,
-      }));
-
-      ["affiliation", "presenter", "date"].forEach((key, i) => {
-        slide.appendChild(el("div", {
-          left: D.px(cx), top: D.py(metaY + i * metaSpacing),
-          width: D.px(cw), height: D.py(0.35),
-          display: "flex", alignItems: "center",
-          fontSize: ptToCqw(D.FONTS.coverMeta.size),
-          color: "#" + D.COLORS.coverMeta,
-        }, sd[key] || ""));
-      });
-      return;
-    }
-
     const H = { x: 0, y: 0, w: D.slideW, h: D.headerH, padX: D.headerPadX, padY: D.headerPadY };
 
     // ── ヘッダー帯 ──
@@ -439,21 +326,6 @@ const D = (() => {
     const cellY = (row) => rowTop(row) + (row === 0 ? gap : gap / 2);
     const cellH = (row) => rowHeights[row] - (row === 0 ? gap : gap / 2) - (row === numRows - 1 ? gap : gap / 2);
 
-    // ── グリッド背景（plain セルのみの場合はスキップ） ──
-    const hasNonPlain = grid.some(row => row.some(cell => cell.type !== "plain"));
-    if (hasNonPlain) {
-      const areaBgKeys = ["area1Bg", "area2Bg", "area3Bg"];
-      for (let col = 0; col < numCols; col++) {
-        slide.appendChild(el("div", {
-          left: D.px(mainX + col * (mainW / numCols)),
-          top: D.py(contentY),
-          width: D.px(mainW / numCols),
-          height: D.py(contentH),
-          background: "#" + D.COLORS[areaBgKeys[col] || "area1Bg"],
-        }));
-      }
-    }
-
     // ── セルの描画 ──
     for (let row = 0; row < numRows; row++) {
       const cells = grid[row];
@@ -479,128 +351,6 @@ const D = (() => {
           bgBox.classList.add("md-bg");
           bgBox.innerHTML = marked.parse(cell.markdown || cell.text || "");
           slide.appendChild(bgBox);
-
-        } else if (cell.type === "step_head") {
-          const be = 0.015;
-          slide.appendChild(el("div", {
-            left: D.px(cx - be), top: D.py(cy - be),
-            width: D.px(cw + be * 2), height: D.py(ch + be * 2),
-            background: "#" + D.COLORS.stepBorder,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
-            background: "#" + D.COLORS.stepFill,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(cw * 0.85), height: D.py(ch),
-            display: "flex", alignItems: "center",
-            paddingLeft: D.px(0.15),
-            fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
-            color: "#" + D.COLORS.stepText, overflow: "hidden",
-          }, cell.label || ""));
-
-        } else if (cell.type === "step") {
-          const arrowH = ch * 0.28;
-          const bulletY = cy + arrowH + gap * 2;
-          const bulletH = ch - arrowH - gap * 2;
-          const be = 0.015;
-          // 矢印枠（影レイヤー）
-          slide.appendChild(el("div", {
-            left: D.px(cx - be), top: D.py(cy - be),
-            width: D.px(cw + be * 2), height: D.py(arrowH + be * 2),
-            background: "#" + D.COLORS.stepBorder,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          // 矢印塗り
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(arrowH),
-            background: "#" + D.COLORS.stepFill,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          // 矢印ラベル
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(cw * 0.85), height: D.py(arrowH),
-            display: "flex", alignItems: "center",
-            paddingLeft: D.px(0.15),
-            fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
-            color: "#" + D.COLORS.stepText, overflow: "hidden",
-          }, cell.label || ""));
-          // 箇条書きボックス
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(bulletY), width: D.px(cw), height: D.py(bulletH),
-            background: "#" + D.COLORS.surface,
-            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
-            borderRadius: "3px",
-          }));
-          const padX = D.cardPadX, padY = D.cardPadY;
-          const box = el("div", {
-            left: D.px(cx + padX), top: D.py(bulletY + padY),
-            width: D.px(cw - padX * 2), height: D.py(bulletH - padY * 2),
-            overflow: "hidden",
-          });
-          box.classList.add("md-card");
-          box.innerHTML = marked.parse(cell.markdown || "");
-          slide.appendChild(box);
-
-        } else if (cell.type === "arrow") {
-          const arrowW = cw * 0.55;
-          const arrowX = cx + (cw - arrowW) / 2;
-          const arrowH = ch * 0.75;
-          const arrowY = cy + (ch - arrowH) / 2;
-          slide.appendChild(el("div", {
-            left: D.px(arrowX), top: D.py(arrowY),
-            width: D.px(arrowW), height: D.py(arrowH),
-            background: "#" + D.COLORS.arrow,
-            clipPath: "polygon(0% 0%, 100% 0%, 50% 100%)",
-          }));
-
-        } else if (cell.type === "table") {
-          const wrap = el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(cw), height: D.py(ch),
-            overflow: "hidden",
-          });
-          const table = document.createElement("table");
-          table.className = "slide-table";
-          const numTableCols = Math.max(
-            cell.head ? cell.head.length : 0,
-            ...(cell.rows || []).map(r => r.length)
-          );
-          const colgroup = document.createElement("colgroup");
-          for (let j = 0; j < numTableCols; j++) {
-            const col = document.createElement("col");
-            col.style.width = (100 / numTableCols).toFixed(4) + "%";
-            colgroup.appendChild(col);
-          }
-          table.appendChild(colgroup);
-          const tbody = document.createElement("tbody");
-          if (cell.head && cell.head.length > 0) {
-            const tr = document.createElement("tr");
-            tr.className = "head-row";
-            cell.head.forEach(text => {
-              const td = document.createElement("td");
-              td.className = "th"; td.textContent = text;
-              tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-          }
-          (cell.rows || []).forEach(row => {
-            const tr = document.createElement("tr");
-            row.forEach((text, j) => {
-              const td = document.createElement("td");
-              if (j === 0) td.className = "th";
-              td.textContent = text;
-              tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-          });
-          table.appendChild(tbody);
-          wrap.appendChild(table);
-          slide.appendChild(wrap);
 
         } else if (cell.type === "conclusion") {
           const accentW = D.conclusionAccentW;
@@ -637,13 +387,46 @@ const D = (() => {
           box.innerHTML = marked.parse(cell.markdown || "");
           slide.appendChild(box);
 
-          // 隣接セル間の縦仕切り線
-          if (col + span < numCols) {
+          const cellIdx = cells.indexOf(cell);
+          const nextCell = cells[cellIdx + 1];
+          if (col + span < numCols && !(nextCell && nextCell.type === "image")) {
             slide.appendChild(el("div", {
               left: D.px(cx + cw + gap / 2), top: D.py(cy),
               width: "1px", height: D.py(ch),
               background: "#" + D.COLORS.border,
             }));
+          }
+
+        } else if (cell.type === "image") {
+          const src = cell.src || "";
+          const label = cell.label || "画像 / Image";
+
+          slide.appendChild(el("div", {
+            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
+            background: "#" + D.COLORS.surface,
+            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
+            overflow: "hidden",
+          }));
+
+          if (src) {
+            const img = document.createElement("img");
+            img.src = src;
+            img.setAttribute("data-role", "element");
+            Object.assign(img.style, {
+              position: "absolute",
+              left: D.px(cx), top: D.py(cy),
+              width: D.px(cw), height: D.py(ch),
+              objectFit: "cover",
+            });
+            slide.appendChild(img);
+          } else {
+            slide.appendChild(el("div", {
+              left: D.px(cx), top: D.py(cy),
+              width: D.px(cw), height: D.py(ch),
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: ptToCqw(D.FONTS.bodyText.size),
+              color: "#" + D.COLORS.textMuted,
+            }, label));
           }
 
         } else if (cell.type === "card") {
@@ -652,13 +435,8 @@ const D = (() => {
             background: "#" + D.COLORS.surface,
             borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
           }));
-
-          const _cardMd = cell.markdown || "";
-          const _titleM = _cardMd.match(/^#{1,3}\s+(.+)$/m);
-          const title = _titleM ? _titleM[1].trim() : "";
-          const bodyMd = _titleM ? _cardMd.slice(_cardMd.indexOf(_titleM[0]) + _titleM[0].length).trim() : _cardMd;
+          const { title, items } = parseCardMarkdown(cell.markdown || "");
           const padX = D.cardPadX, padY = D.cardPadY;
-
           if (title) {
             slide.appendChild(el("div", {
               left: D.px(cx + padX), top: D.py(cy + padY),
@@ -673,8 +451,7 @@ const D = (() => {
               background: "#" + D.COLORS.border,
             }));
           }
-
-          if (bodyMd) {
+          if (items.length > 0) {
             const bodyY = cy + (title ? D.cardDivY + 0.08 : padY);
             const bodyH = cy + ch - bodyY - padY;
             const box = el("div", {
@@ -684,7 +461,11 @@ const D = (() => {
               color: "#" + D.COLORS.text, overflow: "hidden",
             });
             box.classList.add("md-card");
-            box.innerHTML = marked.parse(bodyMd);
+            let html = "";
+            for (const item of items) {
+              html += item.type === "bullet" ? `<li>${item.text}</li>` : `<p>${item.text}</p>`;
+            }
+            box.innerHTML = html.includes("<li>") ? `<ul>${html}</ul>` : html;
             slide.appendChild(box);
           }
         }

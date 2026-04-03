@@ -38,36 +38,18 @@ const SLIDES = [
       "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
     },
     "rowHeightRatios": [
-      0.28,
-      0.72
+      1.0
     ],
     "grid": [
       [
         {
-          "type": "step_head",
-          "label": "ステップ A / Step-A"
+          "type": "plain",
+          "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**と*斜体*）\n- 箇条書き 第2項目（`コード`と~~取り消し~~）\n\n1. 番号リスト 第1項目\n2. 番号リスト 第2項目"
         },
         {
-          "type": "step_head",
-          "label": "ステップ B / Step-B"
-        },
-        {
-          "type": "step_head",
-          "label": "ステップ C / Step-C"
-        }
-      ],
-      [
-        {
-          "type": "card",
-          "markdown": "- テキスト項目 A-01 / Item\n- テキスト項目 A-02（補足 XY）\n- テキスト項目 A-03（数値: 123）"
-        },
-        {
-          "type": "card",
-          "markdown": "- テキスト項目 B-01 / Item\n- テキスト項目 B-02（補足 XY）\n- テキスト項目 B-03（数値: 456）"
-        },
-        {
-          "type": "card",
-          "markdown": "- テキスト項目 C-01 / Item\n- テキスト項目 C-02（補足 XY）\n- テキスト項目 C-03（数値: 789）"
+          "type": "image",
+          "label": "画像 / Image",
+          "gridN": 3
         }
       ]
     ],
@@ -502,50 +484,6 @@ const D = (() => {
             color: "#" + D.COLORS.stepText, overflow: "hidden",
           }, cell.label || ""));
 
-        } else if (cell.type === "step") {
-          const arrowH = ch * 0.28;
-          const bulletY = cy + arrowH + gap * 2;
-          const bulletH = ch - arrowH - gap * 2;
-          const be = 0.015;
-          // 矢印枠（影レイヤー）
-          slide.appendChild(el("div", {
-            left: D.px(cx - be), top: D.py(cy - be),
-            width: D.px(cw + be * 2), height: D.py(arrowH + be * 2),
-            background: "#" + D.COLORS.stepBorder,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          // 矢印塗り
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(arrowH),
-            background: "#" + D.COLORS.stepFill,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          // 矢印ラベル
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(cw * 0.85), height: D.py(arrowH),
-            display: "flex", alignItems: "center",
-            paddingLeft: D.px(0.15),
-            fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
-            color: "#" + D.COLORS.stepText, overflow: "hidden",
-          }, cell.label || ""));
-          // 箇条書きボックス
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(bulletY), width: D.px(cw), height: D.py(bulletH),
-            background: "#" + D.COLORS.surface,
-            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
-            borderRadius: "3px",
-          }));
-          const padX = D.cardPadX, padY = D.cardPadY;
-          const box = el("div", {
-            left: D.px(cx + padX), top: D.py(bulletY + padY),
-            width: D.px(cw - padX * 2), height: D.py(bulletH - padY * 2),
-            overflow: "hidden",
-          });
-          box.classList.add("md-card");
-          box.innerHTML = marked.parse(cell.markdown || "");
-          slide.appendChild(box);
-
         } else if (cell.type === "arrow") {
           const arrowW = cw * 0.55;
           const arrowX = cx + (cw - arrowW) / 2;
@@ -637,13 +575,50 @@ const D = (() => {
           box.innerHTML = marked.parse(cell.markdown || "");
           slide.appendChild(box);
 
-          // 隣接セル間の縦仕切り線
-          if (col + span < numCols) {
+          // 隣接セル間の縦仕切り線（隣が image の場合はボーダーが既にあるので描かない）
+          const cellIdx = cells.indexOf(cell);
+          const nextCell = cells[cellIdx + 1];
+          if (col + span < numCols && !(nextCell && nextCell.type === "image")) {
             slide.appendChild(el("div", {
               left: D.px(cx + cw + gap / 2), top: D.py(cy),
               width: "1px", height: D.py(ch),
               background: "#" + D.COLORS.border,
             }));
+          }
+
+        } else if (cell.type === "image") {
+          const src = cell.src || "";
+          const label = cell.label || "画像 / Image";
+          const gridN = cell.gridN || 3;
+
+          // 外枠
+          slide.appendChild(el("div", {
+            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
+            background: "#" + D.COLORS.surface,
+            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
+            overflow: "hidden",
+          }));
+
+          if (src) {
+            const img = document.createElement("img");
+            img.src = src;
+            img.setAttribute("data-role", "element");
+            Object.assign(img.style, {
+              position: "absolute",
+              left: D.px(cx), top: D.py(cy),
+              width: D.px(cw), height: D.py(ch),
+              objectFit: "cover",
+            });
+            slide.appendChild(img);
+          } else {
+            // 中央ラベル
+            slide.appendChild(el("div", {
+              left: D.px(cx), top: D.py(cy),
+              width: D.px(cw), height: D.py(ch),
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: ptToCqw(D.FONTS.bodyText.size),
+              color: "#" + D.COLORS.textMuted,
+            }, label));
           }
 
         } else if (cell.type === "card") {
@@ -653,10 +628,7 @@ const D = (() => {
             borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
           }));
 
-          const _cardMd = cell.markdown || "";
-          const _titleM = _cardMd.match(/^#{1,3}\s+(.+)$/m);
-          const title = _titleM ? _titleM[1].trim() : "";
-          const bodyMd = _titleM ? _cardMd.slice(_cardMd.indexOf(_titleM[0]) + _titleM[0].length).trim() : _cardMd;
+          const { title, items } = parseCardMarkdown(cell.markdown || "");
           const padX = D.cardPadX, padY = D.cardPadY;
 
           if (title) {
@@ -674,7 +646,7 @@ const D = (() => {
             }));
           }
 
-          if (bodyMd) {
+          if (items.length > 0) {
             const bodyY = cy + (title ? D.cardDivY + 0.08 : padY);
             const bodyH = cy + ch - bodyY - padY;
             const box = el("div", {
@@ -684,7 +656,11 @@ const D = (() => {
               color: "#" + D.COLORS.text, overflow: "hidden",
             });
             box.classList.add("md-card");
-            box.innerHTML = marked.parse(bodyMd);
+            let html = "";
+            for (const item of items) {
+              html += item.type === "bullet" ? `<li>${item.text}</li>` : `<p>${item.text}</p>`;
+            }
+            box.innerHTML = html.includes("<li>") ? `<ul>${html}</ul>` : html;
             slide.appendChild(box);
           }
         }

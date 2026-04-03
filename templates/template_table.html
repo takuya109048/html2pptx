@@ -229,7 +229,7 @@ const D = (() => {
   mdStyle.textContent = `
     .md-card { overflow: hidden; }
     .md-card h1, .md-card h2, .md-card h3 {
-      font-size: ${ptToCqw(D.FONTS.cardTitle.size)};
+      font-size: ${ptToCqw(D.FONTS.cardBody.size)};
       font-weight: 700; line-height: 1.3; margin: 0 0 0.3em 0;
     }
     .md-card p {
@@ -329,6 +329,24 @@ const D = (() => {
     }
     .slide-table tbody tr:nth-child(even) td:not(.th) { background: #${D.COLORS.tableRow}; }
     .slide-table tbody tr:nth-child(odd)  td:not(.th) { background: #${D.COLORS.tableRowAlt}; }
+    .md-plain code, .md-bg code, .md-card code {
+      background: #${D.COLORS.surface}; padding: 0.1em 0.3em;
+      border-radius: 2px; font-size: inherit;
+    }
+    .md-concl code {
+      background: rgba(255,255,255,0.45); padding: 0.1em 0.3em;
+      border-radius: 2px; font-size: inherit;
+    }
+    .md-plain blockquote, .md-bg blockquote, .md-card blockquote {
+      border-left: 3px solid #${D.COLORS.border};
+      padding-left: 0.7em; margin: 0.3em 0 0.4em;
+      color: #${D.COLORS.textMuted}; font-style: italic;
+    }
+    .md-concl blockquote {
+      border-left: 3px solid #${D.COLORS.conclusionBorder};
+      padding-left: 0.7em; margin: 0.3em 0 0.4em;
+      opacity: 0.75; font-style: italic;
+    }
   `;
   document.head.appendChild(mdStyle);
 

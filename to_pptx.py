@@ -10,7 +10,7 @@ import re
 import sys
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from pptx.enum.text import MSO_ANCHOR
+from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.dml.color import RGBColor
 from pptx.oxml.ns import qn
 from lxml import etree as _etree
@@ -149,20 +149,42 @@ def md_content(slide, items, x, y, w, h, size, color="333333", head_size=None):
             p.space_before = Pt(0) if idx == 0 else Pt(8)
             p.space_after  = Pt(3)
             item_size = head_size
+            is_bold, is_italic = True, False
+            eff_color = color
+        elif item_type == "blockquote":
+            p.space_before = Pt(2)
+            p.space_after  = Pt(2)
+            item_size = size
+            is_bold, is_italic = False, True
+            eff_color = C.get("textMuted", "888888")
         else:
             p.space_before = Pt(0)
             p.space_after  = Pt(4)
             item_size = size
+            is_bold, is_italic = False, False
+            eff_color = color
         pPr = p._p.get_or_add_pPr()
         for tag in (qn("a:buChar"), qn("a:buNone")):
             for old in pPr.findall(tag):
                 pPr.remove(old)
+        for attr in ("marL", "indent"):
+            pPr.attrib.pop(attr, None)
         if item_type == "bullet":
             pPr.set("marL", "228600"); pPr.set("indent", "-228600")
             pPr.append(pPr.makeelement(qn("a:buChar"), {"char": "\u2022"}))
+        elif item_type == "bullet2":
+            pPr.set("marL", "457200"); pPr.set("indent", "-228600")
+            pPr.append(pPr.makeelement(qn("a:buChar"), {"char": "\u25e6"}))
+        elif item_type in ("ordered", "ordered2"):
+            pPr.set("marL", "457200" if item_type == "ordered2" else "228600")
+            pPr.set("indent", "-228600")
+            pPr.append(pPr.makeelement(qn("a:buNone"), {}))
+        elif item_type == "blockquote":
+            pPr.set("marL", "228600")
+            pPr.append(pPr.makeelement(qn("a:buNone"), {}))
         else:
             pPr.append(pPr.makeelement(qn("a:buNone"), {}))
-        _add_runs(p, item_text, item_size, item_type == "heading", color)
+        _add_inline_runs(p, item_text, item_size, eff_color, is_bold, is_italic)
         _set_line_spacing(p, item_size, mult=1.4 if item_type == "heading" else 1.8)
     _no_shadow(box)
     return box
@@ -252,23 +274,100 @@ def arrow_shape(slide, x, y, w, h, fill_hex, border_hex="CCCCCC", border_w=0.75)
     slide.shapes._spTree.append(parse_xml(sp_xml))
 
 
+_INLINE_RE = re.compile(
+    r'\*\*([^*\n]+?)\*\*'
+    r'|\*([^*\n]+?)\*'
+    r'|~~([^~\n]+?)~~'
+    r'|`([^`\n]+?)`'
+)
+
+
+def _parse_inline(txt):
+    """Return list of (seg, bold, italic, strike, code)"""
+    segs, last = [], 0
+    for m in _INLINE_RE.finditer(txt):
+        if m.start() > last:
+            segs.append((txt[last:m.start()], False, False, False, False))
+        if m.group(1) is not None:
+            segs.append((m.group(1), True, False, False, False))
+        elif m.group(2) is not None:
+            segs.append((m.group(2), False, True, False, False))
+        elif m.group(3) is not None:
+            segs.append((m.group(3), False, False, True, False))
+        elif m.group(4) is not None:
+            segs.append((m.group(4), False, False, False, True))
+        last = m.end()
+    if last < len(txt):
+        segs.append((txt[last:], False, False, False, False))
+    return segs or [(txt, False, False, False, False)]
+
+
+def _add_inline_runs(p, txt, size, color_hex, base_bold=False, base_italic=False):
+    """Add runs with inline markdown formatting (**bold**, *italic*, ~~strike~~, `code`)."""
+    sz_val = str(int(size * 100))
+    clr = color_hex.upper()
+    for (seg, bold, italic, strike, code) in _parse_inline(txt):
+        if not seg:
+            continue
+        eff_bold = base_bold or bold
+        eff_italic = base_italic or italic
+        for is_jp, chunk in _split_script(seg):
+            r = _el("r")
+            rPr_attrib = {
+                "lang": "ja-JP" if is_jp else "en-US",
+                "sz": sz_val,
+                "b": "1" if eff_bold else "0",
+                "i": "1" if eff_italic else "0",
+                "dirty": "0",
+            }
+            if strike:
+                rPr_attrib["strike"] = "sngStrike"
+            rPr = _el("rPr", rPr_attrib)
+            fill = _el("solidFill")
+            fill.append(_el("srgbClr", {"val": clr}))
+            rPr.append(fill)
+            typeface = "Meiryo" if is_jp else ("Consolas" if code else "Segoe UI")
+            rPr.append(_el("ea" if is_jp else "latin", {"typeface": typeface}))
+            t = _el("t")
+            t.text = chunk
+            r.append(rPr); r.append(t)
+            p._p.append(r)
+
+
 def parse_md(md):
     sections, cur_title, cur_items = [], "", []
+    ordered_idx = 0
     for line in md.strip().split("\n"):
-        s = line.strip()
-        if not s:
+        s = line.rstrip()
+        stripped = s.strip()
+        if not stripped:
+            ordered_idx = 0
             continue
-        m = re.match(r"^#{1,6}\s+(.*)", s)
+        indent = len(s) - len(s.lstrip(" \t"))
+        m = re.match(r"^#{1,6}\s+(.*)", stripped)
         if m:
             if cur_title or cur_items:
                 sections.append((cur_title, cur_items))
                 cur_items = []
-            cur_title = re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", m.group(1))
-        elif re.match(r"^[-*+]\s+", s):
-            content = re.sub(r"^[-*+]\s+", "", s)
-            cur_items.append(("bullet", re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", content)))
+            cur_title = m.group(1)
+            ordered_idx = 0
+        elif re.match(r"^>\s*", stripped):
+            cur_items.append(("blockquote", re.sub(r"^>\s*", "", stripped)))
+            ordered_idx = 0
+        elif re.match(r"^[-*+]\s+", stripped):
+            content = re.sub(r"^[-*+]\s+", "", stripped)
+            cur_items.append(("bullet2" if indent >= 2 else "bullet", content))
+            ordered_idx = 0
+        elif re.match(r"^\d+\.\s+", stripped):
+            content = re.sub(r"^\d+\.\s+", "", stripped)
+            if indent >= 2:
+                cur_items.append(("ordered2", content))
+            else:
+                ordered_idx += 1
+                cur_items.append(("ordered", f"{ordered_idx}. {content}"))
         else:
-            cur_items.append(("para", re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", s)))
+            cur_items.append(("para", stripped))
+            ordered_idx = 0
     if cur_title or cur_items:
         sections.append((cur_title, cur_items))
     return sections
@@ -461,6 +560,22 @@ def render_cell(slide, ci):
             text(slide, label, cx + 0.15, cy, cw * 0.85, ch,
                  F["stepLabel"]["size"], F["stepLabel"]["bold"],
                  C.get("stepText", "333333"))
+
+    elif t == "image":
+        src    = cell.get("src", "")
+        label  = cell.get("label", "画像 / Image")
+        grid_n = int(cell.get("gridN", 3))
+        rect(slide, cx, cy, cw, ch, C["surface"], C["border"], 0.75)
+        img_path = os.path.join(HERE, src) if src else ""
+        if src and os.path.exists(img_path):
+            pic = slide.shapes.add_picture(
+                img_path, Inches(cx), Inches(cy), Inches(cw), Inches(ch))
+            _no_shadow(pic)
+        else:
+            text(slide, label,
+                 cx, cy, cw, ch,
+                 F["bodyText"]["size"], False, C["textMuted"],
+                 align=PP_ALIGN.CENTER)
 
     elif t == "plain":
         md        = cell.get("markdown", "")
