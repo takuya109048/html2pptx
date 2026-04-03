@@ -156,18 +156,41 @@ const D = (() => {
   `;
   document.head.appendChild(mdStyle);
 
-  function parseCardMarkdown(md) {
-    const lines = md.trim().split("\n");
-    let title = "", items = [];
-    for (const line of lines) {
-      const s = line.trim();
-      if (!s) continue;
-      const m = s.match(/^#{1,3}\s+(.*)/);
-      if (m) { title = m[1]; }
-      else if (s.match(/^[-*+]\s+/)) { items.push({ type: "bullet", text: s.replace(/^[-*+]\s+/, "") }); }
-      else { items.push({ type: "para", text: s }); }
-    }
-    return { title, items };
+  // ── ヘルパー関数 ─────────────────────────────────────
+  function addBorderedBox(bx, by, bw, bh, bg, border, opts = {}) {
+    slide.appendChild(el("div", {
+      left: D.px(bx), top: D.py(by), width: D.px(bw), height: D.py(bh),
+      background: "#" + bg,
+      borderWidth: opts.borderW || "1px", borderStyle: "solid", borderColor: "#" + border,
+      ...(opts.radius   ? { borderRadius: opts.radius }  : {}),
+      ...(opts.overflow ? { overflow:     opts.overflow } : {}),
+    }));
+  }
+
+  function addMdBox(cls, bx, by, bw, bh, md) {
+    const box = el("div", { left: D.px(bx), top: D.py(by), width: D.px(bw), height: D.py(bh), overflow: "hidden" });
+    box.classList.add(cls);
+    box.innerHTML = marked.parse(md || "");
+    slide.appendChild(box);
+  }
+
+  function drawStepArrow(ax, ay, aw, ah, label) {
+    const be = 0.015;
+    const clip = "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)";
+    slide.appendChild(el("div", {
+      left: D.px(ax - be), top: D.py(ay - be), width: D.px(aw + be * 2), height: D.py(ah + be * 2),
+      background: "#" + D.COLORS.stepBorder, clipPath: clip,
+    }));
+    slide.appendChild(el("div", {
+      left: D.px(ax), top: D.py(ay), width: D.px(aw), height: D.py(ah),
+      background: "#" + D.COLORS.stepFill, clipPath: clip,
+    }));
+    slide.appendChild(el("div", {
+      left: D.px(ax), top: D.py(ay), width: D.px(aw * 0.85), height: D.py(ah),
+      display: "flex", alignItems: "center", paddingLeft: D.px(0.15),
+      fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
+      color: "#" + D.COLORS.stepText, overflow: "hidden",
+    }, label));
   }
 
   SLIDES.forEach(sd => {
@@ -282,95 +305,26 @@ const D = (() => {
         const span = cell.span || 1;
         const cx = cellX(col), cy = cellY(row);
         const cw = cellW(span), ch = cellH(row);
+        const padX = D.cardPadX, padY = D.cardPadY;
 
         if (cell.type === "section") {
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
-            background: "#" + D.COLORS.bgBox,
-            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
-            borderRadius: "3px",
-          }));
-          const padX = D.cardPadX, padY = D.cardPadY;
-          const bgBox = el("div", {
-            left: D.px(cx + padX), top: D.py(cy + padY),
-            width: D.px(cw - padX * 2), height: D.py(ch - padY * 2),
-            overflow: "hidden",
-          });
-          bgBox.classList.add("md-bg");
-          bgBox.innerHTML = marked.parse(cell.markdown || cell.text || "");
-          slide.appendChild(bgBox);
+          addBorderedBox(cx, cy, cw, ch, D.COLORS.bgBox, D.COLORS.border, { radius: "3px" });
+          addMdBox("md-bg", cx + padX, cy + padY, cw - padX * 2, ch - padY * 2, cell.markdown || cell.text || "");
 
         } else if (cell.type === "step_head") {
-          const be = 0.015;
-          slide.appendChild(el("div", {
-            left: D.px(cx - be), top: D.py(cy - be),
-            width: D.px(cw + be * 2), height: D.py(ch + be * 2),
-            background: "#" + D.COLORS.stepBorder,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
-            background: "#" + D.COLORS.stepFill,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(cw * 0.85), height: D.py(ch),
-            display: "flex", alignItems: "center",
-            paddingLeft: D.px(0.15),
-            fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
-            color: "#" + D.COLORS.stepText, overflow: "hidden",
-          }, cell.label || ""));
+          drawStepArrow(cx, cy, cw, ch, cell.label || "");
 
         } else if (cell.type === "step") {
           const arrowH = ch * 0.28;
           const bulletY = cy + arrowH + gap * 2;
           const bulletH = ch - arrowH - gap * 2;
-          const be = 0.015;
-          // 矢印枠（影レイヤー）
-          slide.appendChild(el("div", {
-            left: D.px(cx - be), top: D.py(cy - be),
-            width: D.px(cw + be * 2), height: D.py(arrowH + be * 2),
-            background: "#" + D.COLORS.stepBorder,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          // 矢印塗り
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(arrowH),
-            background: "#" + D.COLORS.stepFill,
-            clipPath: "polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%)",
-          }));
-          // 矢印ラベル
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(cw * 0.85), height: D.py(arrowH),
-            display: "flex", alignItems: "center",
-            paddingLeft: D.px(0.15),
-            fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
-            color: "#" + D.COLORS.stepText, overflow: "hidden",
-          }, cell.label || ""));
-          // 箇条書きボックス
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(bulletY), width: D.px(cw), height: D.py(bulletH),
-            background: "#" + D.COLORS.surface,
-            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
-            borderRadius: "3px",
-          }));
-          const padX = D.cardPadX, padY = D.cardPadY;
-          const box = el("div", {
-            left: D.px(cx + padX), top: D.py(bulletY + padY),
-            width: D.px(cw - padX * 2), height: D.py(bulletH - padY * 2),
-            overflow: "hidden",
-          });
-          box.classList.add("md-card");
-          box.innerHTML = marked.parse(cell.markdown || "");
-          slide.appendChild(box);
+          drawStepArrow(cx, cy, cw, arrowH, cell.label || "");
+          addBorderedBox(cx, bulletY, cw, bulletH, D.COLORS.surface, D.COLORS.border, { radius: "3px" });
+          addMdBox("md-card", cx + padX, bulletY + padY, cw - padX * 2, bulletH - padY * 2, cell.markdown || "");
 
         } else if (cell.type === "arrow") {
-          const arrowW = cw * 0.55;
-          const arrowX = cx + (cw - arrowW) / 2;
-          const arrowH = ch * 0.75;
-          const arrowY = cy + (ch - arrowH) / 2;
+          const arrowW = cw * 0.55, arrowX = cx + (cw - arrowW) / 2;
+          const arrowH = ch * 0.75, arrowY = cy + (ch - arrowH) / 2;
           slide.appendChild(el("div", {
             left: D.px(arrowX), top: D.py(arrowY),
             width: D.px(arrowW), height: D.py(arrowH),
@@ -379,11 +333,7 @@ const D = (() => {
           }));
 
         } else if (cell.type === "table") {
-          const wrap = el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(cw), height: D.py(ch),
-            overflow: "hidden",
-          });
+          const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
           const table = document.createElement("table");
           table.className = "slide-table";
           const numTableCols = Math.max(
@@ -392,9 +342,9 @@ const D = (() => {
           );
           const colgroup = document.createElement("colgroup");
           for (let j = 0; j < numTableCols; j++) {
-            const col = document.createElement("col");
-            col.style.width = (100 / numTableCols).toFixed(4) + "%";
-            colgroup.appendChild(col);
+            const c = document.createElement("col");
+            c.style.width = (100 / numTableCols).toFixed(4) + "%";
+            colgroup.appendChild(c);
           }
           table.appendChild(colgroup);
           const tbody = document.createElement("tbody");
@@ -408,9 +358,9 @@ const D = (() => {
             });
             tbody.appendChild(tr);
           }
-          (cell.rows || []).forEach(row => {
+          (cell.rows || []).forEach(rowData => {
             const tr = document.createElement("tr");
-            row.forEach((text, j) => {
+            rowData.forEach((text, j) => {
               const td = document.createElement("td");
               if (j === 0) td.className = "th";
               td.textContent = text;
@@ -424,42 +374,20 @@ const D = (() => {
 
         } else if (cell.type === "conclusion") {
           const accentW = D.conclusionAccentW;
-          const padX = D.cardPadX, padY = D.cardPadY;
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
-            background: "#" + D.COLORS.conclusionBg,
-            borderWidth: "1.5px", borderStyle: "solid", borderColor: "#" + D.COLORS.conclusionBorder,
-            borderRadius: "4px",
-          }));
+          addBorderedBox(cx, cy, cw, ch, D.COLORS.conclusionBg, D.COLORS.conclusionBorder, { borderW: "1.5px", radius: "4px" });
           slide.appendChild(el("div", {
             left: D.px(cx), top: D.py(cy),
             width: D.px(accentW), height: D.py(ch),
             background: "#" + D.COLORS.conclusionBorder,
             borderRadius: "4px 0 0 4px",
           }));
-          const box = el("div", {
-            left: D.px(cx + accentW + padX), top: D.py(cy + padY),
-            width: D.px(cw - accentW - padX * 2), height: D.py(ch - padY * 2),
-            overflow: "hidden",
-          });
-          box.classList.add("md-concl");
-          box.innerHTML = marked.parse(cell.markdown || cell.text || "");
-          slide.appendChild(box);
+          addMdBox("md-concl", cx + accentW + padX, cy + padY, cw - accentW - padX * 2, ch - padY * 2, cell.markdown || cell.text || "");
 
         } else if (cell.type === "plain") {
-          const padX = D.headerPadX, padY = D.mainPadY;
-          const box = el("div", {
-            left: D.px(cx + padX), top: D.py(cy + padY),
-            width: D.px(cw - padX * 2), height: D.py(ch - padY * 2),
-            overflow: "hidden",
-          });
-          box.classList.add("md-plain");
-          box.innerHTML = marked.parse(cell.markdown || "");
-          slide.appendChild(box);
-
+          const pPadX = D.headerPadX, pPadY = D.mainPadY;
+          addMdBox("md-plain", cx + pPadX, cy + pPadY, cw - pPadX * 2, ch - pPadY * 2, cell.markdown || "");
           // 隣接セル間の縦仕切り線（隣が image の場合はボーダーが既にあるので描かない）
-          const cellIdx = cells.indexOf(cell);
-          const nextCell = cells[cellIdx + 1];
+          const nextCell = cells[cells.indexOf(cell) + 1];
           if (col + span < numCols && !(nextCell && nextCell.type === "image")) {
             slide.appendChild(el("div", {
               left: D.px(cx + cw + gap / 2), top: D.py(cy),
@@ -469,21 +397,10 @@ const D = (() => {
           }
 
         } else if (cell.type === "image") {
-          const src = cell.src || "";
-          const label = cell.label || "画像 / Image";
-          const gridN = cell.gridN || 3;
-
-          // 外枠
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
-            background: "#" + D.COLORS.surface,
-            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
-            overflow: "hidden",
-          }));
-
-          if (src) {
+          addBorderedBox(cx, cy, cw, ch, D.COLORS.surface, D.COLORS.border, { overflow: "hidden" });
+          if (cell.src) {
             const img = document.createElement("img");
-            img.src = src;
+            img.src = cell.src;
             img.setAttribute("data-role", "element");
             Object.assign(img.style, {
               position: "absolute",
@@ -493,26 +410,20 @@ const D = (() => {
             });
             slide.appendChild(img);
           } else {
-            // 中央ラベル
             slide.appendChild(el("div", {
-              left: D.px(cx), top: D.py(cy),
-              width: D.px(cw), height: D.py(ch),
+              left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: ptToCqw(D.FONTS.bodyText.size),
               color: "#" + D.COLORS.textMuted,
-            }, label));
+            }, cell.label || "画像 / Image"));
           }
 
         } else if (cell.type === "card") {
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch),
-            background: "#" + D.COLORS.surface,
-            borderWidth: "1px", borderStyle: "solid", borderColor: "#" + D.COLORS.border,
-          }));
-
-          const { title, items } = parseCardMarkdown(cell.markdown || "");
-          const padX = D.cardPadX, padY = D.cardPadY;
-
+          addBorderedBox(cx, cy, cw, ch, D.COLORS.surface, D.COLORS.border);
+          const _cardMd = cell.markdown || "";
+          const _titleM = _cardMd.match(/^#{1,3}\s+(.+)$/m);
+          const title = _titleM ? _titleM[1].trim() : "";
+          const bodyMd = _titleM ? _cardMd.slice(_cardMd.indexOf(_titleM[0]) + _titleM[0].length).trim() : _cardMd;
           if (title) {
             slide.appendChild(el("div", {
               left: D.px(cx + padX), top: D.py(cy + padY),
@@ -527,23 +438,10 @@ const D = (() => {
               background: "#" + D.COLORS.border,
             }));
           }
-
-          if (items.length > 0) {
+          if (bodyMd) {
             const bodyY = cy + (title ? D.cardDivY + 0.08 : padY);
             const bodyH = cy + ch - bodyY - padY;
-            const box = el("div", {
-              left: D.px(cx + padX), top: D.py(bodyY),
-              width: D.px(cw - padX * 2), height: D.py(bodyH),
-              fontSize: ptToCqw(D.FONTS.cardBody.size),
-              color: "#" + D.COLORS.text, overflow: "hidden",
-            });
-            box.classList.add("md-card");
-            let html = "";
-            for (const item of items) {
-              html += item.type === "bullet" ? `<li>${item.text}</li>` : `<p>${item.text}</p>`;
-            }
-            box.innerHTML = html.includes("<li>") ? `<ul>${html}</ul>` : html;
-            slide.appendChild(box);
+            addMdBox("md-card", cx + padX, bodyY, cw - padX * 2, bodyH, bodyMd);
           }
         }
         col += span;
