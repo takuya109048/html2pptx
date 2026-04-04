@@ -259,15 +259,22 @@ async def test_fetch_user_not_found_raises_not_found_error():
 ```
 .
 ├── CLAUDE.md
-├── .claude/
-│   ├── settings.json
-│   └── skills/              # プロジェクト内スキル（上記参照）
-├── templates/               # HTMLテンプレートエンジン
-├── templates.json           # スライドテンプレート定義
-├── design.json              # デザイントークン
-├── template_engine_area.html
-├── to_pptx.py               # PPTX生成スクリプト
-└── server.js                # プレビューサーバー
+└── .claude/
+    ├── settings.json
+    └── skills/
+        ├── slide-deck-creator/      # スライドデッキ生成スキル（メイン）
+        │   ├── SKILL.md
+        │   ├── to_pptx.py           # PPTX生成スクリプト
+        │   ├── templates.json       # スライドテンプレート定義
+        │   ├── design.json          # デザイントークン
+        │   ├── background.png       # 表紙背景画像
+        │   ├── logo.png             # ロゴ画像
+        │   ├── template_engine_area.html  # プレビューエンジン
+        │   ├── server.js            # プレビューサーバー
+        │   ├── templates/           # HTMLテンプレート群
+        │   ├── references/          # テンプレートリファレンス
+        │   └── evals/               # evalデータ
+        └── ...                      # その他スキル
 ```
 
 ---

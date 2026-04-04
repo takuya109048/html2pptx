@@ -105,7 +105,20 @@
       "Bash(find /c -name node.exe)",
       "Bash(netstat -ano)",
       "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object OwningProcess | ForEach-Object { Stop-Process -Id $_OwningProcess -Force }\")",
-      "Bash(taskkill //F //FI \"IMAGENAME eq node.exe\")"
+      "Bash(taskkill //F //FI \"IMAGENAME eq node.exe\")",
+      "Bash(python3 -c \":*)",
+      "Bash(py -c \":*)",
+      "Bash(\"/c/Program Files/LibreOffice/program/python\" -c \":*)",
+      "Bash(\"/c/Program Files/LibreOffice/program/python\" -m scripts.aggregate_benchmark \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1\" --skill-name slide-deck-creator)",
+      "Bash(\"/c/Program Files/LibreOffice/program/python\" eval-viewer/generate_review.py \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1\" --skill-name \"slide-deck-creator\" --benchmark \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1/benchmark.json\" --static \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1/review.html\")",
+      "Bash(PYTHONUTF8=1 \"/c/Program Files/LibreOffice/program/python\" eval-viewer/generate_review.py \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1\" --skill-name \"slide-deck-creator\" --benchmark \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1/benchmark.json\" --static \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1/review.html\")",
+      "Bash(WS=\"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1\")",
+      "Bash(for eval:*)",
+      "Bash(for config:*)",
+      "Bash(cp \"$WS/$eval/eval_metadata.json\" \"$WS/$eval/$config/\")",
+      "Bash(echo \"Copied $eval/$config\")",
+      "Bash(start \"\" \"C:/Users/takuy/.claude/skills/slide-deck-creator-workspace/iteration-1/review.html\")",
+      "Bash(ls \"C:\\\\Users\\\\takuy\\\\.claude\\\\skills\\\\slide-deck-creator-workspace\\\\iteration-1\\\\content-focused\\\\with_skill\\\\outputs\"\" 2>/dev/null || echo \"DIR_NOT_FOUND \")"
     ]
   }
 }

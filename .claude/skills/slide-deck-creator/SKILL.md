@@ -152,18 +152,23 @@ python to_pptx.py
 ```
 
 **実行手順**:
-1. 生成した JSON を `templates.json` に書き込む（既存内容を置き換え）
-2. `python to_pptx.py` を実行して `output.pptx` を生成する
+1. 生成した JSON をこのスキルフォルダ内の `templates.json` に書き込む（既存内容を置き換え）
+2. `to_pptx.py` を実行して `output.pptx` を生成する
 3. 生成されたファイルをユーザーに案内する
 
+```bash
+SKILL=".claude/skills/slide-deck-creator"
+python "$SKILL/to_pptx.py"
 ```
-✅ output.pptx を生成しました。
+
+```
+✅ output.pptx を生成しました（スキルフォルダ内）
 スライド枚数: N枚
 ```
 
 **特定スライドのみ生成したい場合**:
 ```bash
-python to_pptx.py slide_01   # 特定スライドのみ
+python "$SKILL/to_pptx.py" slide_01
 ```
 
 ---
