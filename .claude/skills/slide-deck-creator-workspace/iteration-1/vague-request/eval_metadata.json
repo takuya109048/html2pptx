@@ -1,0 +1,13 @@
+{
+  "eval_id": 0,
+  "eval_name": "vague-request",
+  "prompt": "新製品発表のプレゼン資料のJSONを作って",
+  "assertions": [
+    { "id": "valid_json", "text": "出力が有効な JSON である" },
+    { "id": "has_cover", "text": "cover テンプレートのスライドが含まれる（layout: 'cover'）" },
+    { "id": "multiple_slides", "text": "2枚以上のスライドが生成されている" },
+    { "id": "correct_engine", "text": "全スライドに engine: 'area' が設定されている" },
+    { "id": "grid_structure", "text": "cover 以外のスライドに grid 配列が存在する" },
+    { "id": "has_page", "text": "cover 以外の各スライドに page フィールドがある" }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "run_id": "content-focused-with_skill",
+  "eval_name": "content-focused",
+  "expectations": [
+    {
+      "text": "出力が有効な JSON である",
+      "passed": true,
+      "evidence": "deck.json は有効なJSONとして保存済み。パース可能な構造。"
+    },
+    {
+      "text": "5枚のスライドが生成されている",
+      "passed": true,
+      "evidence": "slide_01〜slide_05 の5キーが存在する。"
+    },
+    {
+      "text": "cover スライドのタイトルに 'Q2 2026' または '業績レビュー' が含まれる",
+      "passed": true,
+      "evidence": "slide_01.SLIDES[0].title = 'Q2 2026 業績レビュー' — 両方含む。"
+    },
+    {
+      "text": "table の rows に '120M' または '120' が含まれる",
+      "passed": true,
+      "evidence": "slide_02 の table.rows[0][1] = '120M'。"
+    },
+    {
+      "text": "table の rows に '30M' または '利益' が含まれる",
+      "passed": true,
+      "evidence": "slide_02 の table.rows[2][0] = '利益'、rows[2][1] = '30M'。"
+    },
+    {
+      "text": "table_conclusion に相当する構造（table + conclusion の2行grid）を持つスライドが存在する",
+      "passed": true,
+      "evidence": "slide_05: rowHeightRatios=[0.75, 0.25]、grid[0]=[table]、grid[1]=[conclusion]。"
+    },
+    {
+      "text": "card が3つ並ぶ行を持つスライドが存在する",
+      "passed": true,
+      "evidence": "slide_03: grid[0] に card×3。"
+    },
+    {
+      "text": "step_head が3つ並ぶ行を持つスライドが存在する",
+      "passed": true,
+      "evidence": "slide_04: grid[0] に step_head×3。"
+    }
+  ],
+  "pass_count": 8,
+  "total_count": 8,
+  "pass_rate": 1.0,
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  }
+}

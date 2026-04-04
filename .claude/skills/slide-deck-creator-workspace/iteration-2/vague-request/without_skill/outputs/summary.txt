@@ -1,0 +1,6 @@
+vague-request without_skill — iteration-2
+Prompt: 新製品発表のプレゼン資料のJSONを作って
+Slides: 5
+Format: custom (not area engine)
+Templates: cover/content/three_columns/steps/summary (独自型)
+Notes: スキルなし生成。area engine/grid/step_head/engine フィールドなし。

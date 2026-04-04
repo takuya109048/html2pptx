@@ -1,0 +1,64 @@
+{
+  "title": "新製品発表プレゼンテーション",
+  "slides": [
+    {
+      "id": 1,
+      "type": "cover",
+      "content": {
+        "title": "NovaSuite 新製品発表",
+        "subtitle": "次世代の業務効率化ソリューション",
+        "date": "2026-04-04",
+        "presenter": "プレゼンター名"
+      }
+    },
+    {
+      "id": 2,
+      "type": "content",
+      "title": "市場背景と課題",
+      "content": {
+        "points": [
+          "現在の市場規模: 5,000億円（年成長率12%）",
+          "既存ソリューションの課題: 操作複雑・高コスト・統合困難",
+          "顧客ニーズ: 手軽さ・低コスト・即時効果"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "type": "three_columns",
+      "title": "製品の3大特徴",
+      "content": {
+        "columns": [
+          { "heading": "シンプル設計", "body": "直感的なUIで導入当日から使える。専門知識不要。" },
+          { "heading": "コスト削減", "body": "従来比40%コスト削減。月額固定料金で予算計画が容易。" },
+          { "heading": "シームレス統合", "body": "既存システムとAPI連携。移行コスト最小化。" }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "type": "steps",
+      "title": "導入ロードマップ",
+      "content": {
+        "steps": [
+          { "step": 1, "label": "初期設定", "description": "環境構築・データ移行（1週間）" },
+          { "step": 2, "label": "パイロット運用", "description": "部門限定での試験運用（2週間）" },
+          { "step": 3, "label": "全社展開", "description": "トレーニング実施・本番稼働（1ヶ月）" }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "type": "summary",
+      "title": "まとめ・期待効果",
+      "content": {
+        "summary": "NovaSuiteは、導入の手軽さとコスト効率を両立した次世代ソリューションです。",
+        "metrics": [
+          { "label": "業務効率向上", "value": "+35%" },
+          { "label": "コスト削減", "value": "-40%" },
+          { "label": "導入期間", "value": "最短1ヶ月" }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "metadata": {
+    "skill_name": "slide-deck-creator",
+    "iteration": 2,
+    "skill_path": "C:/Users/takuy/.claude/skills/slide-deck-creator",
+    "executor_model": "claude-sonnet-4-6",
+    "timestamp": "2026-04-04T00:00:00Z",
+    "evals_run": [0, 1, 2],
+    "runs_per_configuration": 1,
+    "skill_changes": "Added slide count enforcement rule (six_slides fix) and explicit page field guidance"
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "vague-request",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 104.5,
+        "tokens": 39197,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "valid_json", "passed": true, "evidence": "有効なJSONオブジェクト"},
+        {"text": "has_cover", "passed": true, "evidence": "cover キーに layout:'cover' を確認"},
+        {"text": "multiple_slides", "passed": true, "evidence": "6スライド生成（cover + slide_02〜06）"},
+        {"text": "correct_engine", "passed": true, "evidence": "全スライドに engine:'area' を確認"},
+        {"text": "grid_structure", "passed": true, "evidence": "slide_02〜06 全てに grid 配列を確認"},
+        {"text": "has_page", "passed": true, "evidence": "slide_02〜06 全てに page フィールドを確認（cover除く）"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "vague-request",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.167,
+        "passed": 1,
+        "failed": 5,
+        "total": 6,
+        "time_seconds": 57.6,
+        "tokens": 33939,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "valid_json", "passed": true, "evidence": "有効なJSONオブジェクト"},
+        {"text": "has_cover", "passed": false, "evidence": "layout:'cover' フィールドなし — type:'cover' のみ"},
+        {"text": "multiple_slides", "passed": false, "evidence": "slides 配列は存在するが最上位キー構造でない"},
+        {"text": "correct_engine", "passed": false, "evidence": "engine フィールドなし — カスタム形式"},
+        {"text": "grid_structure", "passed": false, "evidence": "grid 配列なし — slides[].content 構造"},
+        {"text": "has_page", "passed": false, "evidence": "page フィールドなし"}
+      ],
+      "notes": ["カスタムJSON形式（slides配列）を使用。area engine フォーマット未使用。"]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "detailed-request",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 109.7,
+        "tokens": 39773,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "valid_json", "passed": true, "evidence": "有効なJSONオブジェクト"},
+        {"text": "six_slides", "passed": true, "evidence": "slide_01〜06 の6キー確認 ✓ (iteration-1 の失敗を修正)"},
+        {"text": "presenter_name", "passed": true, "evidence": "slide_01.SLIDES[0].presenter = '田中太郎'"},
+        {"text": "affiliation", "passed": true, "evidence": "slide_01.SLIDES[0].affiliation = 'DX推進部'"},
+        {"text": "date", "passed": true, "evidence": "slide_01.SLIDES[0].date = '2026-04-10'"},
+        {"text": "has_flow4", "passed": true, "evidence": "slide_04 grid[0]: step_head×4 確認"},
+        {"text": "has_converge", "passed": true, "evidence": "slide_06: card×3 + arrow + conclusion 確認"},
+        {"text": "page_numbers", "passed": true, "evidence": "slide_02〜06 全てに page フィールド確認"}
+      ],
+      "notes": ["期待効果(slide_05: bg_3card)と結論(slide_06: converge_3card)を分離して6枚を達成"]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "detailed-request",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.375,
+        "passed": 3,
+        "failed": 5,
+        "total": 8,
+        "time_seconds": 58.1,
+        "tokens": 34445,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "valid_json", "passed": true, "evidence": "有効なJSONオブジェクト"},
+        {"text": "six_slides", "passed": true, "evidence": "slides 配列に6要素"},
+        {"text": "presenter_name", "passed": true, "evidence": "presentation.presenter = '田中太郎'"},
+        {"text": "affiliation", "passed": false, "evidence": "affiliation は presentation 上位オブジェクトのみ — cover スライド直下になし"},
+        {"text": "date", "passed": false, "evidence": "date は presentation 上位オブジェクトのみ — cover スライド直下になし"},
+        {"text": "has_flow4", "passed": false, "evidence": "phases 配列を使用 — step_head grid 構造なし"},
+        {"text": "has_converge", "passed": false, "evidence": "points 配列を使用 — card×3+arrow+conclusion grid なし"},
+        {"text": "page_numbers", "passed": false, "evidence": "page フィールドなし"}
+      ],
+      "notes": ["カスタムJSON形式（slides配列）を使用。area engine フォーマット未使用。発表者情報が上位オブジェクトのみ。"]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "content-focused",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 59.5,
+        "tokens": 38086,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "valid_json", "passed": true, "evidence": "有効なJSONオブジェクト"},
+        {"text": "five_slides", "passed": true, "evidence": "slide_01〜05 の5キー確認"},
+        {"text": "cover_title", "passed": true, "evidence": "title = 'Q2 2026 業績レビュー'"},
+        {"text": "table_data_120m", "passed": true, "evidence": "slide_02 rows[0][1] = '120M'"},
+        {"text": "table_data_profit", "passed": true, "evidence": "slide_02 rows[2][1] = '30M'"},
+        {"text": "has_table_conclusion", "passed": true, "evidence": "slide_05: rowHeightRatios=[0.75,0.25], grid[0]=table, grid[1]=conclusion"},
+        {"text": "three_cards", "passed": true, "evidence": "slide_03: grid[0] に card×3"},
+        {"text": "flow_3step", "passed": true, "evidence": "slide_04: grid[0] に step_head×3"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "content-focused",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 69.7,
+        "tokens": 36778,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "valid_json", "passed": true, "evidence": "有効なJSONオブジェクト"},
+        {"text": "five_slides", "passed": true, "evidence": "slide_01〜05 の5キー確認"},
+        {"text": "cover_title", "passed": true, "evidence": "title = 'Q2 2026 業績レビュー'"},
+        {"text": "table_data_120m", "passed": true, "evidence": "slide_02 rows[0][1] = '120M'"},
+        {"text": "table_data_profit", "passed": true, "evidence": "slide_02 rows[2][1] = '30M'"},
+        {"text": "has_table_conclusion", "passed": true, "evidence": "slide_05: rowHeightRatios=[0.72,0.28], grid[0]=table, grid[1]=conclusion"},
+        {"text": "three_cards", "passed": true, "evidence": "slide_03: grid[0] に card×3"},
+        {"text": "flow_3step", "passed": true, "evidence": "slide_04: grid[0] に step_head×3"}
+      ],
+      "notes": ["⚠️ 既存 iteration-1 ファイルを参照して area engine フォーマットを使用 — without_skill として純粋な比較にならない"]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 91.2, "stddev": 26.3, "min": 59.5, "max": 109.7},
+      "tokens": {"mean": 39019, "stddev": 744, "min": 38086, "max": 39773}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.514, "stddev": 0.436, "min": 0.167, "max": 1.0},
+      "time_seconds": {"mean": 61.8, "stddev": 6.5, "min": 57.6, "max": 69.7},
+      "tokens": {"mean": 35054, "stddev": 1372, "min": 33939, "max": 36778}
+    },
+    "delta": {
+      "pass_rate": "+0.486",
+      "time_seconds": "+29.4",
+      "tokens": "+3965"
+    }
+  },
+  "notes": [
+    "iteration-2 改善: six_slides assertion が with_skill で 100% 合格 (iteration-1: 87.5% → iteration-2: 100%)",
+    "without_skill eval-2 は既存ファイル参照により area engine 形式を使用 — 純粋な比較にならない",
+    "without_skill eval-0/1 はカスタム形式を使用 — フォーマット非準拠が明確",
+    "with_skill は全3 eval で 100% 達成",
+    "KEY: スキルによりフォーマット準拠率が大幅改善 (51.4% → 100%)"
+  ]
+}

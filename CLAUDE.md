@@ -232,26 +232,42 @@ async def test_fetch_user_not_found_raises_not_found_error():
 
 ---
 
-## ディレクトリ構成
+## Skills 管理
 
-<!-- TODO: 実際の構成に合わせて更新 -->
+**すべての skills はプロジェクト内の `.claude/skills/` で管理する。**
+グローバル（`~/.claude/skills/`）には置かない。
+
+```
+.claude/
+└── skills/
+    ├── slide-deck-creator/       # スライドデッキJSON生成スキル
+    │   ├── SKILL.md
+    │   └── references/
+    ├── slide-deck-creator-workspace/  # eval ワークスペース
+    ├── skill-creator/            # スキル作成・改善スキル
+    ├── pptx/                     # PPTX操作スキル
+    ├── pdf/                      # PDF操作スキル
+    └── ...                       # その他スキル
+```
+
+新しいスキルを作成する際は `.claude/skills/<skill-name>/` に作成すること。
+
+---
+
+## ディレクトリ構成
 
 ```
 .
 ├── CLAUDE.md
-├── pyproject.toml       # パッケージ設定・依存関係
-├── src/
-│   ├── __init__.py
-│   ├── main.py          # エントリポイント
-│   ├── models/          # データモデル・スキーマ
-│   ├── services/        # ビジネスロジック
-│   ├── repositories/    # DB・外部APIアクセス
-│   └── exceptions.py    # カスタム例外
-├── tests/
-│   ├── conftest.py
-│   ├── unit/
-│   └── integration/
-└── .env.example         # 環境変数のサンプル（実値は .env に）
+├── .claude/
+│   ├── settings.json
+│   └── skills/              # プロジェクト内スキル（上記参照）
+├── templates/               # HTMLテンプレートエンジン
+├── templates.json           # スライドテンプレート定義
+├── design.json              # デザイントークン
+├── template_engine_area.html
+├── to_pptx.py               # PPTX生成スクリプト
+└── server.js                # プレビューサーバー
 ```
 
 ---

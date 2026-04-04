@@ -1,0 +1,49 @@
+{
+  "run_id": "content-focused-without_skill",
+  "eval_name": "content-focused",
+  "expectations": [
+    {
+      "text": "出力が有効な JSON である",
+      "passed": true,
+      "evidence": "deck.json は有効なJSONだが、templates.json フォーマットではなく独自構造。"
+    },
+    {
+      "text": "5枚のスライドが生成されている",
+      "passed": true,
+      "evidence": "slides 配列に5要素存在する。"
+    },
+    {
+      "text": "cover スライドのタイトルに 'Q2 2026' または '業績レビュー' が含まれる",
+      "passed": true,
+      "evidence": "slides[0].content.title = 'Q2 2026 業績レビュー'。"
+    },
+    {
+      "text": "table の rows に '120M' または '120' が含まれる",
+      "passed": true,
+      "evidence": "slides[1].content.table.rows[0][1] = '120M'。"
+    },
+    {
+      "text": "table の rows に '30M' または '利益' が含まれる",
+      "passed": true,
+      "evidence": "slides[1].content.table.rows[2][0] = '利益'、rows[2][1] = '30M (+50%)'。"
+    },
+    {
+      "text": "table_conclusion に相当する構造（table + conclusion の2行grid）を持つスライドが存在する",
+      "passed": false,
+      "evidence": "slides[4] に table と conclusion フィールドはあるが、grid/rowHeightRatios 構造ではなく独自フォーマット。engine:'area' 形式に準拠していない。"
+    },
+    {
+      "text": "card が3つ並ぶ行を持つスライドが存在する",
+      "passed": false,
+      "evidence": "slides[2].content.cards に3要素あるが、grid 配列構造ではなく独自フォーマット。"
+    },
+    {
+      "text": "step_head が3つ並ぶ行を持つスライドが存在する",
+      "passed": false,
+      "evidence": "slides[3].content.steps に3要素あるが、step_head 型のgrid行ではなく独自フォーマット。"
+    }
+  ],
+  "pass_count": 5,
+  "total_count": 8,
+  "pass_rate": 0.625
+}

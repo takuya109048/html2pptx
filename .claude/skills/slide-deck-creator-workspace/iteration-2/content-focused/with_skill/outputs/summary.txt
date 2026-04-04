@@ -1,0 +1,6 @@
+content-focused with_skill - iteration-2
+Prompt: 四半期レビュースライドのJSONを5枚で作って
+Slides: 5 (slide_01-05)
+Format: area engine
+Templates: cover / table / list_3card / flow_3step / table_conclusion
+Notes: 全5枚。枚数・構造ともに要件通り。120M/30M データ正確。

@@ -1,0 +1,49 @@
+{
+  "run_id": "detailed-request-with_skill",
+  "eval_name": "detailed-request",
+  "expectations": [
+    {
+      "text": "出力が有効な JSON である",
+      "passed": true,
+      "evidence": "deck.json は有効なJSONとして保存済み。"
+    },
+    {
+      "text": "6枚のスライドが生成されている（最上位キーが6つ）",
+      "passed": false,
+      "evidence": "slide_01〜slide_05 の5キーのみ。プロンプトで要求した6枚に対し1枚不足。エージェントが6枚目を省略した。"
+    },
+    {
+      "text": "cover スライドに '田中太郎' が含まれる",
+      "passed": true,
+      "evidence": "slide_01.SLIDES[0].presenter = '田中太郎'。"
+    },
+    {
+      "text": "cover スライドに 'DX推進部' が含まれる",
+      "passed": true,
+      "evidence": "slide_01.SLIDES[0].affiliation = 'DX推進部'。"
+    },
+    {
+      "text": "cover スライドに '2026-04-10' が含まれる",
+      "passed": true,
+      "evidence": "slide_01.SLIDES[0].date = '2026-04-10'。"
+    },
+    {
+      "text": "flow_4step に相当する構造（step_head×4のgrid行）を持つスライドが存在する",
+      "passed": true,
+      "evidence": "slide_04: grid[0] に step_head×4、grid[1] に card×4。"
+    },
+    {
+      "text": "converge_3card に相当する構造（card×3 + arrow + conclusion）を持つスライドが存在する",
+      "passed": true,
+      "evidence": "slide_05: rowHeightRatios=[0.65,0.08,0.27]、grid[0]=card×3、grid[1]=arrow(span:3)、grid[2]=conclusion(span:3)。"
+    },
+    {
+      "text": "全スライドに page フィールドがある（cover を除く）",
+      "passed": true,
+      "evidence": "slide_02〜slide_05 全てに page フィールドあり（1/5〜4/5）。"
+    }
+  ],
+  "pass_count": 7,
+  "total_count": 8,
+  "pass_rate": 0.875
+}
