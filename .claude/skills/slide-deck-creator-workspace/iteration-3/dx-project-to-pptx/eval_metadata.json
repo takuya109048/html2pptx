@@ -1,0 +1,14 @@
+{
+  "eval_id": 3,
+  "eval_name": "dx-project-to-pptx",
+  "prompt": "DX推進プロジェクト中間報告（3フェーズ進捗/課題2件/次アクション）をプレゼンにして",
+  "assertions": [
+    { "id": "valid_json", "text": "deck.json が有効な JSON である" },
+    { "id": "correct_engine", "text": "全スライドに engine: 'area' が設定されている" },
+    { "id": "has_cover", "text": "cover テンプレートのスライドが含まれる" },
+    { "id": "has_flow_for_phases", "text": "step_head タイプのセルが存在する（フェーズ進捗の表現）" },
+    { "id": "source_content_preserved", "text": "原文のキーワード（BigQuery または AWS または フェーズ）が JSON 内に含まれる" },
+    { "id": "multiple_slides", "text": "3枚以上のスライドが生成されている" },
+    { "id": "pptx_generated", "text": "output.pptx が生成されている" }
+  ]
+}
