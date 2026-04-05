@@ -1,0 +1,146 @@
+{
+  "slide_01": {
+    "name": "表紙",
+    "engine": "area",
+    "SLIDES": [{
+      "layout": "cover",
+      "title": "Nova X1\n新製品発表",
+      "affiliation": "プロダクト開発部",
+      "presenter": "発表者",
+      "date": "2026-04-05",
+      "bg": "background.png"
+    }]
+  },
+  "slide_02": {
+    "name": "アジェンダ",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "本日のアジェンダ",
+      "page": "1/7",
+      "rowHeightRatios": [1.0],
+      "grid": [[
+        {
+          "type": "plain",
+          "body": "1. 市場背景と課題\n2. Nova X1 製品概要\n3. コア機能紹介\n4. 競合比較\n5. 導入ロードマップ\n6. 価格・購入方法\n7. まとめ"
+        }
+      ]]
+    }]
+  },
+  "slide_03": {
+    "name": "市場背景",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "市場背景と3つの課題",
+      "page": "2/7",
+      "rowHeightRatios": [0.25, 0.08, 0.67],
+      "grid": [
+        [{ "type": "section", "span": 3, "body": "現在のスマートデバイス市場が抱える3つの問題" }],
+        [{ "type": "arrow", "span": 3 }],
+        [
+          { "type": "card", "title": "バッテリー問題", "body": "1日で切れる\n重い処理に弱い\n充電時間が長い" },
+          { "type": "card", "title": "セキュリティ不安", "body": "データ漏洩リスク\n認証が不便\n企業利用に不向き" },
+          { "type": "card", "title": "操作性の複雑さ", "body": "学習コストが高い\n直感的でないUI\nカスタマイズ困難" }
+        ]
+      ]
+    }]
+  },
+  "slide_04": {
+    "name": "製品概要",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "Nova X1 製品概要",
+      "page": "3/7",
+      "rowHeightRatios": [1.0],
+      "grid": [[
+        {
+          "type": "plain",
+          "body": "## Nova X1 とは\n\nNova X1は、バッテリー・セキュリティ・操作性の3課題を同時解決する次世代スマートデバイスです。\n\n- **PowerSense**: 業界最長72時間バッテリー\n- **ShieldCore**: 軍用レベル暗号化\n- **FlowUI**: AIによる直感的操作"
+        }
+      ]]
+    }]
+  },
+  "slide_05": {
+    "name": "コア機能",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "3つのコア機能",
+      "page": "4/7",
+      "rowHeightRatios": [0.28, 0.72],
+      "grid": [
+        [
+          { "type": "step_head", "title": "PowerSense", "body": "バッテリー" },
+          { "type": "step_head", "title": "ShieldCore", "body": "セキュリティ" },
+          { "type": "step_head", "title": "FlowUI", "body": "操作性" }
+        ],
+        [
+          { "type": "card", "title": "72時間駆動", "body": "AIによる電力最適化\n急速充電15分で50%\n省電力モード自動切替" },
+          { "type": "card", "title": "軍用暗号化", "body": "AES-256暗号化\n生体認証3種類対応\nゼロトラスト設計" },
+          { "type": "card", "title": "AIアシスト操作", "body": "使用パターン学習\nジェスチャー操作\n多言語音声認識" }
+        ]
+      ]
+    }]
+  },
+  "slide_06": {
+    "name": "競合比較",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "競合製品との比較",
+      "page": "5/7",
+      "rowHeightRatios": [0.75, 0.25],
+      "grid": [
+        [[{
+          "type": "table",
+          "headers": ["機能", "Nova X1", "競合A", "競合B"],
+          "rows": [
+            ["バッテリー", "72時間", "24時間", "36時間"],
+            ["暗号化", "軍用AES-256", "標準AES-128", "標準AES-128"],
+            ["AI機能", "オンデバイス", "クラウド依存", "なし"],
+            ["価格", "¥89,800", "¥95,000", "¥75,000"]
+          ]
+        }]],
+        [{ "type": "conclusion", "span": 1, "body": "Nova X1はバッテリー・セキュリティ・AI機能すべてで業界最高水準を達成しながら競争力ある価格を実現" }]
+      ]
+    }]
+  },
+  "slide_07": {
+    "name": "ロードマップ",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "発売・展開ロードマップ",
+      "page": "6/7",
+      "rowHeightRatios": [0.28, 0.72],
+      "grid": [
+        [
+          { "type": "step_head", "title": "Q2 2026", "body": "先行予約開始" },
+          { "type": "step_head", "title": "Q3 2026", "body": "一般発売" },
+          { "type": "step_head", "title": "Q4 2026", "body": "企業向け展開" },
+          { "type": "step_head", "title": "Q1 2027", "body": "グローバル展開" }
+        ],
+        [
+          { "type": "card", "title": "先行予約", "body": "予約特典: 専用ケース\n5,000台限定\n¥79,800（早割価格）" },
+          { "type": "card", "title": "一般販売開始", "body": "量販店・直販サイト\n全国一斉発売\n¥89,800" },
+          { "type": "card", "title": "エンタープライズ版", "body": "MDM対応\n法人専用サポート\n100台〜一括見積" },
+          { "type": "card", "title": "海外展開", "body": "北米・欧州・アジア\n現地パートナー経由\n多言語対応完了" }
+        ]
+      ]
+    }]
+  },
+  "slide_08": {
+    "name": "まとめ",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "まとめ",
+      "page": "7/7",
+      "rowHeightRatios": [0.65, 0.08, 0.27],
+      "grid": [
+        [
+          { "type": "card", "title": "課題解決", "body": "バッテリー・セキュリティ・操作性の3課題を一挙解決" },
+          { "type": "card", "title": "業界最高水準", "body": "全ての主要スペックで競合を上回る圧倒的な性能" },
+          { "type": "card", "title": "今すぐ予約", "body": "先行予約特典あり。2026年Q2より受付開始" }
+        ],
+        [{ "type": "arrow", "span": 3 }],
+        [{ "type": "conclusion", "span": 3, "body": "Nova X1は次世代スマートデバイスの新標準です。先行予約で特別価格をご利用ください。" }]
+      ]
+    }]
+  }
+}

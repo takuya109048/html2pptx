@@ -1,0 +1,18 @@
+## スライドデッキ生成サマリー（without_skill）
+
+### スライド枚数
+6枚（表紙1枚 + コンテンツ5枚）
+
+### 使用テンプレート
+1. slide_01 - cover（田中太郎/DX推進部/2026-04-10）
+2. slide_02 - plain_1col（現状の課題）
+3. slide_03 - list_3card（3つの施策）
+4. slide_04 - flow_4step（ロードマップ）
+5. slide_05 - converge_3card（期待効果）
+6. slide_06 - converge_3card（まとめ） ← 重複
+
+### 主な設計判断
+- ユーザー指定の6枚を達成
+- 発表者情報あり（coverにbgあるがlogoなし）
+- pageフォーマットは "1/5" 形式（スペースなし）
+- 6枚目はconverge_3cardを再利用（plain_1colの代わり）

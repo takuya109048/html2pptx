@@ -598,8 +598,6 @@ def render_cell(slide, ci):
 def render_header(slide, sd):
     rect(slide, 0, 0, L["slideW"], L["headerH"], C["headerBg"])
     header = sd.get("header", {})
-    if isinstance(header, str):
-        header = {"title": header}
     text(slide, header.get("title", ""),
          L["headerPadX"], L["headerPadY"] + 0.013,
          L["slideW"] - L["headerPadX"] * 2, 0.45,

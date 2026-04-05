@@ -1,0 +1,114 @@
+{
+  "slide_01": {
+    "name": "表紙",
+    "engine": "area",
+    "SLIDES": [{
+      "layout": "cover",
+      "title": "AIを活用したコスト削減\n提案書",
+      "affiliation": "DX推進部",
+      "presenter": "田中太郎",
+      "date": "2026-04-10",
+      "bg": "background.png"
+    }]
+  },
+  "slide_02": {
+    "name": "現状の課題",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "現状の課題",
+      "page": "1/5",
+      "rowHeightRatios": [1.0],
+      "grid": [[
+        {
+          "type": "plain",
+          "body": "## 主な課題\n\n- **手作業の非効率**: データ入力・転記に多大な時間とコスト\n- **意思決定の遅延**: データ収集・分析に数日かかり機会損失が発生\n- **人件費の高騰**: 定型業務担当者の採用コスト増加（前年比+15%）"
+        }
+      ]]
+    }]
+  },
+  "slide_03": {
+    "name": "AI活用の3つの施策",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "AI活用の3つの施策",
+      "page": "2/5",
+      "rowHeightRatios": [1.0],
+      "grid": [[
+        {
+          "type": "card",
+          "title": "業務自動化（RPA×AI）",
+          "body": "申請・承認・データ入力を自動化\n削減効果: ¥4,500万円/年"
+        },
+        {
+          "type": "card",
+          "title": "AI需要予測・在庫最適化",
+          "body": "在庫管理・発注計画にAIを活用\n削減効果: ¥6,000万円/年"
+        },
+        {
+          "type": "card",
+          "title": "生成AIナレッジ活用",
+          "body": "問い合わせ対応・資料作成の効率化\n削減効果: ¥2,500万円/年"
+        }
+      ]]
+    }]
+  },
+  "slide_04": {
+    "name": "実装ロードマップ",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "実装ロードマップ（4フェーズ）",
+      "page": "3/5",
+      "rowHeightRatios": [0.28, 0.72],
+      "grid": [
+        [
+          { "type": "step_head", "title": "Phase 1", "body": "準備（1-2ヶ月）" },
+          { "type": "step_head", "title": "Phase 2", "body": "PoC（3-4ヶ月）" },
+          { "type": "step_head", "title": "Phase 3", "body": "展開（5-8ヶ月）" },
+          { "type": "step_head", "title": "Phase 4", "body": "最適化（9ヶ月〜）" }
+        ],
+        [
+          { "type": "card", "title": "基盤整備", "body": "AI基盤構築\nデータ整備\n体制確立" },
+          { "type": "card", "title": "パイロット実施", "body": "PoC実施\n効果測定\n改善点洗い出し" },
+          { "type": "card", "title": "全社展開", "body": "全業務への適用\n研修実施\n監視体制構築" },
+          { "type": "card", "title": "継続改善", "body": "モデル改善\n横展開\nROIレビュー" }
+        ]
+      ]
+    }]
+  },
+  "slide_05": {
+    "name": "期待効果",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "期待効果",
+      "page": "4/5",
+      "rowHeightRatios": [0.65, 0.08, 0.27],
+      "grid": [
+        [
+          { "type": "card", "title": "コスト削減", "body": "3施策合計で年間¥1.3億円削減\n現状コストの29%を削減" },
+          { "type": "card", "title": "業務効率化", "body": "定型業務70%短縮\n高付加価値業務へシフト" },
+          { "type": "card", "title": "意思決定改善", "body": "データ集計3日→即時\n機会損失ゼロを目指す" }
+        ],
+        [{ "type": "arrow", "span": 3 }],
+        [{ "type": "conclusion", "span": 3, "body": "AI活用により年間¥1.3億円削減と業務効率化を同時に実現" }]
+      ]
+    }]
+  },
+  "slide_06": {
+    "name": "まとめ",
+    "engine": "area",
+    "SLIDES": [{
+      "header": "まとめ・次のアクション",
+      "page": "5/5",
+      "rowHeightRatios": [0.65, 0.08, 0.27],
+      "grid": [
+        [
+          { "type": "card", "title": "施策1: 自動化", "body": "RPA×AIで定型業務を自動化\n¥4,500万円/年の削減" },
+          { "type": "card", "title": "施策2: 予測", "body": "AIで需要予測・在庫最適化\n¥6,000万円/年の削減" },
+          { "type": "card", "title": "施策3: 生成AI", "body": "生成AIでナレッジ活用\n¥2,500万円/年の削減" }
+        ],
+        [{ "type": "arrow", "span": 3 }],
+        [{ "type": "conclusion", "span": 3, "body": "来月よりPhase1に着手。経営承認の取得とベンダー選定を速やかに進める。" }]
+      ]
+    }]
+  }
+}

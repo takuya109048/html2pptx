@@ -1,0 +1,19 @@
+## スライドデッキ生成サマリー（with_skill）
+
+### スライド枚数
+6枚（表紙1枚 + コンテンツ5枚）
+
+### 使用テンプレート
+1. slide_01 - cover（田中太郎/DX推進部/2026-04-10）
+2. slide_02 - plain_1col（現状の課題: 3課題を詳述）
+3. slide_03 - list_3card（AI活用の3施策）
+4. slide_04 - flow_4step（実装ロードマップ Phase1〜4）
+5. slide_05 - converge_3card（期待効果3点→結論）
+6. slide_06 - plain_1col（まとめ・次のアクション表）
+
+### 主な設計判断
+- ユーザー指定どおり6枚を厳守
+- 発表者情報（田中太郎/DX推進部/2026-04-10）をcoverに記載
+- page番号は "1 / 5"〜"5 / 5" 形式
+- logo: "logo.png" を全コンテンツスライドに付与
+- 指定されたテンプレート（plain_1col/list_3card/flow_4step/converge_3card）を使用

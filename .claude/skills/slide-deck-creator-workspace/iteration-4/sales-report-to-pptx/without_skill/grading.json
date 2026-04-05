@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "deck.json が有効な JSON として出力されている",
+      "passed": true,
+      "evidence": "deck.json は6スライドの有効なJSON。"
+    },
+    {
+      "text": "最初のスライドが cover テンプレートを使用している",
+      "passed": true,
+      "evidence": "slide_01 に \"layout\": \"cover\" が設定されている（logoなし）。"
+    },
+    {
+      "text": "KPIデータを含む table または table_conclusion テンプレートが使われている",
+      "passed": true,
+      "evidence": "slide_03 に table テンプレートが使われている（table_conclusionではなくtableのみ）。"
+    },
+    {
+      "text": "売上2.4億円・新規顧客142社・解約率1.2%などの数値がスライドに含まれている",
+      "passed": true,
+      "evidence": "slide_03 に \"2.4億円\", \"142社\", \"1.2%\", \"0.8億円\" が含まれている。"
+    },
+    {
+      "text": "output.pptx ファイルが生成されている",
+      "passed": false,
+      "evidence": "PPTXは生成されていない（スキルなしではto_pptx.pyの実行手順が不明）。"
+    },
+    {
+      "text": "すべてのスライドが有効なテンプレート名を使用している",
+      "passed": true,
+      "evidence": "bg_3card, table, plain_1col, flow_3step, converge_3card。すべて有効。"
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1,
+    "pass_rate": 0.833
+  }
+}

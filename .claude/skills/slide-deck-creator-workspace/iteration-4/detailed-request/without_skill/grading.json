@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "deck.json が有効な JSON として出力されている",
+      "passed": true,
+      "evidence": "deck.json は6スライドの有効なJSON。"
+    },
+    {
+      "text": "スライドがちょうど6枚生成されている",
+      "passed": true,
+      "evidence": "slide_01〜slide_06 の6枚が生成されている。"
+    },
+    {
+      "text": "最初のスライドが cover テンプレートを使用している",
+      "passed": true,
+      "evidence": "slide_01 の SLIDES[0] に \"layout\": \"cover\" が設定されている（logoフィールドなし）。"
+    },
+    {
+      "text": "cover スライドに発表者（田中太郎）・所属（DX推進部）・日付（2026-04-10）が含まれている",
+      "passed": true,
+      "evidence": "slide_01 に \"presenter\": \"田中太郎\", \"affiliation\": \"DX推進部\", \"date\": \"2026-04-10\" が設定されている。"
+    },
+    {
+      "text": "list_3card テンプレートが使われている",
+      "passed": true,
+      "evidence": "slide_03 に list_3card が使われている。"
+    },
+    {
+      "text": "flow_4step テンプレートが使われている",
+      "passed": true,
+      "evidence": "slide_04 に flow_4step が使われている。"
+    },
+    {
+      "text": "converge_3card テンプレートが使われている",
+      "passed": true,
+      "evidence": "slide_05, slide_06 の両方に converge_3card が使われている。"
+    },
+    {
+      "text": "コンテンツスライド5枚に '1 / 5' 〜 '5 / 5' のページ番号が付いている",
+      "passed": false,
+      "evidence": "ページ番号が \"1/5\" 形式（スペースなし）。SKILL.md指定の \"N / M\" 形式と一致しない。"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1,
+    "pass_rate": 0.875
+  }
+}

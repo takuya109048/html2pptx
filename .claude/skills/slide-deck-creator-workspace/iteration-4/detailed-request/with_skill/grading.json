@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "deck.json が有効な JSON として出力されている",
+      "passed": true,
+      "evidence": "deck.json は6スライドの有効なJSON。"
+    },
+    {
+      "text": "スライドがちょうど6枚生成されている",
+      "passed": true,
+      "evidence": "slide_01〜slide_06 の6枚が生成されている。"
+    },
+    {
+      "text": "最初のスライドが cover テンプレートを使用している",
+      "passed": true,
+      "evidence": "slide_01 の SLIDES[0] に \"layout\": \"cover\" が設定されている。"
+    },
+    {
+      "text": "cover スライドに発表者（田中太郎）・所属（DX推進部）・日付（2026-04-10）が含まれている",
+      "passed": true,
+      "evidence": "slide_01 に \"presenter\": \"田中太郎\", \"affiliation\": \"DX推進部\", \"date\": \"2026-04-10\" が設定されている。"
+    },
+    {
+      "text": "list_3card テンプレートが使われている",
+      "passed": true,
+      "evidence": "slide_03 が list_3card テンプレートを使用している（grid: [[card, card, card]]）。"
+    },
+    {
+      "text": "flow_4step テンプレートが使われている",
+      "passed": true,
+      "evidence": "slide_04 が flow_4step テンプレートを使用している（4列のフロー構成）。"
+    },
+    {
+      "text": "converge_3card テンプレートが使われている",
+      "passed": true,
+      "evidence": "slide_05 が converge_3card テンプレートを使用している（card×3 → arrow → conclusion）。"
+    },
+    {
+      "text": "コンテンツスライド5枚に '1 / 5' 〜 '5 / 5' のページ番号が付いている",
+      "passed": true,
+      "evidence": "slide_02〜06 に \"1 / 5\"〜\"5 / 5\" 形式のページ番号が正しく付与されている。"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}

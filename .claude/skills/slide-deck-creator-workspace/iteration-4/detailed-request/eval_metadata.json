@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "detailed-request",
+  "prompt": "AIを活用したコスト削減の提案書のJSONを生成して。構成は：表紙、現状の課題（1カラムテキスト）、AI活用の3つの施策（3カード）、実装ロードマップ（4段階フロー）、期待効果を3点まとめて結論に収束する6枚構成。発表者: 田中太郎、所属: DX推進部、日付: 2026-04-10",
+  "assertions": [
+    { "id": "valid_json", "text": "deck.json が有効な JSON として出力されている" },
+    { "id": "six_slides", "text": "スライドがちょうど6枚生成されている" },
+    { "id": "cover_slide_first", "text": "最初のスライドが cover テンプレートを使用している" },
+    { "id": "presenter_info", "text": "cover スライドに発表者（田中太郎）・所属（DX推進部）・日付（2026-04-10）が含まれている" },
+    { "id": "list_3card_used", "text": "list_3card テンプレートが使われている" },
+    { "id": "flow_4step_used", "text": "flow_4step テンプレートが使われている" },
+    { "id": "converge_3card_used", "text": "converge_3card テンプレートが使われている" },
+    { "id": "page_numbers_correct", "text": "コンテンツスライド5枚に '1 / 5' 〜 '5 / 5' のページ番号が付いている" }
+  ]
+}

@@ -1,0 +1,18 @@
+## スライドデッキ生成サマリー（without_skill）
+
+### スライド枚数
+6枚（表紙1枚 + コンテンツ5枚）
+
+### 使用テンプレート
+1. slide_01 - cover（営業レポート）
+2. slide_02 - bg_3card（エグゼクティブサマリー 3カード）
+3. slide_03 - table（主要KPI表）
+4. slide_04 - plain_1col（課題と対応策 テキスト）
+5. slide_05 - flow_3step（来期施策）
+6. slide_06 - converge_3card（まとめ）
+
+### 主な設計判断
+- スキルなし。KPIはtableで反映したが tableではなく単独テーブルのみ（table_conclusionは使わず）
+- pageフォーマットは "1/5" 形式（スペースなし）
+- logoフィールドなし
+- PPTXは生成せず（JSONのみ）

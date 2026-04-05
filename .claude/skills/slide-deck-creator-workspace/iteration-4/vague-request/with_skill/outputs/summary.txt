@@ -1,0 +1,19 @@
+## スライドデッキ生成サマリー（with_skill）
+
+### スライド枚数
+6枚（表紙1枚 + コンテンツ5枚）
+
+### 使用テンプレート
+1. slide_01 - cover（表紙: SmartEdge Pro 新製品発表会）
+2. slide_02 - plain_1col（製品概要: 特長・ターゲット説明）
+3. slide_03 - list_3card（3つのコア機能: NeuroPulse/ShieldCore/CloudSync）
+4. slide_04 - bg_3card（ターゲット市場: 製造・医療・物流）
+5. slide_05 - flow_3step（導入プロセス: トライアル→PoC→本番）
+6. slide_06 - converge_3card（まとめ: 3根拠→結論）
+
+### 主な設計判断
+- SKILL.md Pattern B（原文なし）で進行。製品名・業界・数値は架空で設定
+- page番号は表紙を除いた5枚を "1 / 5"〜"5 / 5" で付番
+- logo: "logo.png" を全コンテンツスライドに付与
+- 表紙のbgは "background.png" 固定
+- converge_3card で3要素から結論を導く構成で締めた

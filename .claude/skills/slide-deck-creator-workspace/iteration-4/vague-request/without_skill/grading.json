@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "deck.json が有効な JSON として出力されている",
+      "passed": true,
+      "evidence": "deck.json は8スライドの有効なJSON。"
+    },
+    {
+      "text": "最初のスライドが cover テンプレートを使用している",
+      "passed": true,
+      "evidence": "slide_01 に \"layout\": \"cover\" が設定されている（bgありだがlogoなし）。"
+    },
+    {
+      "text": "3枚以上のスライドが生成されている",
+      "passed": true,
+      "evidence": "8枚生成されている。"
+    },
+    {
+      "text": "すべてのスライドが有効なテンプレート名（cover/plain_1col/plain_2col/list_3card/flow_3step/flow_4step/bg_3card/diffuse_3card/converge_3card/image_conclusion/plain_image/table/table_conclusion）を使用している",
+      "passed": true,
+      "evidence": "diffuse_3card/plain_1col/flow_3step/table_conclusion/flow_4step/converge_3card — 全て有効なテンプレート名。"
+    },
+    {
+      "text": "コンテンツスライドに 'N / M' 形式のページ番号が付いている",
+      "passed": false,
+      "evidence": "ページ番号が \"1/7\" 形式（スペースなし）。SKILL.md指定の \"N / M\" 形式（スペースあり）と一致しない。"
+    },
+    {
+      "text": "全スライドで engine が 'area' になっている",
+      "passed": true,
+      "evidence": "全スライドで \"engine\": \"area\" が設定されている。"
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1,
+    "pass_rate": 0.833
+  }
+}

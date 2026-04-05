@@ -1,0 +1,21 @@
+## スライドデッキ生成サマリー（with_skill）
+
+### スライド枚数
+7枚（表紙1枚 + コンテンツ6枚）
+
+### 使用テンプレート
+1. slide_01 - cover（2026年度 第1四半期 営業レポート）
+2. slide_02 - plain_1col（エグゼクティブサマリー）
+3. slide_03 - table_conclusion（主要KPI: 売上2.4億円/新規142社/解約率1.2%）
+4. slide_04 - bg_3card（課題と対応策: 3課題）
+5. slide_05 - list_3card（来期の重点施策: 3施策）
+6. slide_06 - converge_3card（まとめ→結論）
+7. slide_07 - table_conclusion（Q2見通し）
+
+### 主な設計判断
+- Pattern A（原文あり）で処理。原文のKPI数値をそのまま table に反映
+- KPIは table_conclusion で数値とコメントを一体化
+- 課題2件 + コスト問題を bg_3card の3カードに整理
+- page番号は "1 / 6"〜"6 / 6" 形式
+- logo: "logo.png" 全スライドに付与
+- output.pptx を生成（186.5KB、7スライド）
