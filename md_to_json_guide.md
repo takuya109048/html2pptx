@@ -59,11 +59,13 @@
 |-----|-------|
 | layout | flow_3step |
 | page | 2 / 10 |
+| note | ここに発表者原稿（ノート）を記述します。PPTXのノートに出力されます。 |
 ```
 
 - 先頭列がキー、2列目以降が値として扱われます
 - `layout` が未指定のブロックはスキップされます
 - `page` を指定しない場合、cover 以外に自動で `n / total` が振られます
+- **`note` を指定すると PPTX の発表者ノートに出力されます（任意）**
 
 ### タグ一覧と対応するセル型
 
@@ -82,6 +84,7 @@
 - `presenter`
 - `date`
 - `bg`（未指定時は `background.png`）
+- `note`（任意：発表者ノート）
 
 ## レイアウト一覧
 
@@ -149,6 +152,7 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 | presenter | 山田 花子 |
 | date | 2026-04-08 |
 | bg | background.png |
+| note | 本日はお時間をいただきありがとうございます。このデッキでは業務改革プロジェクトの全体像をご説明します。 |
 ```
 
 ### list_3card
@@ -160,6 +164,7 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 | key | value |
 |-----|-------|
 | layout | list_3card |
+| note | 3つの施策は並行して進めますが、優先度は可視化→標準化→自動化の順です。 |
 
 ## card-a
 ### 可視化

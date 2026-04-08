@@ -222,6 +222,9 @@ def apply_layout_mapping(
         header["message"] = str(front_matter.get("message", header.get("message", "")))
 
     slide["logo"] = "logo.png"
+    note_val = front_matter.get("note", "")
+    if note_val:
+        slide["note"] = str(note_val)
 
     sections = parse_sections(body)
     tags = section_map(sections)
@@ -316,7 +319,7 @@ def apply_layout_mapping(
 
 def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
     """Build a cover slide directly from metadata."""
-    return {
+    slide = {
         "layout": "cover",
         "title": str(front_matter.get("title", "")),
         "affiliation": str(front_matter.get("affiliation", "")),
@@ -324,6 +327,10 @@ def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
         "date": str(front_matter.get("date", "")),
         "bg": str(front_matter.get("bg", "background.png")),
     }
+    note_val = front_matter.get("note", "")
+    if note_val:
+        slide["note"] = str(note_val)
+    return slide
 
 
 def assign_pages(slides: list[dict[str, Any]]) -> None:

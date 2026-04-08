@@ -724,6 +724,12 @@ def main():
                             render_cell(slide, ci)
                     render_footer(slide, sd)
 
+                # ノート（発表者原稿）の書き込み
+                note_text = sd.get("note", "")
+                if note_text:
+                    notes_slide = slide.notes_slide
+                    notes_slide.notes_text_frame.text = note_text
+
             total += len(slides_data)
             print(f"OK ({len(slides_data)} slides)")
         except Exception as e:
