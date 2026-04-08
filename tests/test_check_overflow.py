@@ -184,23 +184,25 @@ class TestCalcStatus:
     def test_ok_both_within_limit(self):
         assert calc_status(10, 20, 3, 5, 0.1) == "OK"
 
-    def test_overflow_width_exceeds_limit(self):
-        assert calc_status(25, 20, 3, 5, 0.1) == "OVERFLOW"
-
     def test_overflow_lines_exceeds_limit(self):
+        # line count overflow → OVERFLOW (width alone does not cause OVERFLOW)
         assert calc_status(10, 20, 7, 5, 0.1) == "OVERFLOW"
 
-    def test_warn_width_near_limit(self):
-        # 19 > 20*(1-0.1)=18, and 19 <= 20 → WARN
-        assert calc_status(19, 20, 3, 5, 0.1) == "WARN"
+    def test_width_over_cpl_gives_warn_not_overflow(self):
+        # width > cpl → WARN only (PPTX wraps; OVERFLOW driven by line count)
+        assert calc_status(25, 20, 3, 5, 0.1) == "WARN"
 
     def test_warn_lines_at_limit(self):
-        # 5 > 5*(1-0.1)=4.5, and 5 <= 5 → WARN
+        # act_lines > max_lines*(1-warn_ratio) but <= max_lines → WARN
         assert calc_status(10, 20, 5, 5, 0.1) == "WARN"
 
-    def test_ok_exactly_at_limit(self):
-        # width == cpl is not WARN (> check, not >=)
-        assert calc_status(18, 20, 4, 5, 0.1) == "OK"
+    def test_ok_width_at_cpl(self):
+        # max_w == cpl → not WARN (strict > check)
+        assert calc_status(20, 20, 4, 5, 0.1) == "OK"
+
+    def test_overflow_lines_with_wide_text(self):
+        # both width and lines exceed → OVERFLOW (line count dominates)
+        assert calc_status(25, 20, 7, 5, 0.1) == "OVERFLOW"
 
 
 # ── chars_per_line / max_lines ───────────────────────────────────────────────

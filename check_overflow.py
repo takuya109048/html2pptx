@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-EM_RATIO = 1.8
+EM_RATIO = 0.5  # em per display unit (1 wide char = 1em = 2 units → 0.5em/unit)
 LINE_SPACING = 1.35
 WARN_RATIO = 0.1
 
@@ -127,13 +127,15 @@ def measure_text(lines: list[tuple[str, str]], chars_per_line: int) -> tuple[int
 
 
 def calc_status(max_w: int, cpl: int, act_lines: int, max_lines: int, warn_ratio: float) -> str:
-    w_over = max_w > cpl
+    # PPTX text boxes always word-wrap, so width alone does not cause overflow.
+    # Status is determined solely by line count vs max_lines.
+    # max_w > cpl contributes WARN only (text is wide but still wraps).
     l_over = act_lines > max_lines
-    w_warn = (max_w > cpl * (1 - warn_ratio)) if not w_over else False
     l_warn = (act_lines > max_lines * (1 - warn_ratio)) if not l_over else False
-    if w_over or l_over:
+    w_warn = max_w > cpl
+    if l_over:
         return "OVERFLOW"
-    if w_warn or l_warn:
+    if l_warn or w_warn:
         return "WARN"
     return "OK"
 
