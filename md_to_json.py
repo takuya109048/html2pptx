@@ -308,6 +308,10 @@ def apply_layout_mapping(
                 image_val = front_matter.get(image_key)
                 if image_val:
                     cell["src"] = str(image_val)
+                label_key = f"image_label_{image_cursor}"
+                label_val = front_matter.get(label_key)
+                if label_val:
+                    cell["markdown"] = str(label_val)
                 image_cursor += 1
                 continue
 

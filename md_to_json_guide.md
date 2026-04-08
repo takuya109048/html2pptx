@@ -75,6 +75,26 @@
 - `conclusion`: `conclusion` セルに割り当て
 - `table`: `table` セルに割り当て（セクション内に Markdown テーブル必須）
 
+### imageセルのフィールド
+
+`plain_image_row` / `plain_image_col` レイアウトでは、メタデータテーブルに以下のキーを指定できます。
+
+| key | 説明 |
+|-----|------|
+| `image_1` | 画像ファイルパス（例: `photo.png`）。省略するとプレースホルダーを表示。 |
+| `image_label_1` | 画像プレースホルダーのテキスト（画像未指定時に表示）。Markdown対応。 |
+
+画像が複数ある場合は `image_2` / `image_label_2` と連番で指定します。
+
+例:
+```md
+| key | value |
+|-----|-------|
+| layout | plain_image_row |
+| image_1 | photos/chart.png |
+| image_label_1 | **売上推移グラフ** を挿入 |
+```
+
 ### coverスライドの特殊フィールド
 
 `layout: cover` のときは、以下をメタデータから直接使用します。
