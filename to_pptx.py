@@ -4,6 +4,28 @@
   python to_pptx.py              # すべて → all_templates.pptx
   python to_pptx.py cover        # 特定テンプレートのみ → cover.pptx
 """
+
+# ── Python 3.10+ 互換パッチ ───────────────────────────────
+# 古いライブラリが `from collections import Mapping` 等を参照する場合に備え、
+# collections.abc のメンバーを collections 名前空間にエイリアスする。
+import collections as _collections
+import collections.abc as _collections_abc
+
+_ABC_NAMES = (
+    'Awaitable', 'Coroutine', 'AsyncIterable', 'AsyncIterator', 'AsyncGenerator',
+    'Hashable', 'Iterable', 'Iterator', 'Generator', 'Reversible',
+    'Container', 'Collection', 'Callable',
+    'Set', 'MutableSet',
+    'Mapping', 'MutableMapping', 'MappingView', 'KeysView', 'ItemsView', 'ValuesView',
+    'Sequence', 'MutableSequence',
+    'ByteString', 'Buffer',
+)
+for _name in _ABC_NAMES:
+    if hasattr(_collections_abc, _name) and not hasattr(_collections, _name):
+        setattr(_collections, _name, getattr(_collections_abc, _name))
+del _collections, _collections_abc, _name
+# ─────────────────────────────────────────────────────────
+
 import json
 import os
 import re
