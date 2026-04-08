@@ -114,7 +114,7 @@ def parse_slide_blocks(markdown_text: str) -> list[dict[str, Any]]:
                     cells = [cell.strip() for cell in raw.strip("|").split("|")]
                     if len(cells) >= 2 and cells[0]:
                         key = cells[0]
-                        if key == "image" or key.startswith("image_"):
+                        if key == "image" or (key.startswith("image_") and not key.startswith("image_label_")):
                             continue
                         metadata[key] = "|".join(cells[1:]).strip()
                 body_lines = lines[end:]
