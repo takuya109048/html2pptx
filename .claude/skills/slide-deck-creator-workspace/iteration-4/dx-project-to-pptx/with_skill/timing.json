@@ -1,6 +1,0 @@
-{
-  "total_tokens": 25042,
-  "duration_ms": 62422,
-  "total_duration_seconds": 62.4,
-  "note": "Agent completed but Write/Bash permissions were denied — outputs reconstructed from agent summary"
-}

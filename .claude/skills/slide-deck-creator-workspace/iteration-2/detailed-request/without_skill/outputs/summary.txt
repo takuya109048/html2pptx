@@ -1,6 +1,0 @@
-detailed-request without_skill — iteration-2
-Prompt: AIを活用したコスト削減…6枚構成。発表者: 田中太郎
-Slides: 6
-Format: custom (not area engine)
-Templates: cover/text/three_cards/roadmap/three_points/conclusion (独自型)
-Notes: スキルなし生成。engine/grid/step_head/rowHeightRatios フィールドなし。presenter/affiliation/date は上位のpresentationオブジェクトに含まれるが coverスライド直下ではない。

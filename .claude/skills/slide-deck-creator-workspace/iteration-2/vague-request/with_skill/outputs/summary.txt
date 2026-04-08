@@ -1,7 +1,0 @@
-vague-request with_skill - iteration-2
-Prompt: 新製品発表のプレゼン資料のJSONを作って
-Slides: 6 (cover + slide_02〜06)
-Format: area engine
-Templates: cover / bg_3card / plain_1col / list_3card / flow_4step / converge_3card
-page: 1/5 〜 5/5 (cover除く)
-Notes: 6スライド生成。engine/grid/span/rowHeightRatios すべて正確。デモコンテンツ(ProSolution X)を使用。

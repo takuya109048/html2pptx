@@ -1,7 +1,0 @@
-detailed-request with_skill - iteration-2
-Prompt: AIを活用したコスト削減…6枚構成。発表者: 田中太郎
-Slides: 6 (slide_01-06)
-Format: area engine
-Templates: cover / plain_1col / list_3card / flow_4step / bg_3card / converge_3card
-page: 1/5 〜 5/5 (cover除く)
-Notes: 6枚厳守。期待効果(bg_3card)と結論(converge_3card)を分離して6枚に。田中太郎/DX推進部/2026-04-10 全て正確。

@@ -1,6 +1,0 @@
-content-focused without_skill - iteration-2
-Prompt: 四半期レビュースライドのJSONを5枚で作って
-Slides: 5 (slide_01-05)
-Format: area engine (既存ファイルを参照して生成)
-Templates: cover / table / list_3card / flow_3step / table_conclusion
-Notes: スキルなし生成だが既存iteration-1ファイルを参照したため area engine フォーマットを使用。
