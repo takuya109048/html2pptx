@@ -211,14 +211,16 @@ const D = (() => {
       const divY = 2.81, divW = 4.0;
       const metaY = 3.01, metaSpacing = 0.35;
 
-      slide.appendChild(el("div", {
+      const titleBox = el("div", {
         left: D.px(cx), top: D.py(titleY),
         width: D.px(cw), height: D.py(titleH),
         display: "flex", alignItems: "center",
         fontSize: ptToCqw(D.FONTS.coverTitle.size), fontWeight: "700",
         color: "#" + D.COLORS.coverTitle,
         lineHeight: "1.4", whiteSpace: "pre-wrap", wordWrap: "break-word",
-      }, sd.title));
+      });
+      titleBox.innerHTML = marked.parseInline(sd.title || "");
+      slide.appendChild(titleBox);
 
       slide.appendChild(el("div", {
         left: D.px(cx), top: D.py(divY),
@@ -227,13 +229,15 @@ const D = (() => {
       }));
 
       ["affiliation", "presenter", "date"].forEach((key, i) => {
-        slide.appendChild(el("div", {
+        const metaEl = el("div", {
           left: D.px(cx), top: D.py(metaY + i * metaSpacing),
           width: D.px(cw), height: D.py(0.35),
           display: "flex", alignItems: "center",
           fontSize: ptToCqw(D.FONTS.coverMeta.size),
           color: "#" + D.COLORS.coverMeta,
-        }, sd[key] || ""));
+        });
+        metaEl.innerHTML = marked.parseInline(sd[key] || "");
+        slide.appendChild(metaEl);
       });
       return;
     }
@@ -245,19 +249,23 @@ const D = (() => {
       left: D.px(H.x), top: D.py(H.y), width: D.px(H.w), height: D.py(H.h),
       background: "#" + D.COLORS.headerBg,
     }));
-    slide.appendChild(el("div", {
+    const titleEl = el("div", {
       left: D.px(H.padX), top: D.py(H.padY),
       width: D.px(H.w - H.padX * 2), height: D.py(0.45),
       fontSize: ptToCqw(D.FONTS.title.size), fontWeight: "700",
       color: "#" + D.COLORS.headerText, display: "flex", alignItems: "center",
-    }, sd.header.title));
-    slide.appendChild(el("div", {
+    });
+    titleEl.innerHTML = marked.parseInline(sd.header.title || "");
+    slide.appendChild(titleEl);
+    const msgEl = el("div", {
       left: D.px(H.padX), top: D.py(H.padY + 0.45),
       width: D.px(H.w - H.padX * 2), height: D.py(0.3),
       fontSize: ptToCqw(D.FONTS.message.size), fontWeight: "400",
       color: "#" + D.COLORS.headerText, opacity: "0.85",
       display: "flex", alignItems: "center",
-    }, sd.header.message));
+    });
+    msgEl.innerHTML = marked.parseInline(sd.header.message || "");
+    slide.appendChild(msgEl);
 
     // ── グリッド計算 ──
     const grid = sd.grid || [];
@@ -309,16 +317,16 @@ const D = (() => {
 
         if (cell.type === "section") {
           addBorderedBox(cx, cy, cw, ch, D.COLORS.bgBox, D.COLORS.border, { radius: "3px" });
-          addMdBox("md-bg", cx + padX, cy + padY, cw - padX * 2, ch - padY * 2, cell.markdown || cell.text || "");
+          addMdBox("md-bg", cx + padX, cy + padY, cw - padX * 2, ch - padY * 2, cell.markdown || "");
 
         } else if (cell.type === "step_head") {
-          drawStepArrow(cx, cy, cw, ch, cell.label || "");
+          drawStepArrow(cx, cy, cw, ch, cell.markdown || "");
 
         } else if (cell.type === "step") {
           const arrowH = ch * 0.28;
           const bulletY = cy + arrowH + gap * 2;
           const bulletH = ch - arrowH - gap * 2;
-          drawStepArrow(cx, cy, cw, arrowH, cell.label || "");
+          drawStepArrow(cx, cy, cw, arrowH, cell.markdown || "");
           addBorderedBox(cx, bulletY, cw, bulletH, D.COLORS.surface, D.COLORS.border, { radius: "3px" });
           addMdBox("md-card", cx + padX, bulletY + padY, cw - padX * 2, bulletH - padY * 2, cell.markdown || "");
 
@@ -351,19 +359,19 @@ const D = (() => {
           if (cell.head && cell.head.length > 0) {
             const tr = document.createElement("tr");
             tr.className = "head-row";
-            cell.head.forEach(text => {
+            cell.head.forEach(cellText => {
               const td = document.createElement("td");
-              td.className = "th"; td.textContent = text;
+              td.className = "th"; td.innerHTML = marked.parseInline(cellText || "");
               tr.appendChild(td);
             });
             tbody.appendChild(tr);
           }
           (cell.rows || []).forEach(rowData => {
             const tr = document.createElement("tr");
-            rowData.forEach((text, j) => {
+            rowData.forEach((cellText, j) => {
               const td = document.createElement("td");
               if (j === 0) td.className = "th";
-              td.textContent = text;
+              td.innerHTML = marked.parseInline(cellText || "");
               tr.appendChild(td);
             });
             tbody.appendChild(tr);
@@ -381,7 +389,7 @@ const D = (() => {
             background: "#" + D.COLORS.conclusionBorder,
             borderRadius: "4px 0 0 4px",
           }));
-          addMdBox("md-concl", cx + accentW + padX, cy + padY, cw - accentW - padX * 2, ch - padY * 2, cell.markdown || cell.text || "");
+          addMdBox("md-concl", cx + accentW + padX, cy + padY, cw - accentW - padX * 2, ch - padY * 2, cell.markdown || "");
 
         } else if (cell.type === "plain") {
           const pPadX = D.headerPadX, pPadY = D.mainPadY;
@@ -415,7 +423,7 @@ const D = (() => {
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: ptToCqw(D.FONTS.bodyText.size),
               color: "#" + D.COLORS.textMuted,
-            }, cell.label || "画像 / Image"));
+            }, cell.markdown || "画像 / Image"));
           }
 
         } else if (cell.type === "card") {

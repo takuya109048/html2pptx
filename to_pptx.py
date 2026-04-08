@@ -127,7 +127,7 @@ def text(slide, txt, x, y, w, h, size, bold=False, color="333333",
     p = tf.paragraphs[0]
     if align:
         p.alignment = align
-    _add_runs(p, txt, size, bold, color)
+    _add_inline_runs(p, txt, size, color, base_bold=bold)
     _no_shadow(box)
     return box
 
@@ -381,7 +381,7 @@ def _set_table_cell(cell, cell_text, size, bold, text_color, bg_color, border_co
     tf.margin_top  = tf.margin_bottom = Pt(3)
     tf.word_wrap = True
     tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    _add_runs(tf.paragraphs[0], cell_text, size, bold, text_color)
+    _add_inline_runs(tf.paragraphs[0], cell_text, size, text_color, base_bold=bold)
     tc   = cell._tc
     tcPr = tc.get_or_add_tcPr()
     for old in tcPr.findall(qn("a:solidFill")):
@@ -444,7 +444,7 @@ def render_cell(slide, ci):
 
     if t == "section":
         rect(slide, cx, cy, cw, ch, C.get("bgBox", "E8EDF2"), C["border"], 0.75)
-        md = cell.get("markdown", cell.get("text", ""))
+        md = cell.get("markdown", "")
         if md:
             sections  = parse_md(md)
             all_items = []
@@ -525,7 +525,7 @@ def render_cell(slide, ci):
         accentW = L.get("conclusionAccentW", 0.07)
         rect(slide, cx, cy, cw, ch, C["conclusionBg"], C["conclusionBorder"], 1.5)
         rect(slide, cx, cy, accentW, ch, C["conclusionBorder"])
-        md        = cell.get("markdown", cell.get("text", ""))
+        md        = cell.get("markdown", "")
         content_x = cx + accentW + padX
         content_w = cw - accentW - padX * 2
         sections  = parse_md(md) if md else []
@@ -555,7 +555,7 @@ def render_cell(slide, ci):
     elif t == "step_head":
         arrow_shape(slide, cx, cy, cw, ch,
                     C.get("stepFill", "D0D0D0"), C.get("stepBorder", "CCCCCC"))
-        label = cell.get("label", cell.get("text", ""))
+        label = cell.get("markdown", "")
         if label:
             text(slide, label, cx + 0.15, cy, cw * 0.85, ch,
                  F["stepLabel"]["size"], F["stepLabel"]["bold"],
@@ -563,7 +563,7 @@ def render_cell(slide, ci):
 
     elif t == "image":
         src    = cell.get("src", "")
-        label  = cell.get("label", "画像 / Image")
+        label  = cell.get("markdown", "画像 / Image")
         grid_n = int(cell.get("gridN", 3))
         rect(slide, cx, cy, cw, ch, C["surface"], C["border"], 0.75)
         img_path = os.path.join(HERE, src) if src else ""
@@ -646,7 +646,7 @@ def render_cover(slide, sd):
     _fix_bodyPr(tf)
     for i, line in enumerate(title_lines):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        _add_runs(p, line, F["coverTitle"]["size"], F["coverTitle"]["bold"], C["coverTitle"])
+        _add_inline_runs(p, line, F["coverTitle"]["size"], C["coverTitle"], base_bold=F["coverTitle"]["bold"])
         _set_line_spacing(p, F["coverTitle"]["size"], mult=1.4)
     _no_shadow(box)
     hline(slide, 0.5, 2.81, 4.0, C["coverDivider"], 0.75)

@@ -153,9 +153,9 @@
         "rowHeightRatios": [0.28, 0.72],
         "grid": [
           [
-            { "type": "step_head", "label": "ステップ A / Step-A" },
-            { "type": "step_head", "label": "ステップ B / Step-B" },
-            { "type": "step_head", "label": "ステップ C / Step-C" }
+            { "type": "step_head", "markdown": "ステップ A / Step-A" },
+            { "type": "step_head", "markdown": "ステップ B / Step-B" },
+            { "type": "step_head", "markdown": "ステップ C / Step-C" }
           ],
           [
             { "type": "card", "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
@@ -180,10 +180,10 @@
         "rowHeightRatios": [0.28, 0.72],
         "grid": [
           [
-            { "type": "step_head", "label": "ステップ A / Step-A" },
-            { "type": "step_head", "label": "ステップ B / Step-B" },
-            { "type": "step_head", "label": "ステップ C / Step-C" },
-            { "type": "step_head", "label": "ステップ D / Step-D" }
+            { "type": "step_head", "markdown": "ステップ A / Step-A" },
+            { "type": "step_head", "markdown": "ステップ B / Step-B" },
+            { "type": "step_head", "markdown": "ステップ C / Step-C" },
+            { "type": "step_head", "markdown": "ステップ D / Step-D" }
           ],
           [
             { "type": "card", "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
@@ -273,7 +273,7 @@
           [
             {
               "type": "image",
-              "label": "画像 / Image"
+              "markdown": "画像 / Image"
             }
           ]
         ],
@@ -300,7 +300,7 @@
             },
             {
               "type": "image",
-              "label": "画像 / Image",
+              "markdown": "画像 / Image",
               "gridN": 3
             }
           ]
