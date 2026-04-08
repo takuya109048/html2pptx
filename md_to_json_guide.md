@@ -101,9 +101,7 @@
 
 - `title`
 - `affiliation`
-- `presenter`
 - `date`
-- `bg`（未指定時は `background.png`）
 - `note`（任意：発表者ノート）
 
 ## レイアウト一覧
@@ -169,9 +167,7 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 |-----|-------|
 | layout | cover |
 | affiliation | 経営企画部 |
-| presenter | 山田 花子 |
 | date | 2026-04-08 |
-| bg | background.png |
 | note | 本日はお時間をいただきありがとうございます。このデッキでは業務改革プロジェクトの全体像をご説明します。 |
 ```
 
