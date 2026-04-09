@@ -5,10 +5,10 @@
     "SLIDES": [
       {
         "layout": "cover",
-        "title":       "タイトル A-01\n/ Title Placeholder",
-        "affiliation": "所属 X-01 / Affiliation",
-        "presenter":   "発表者 Y-01 / Presenter Name",
-        "date":        "Date Z-01 / 2026-00-00",
+        "title":       "タイトル",
+        "affiliation": "所属",
+        "presenter":   "発表者名",
+        "date":        "日付",
         "bg":          "background.png"
       }
     ]
@@ -19,27 +19,26 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [0.75, 0.25],
         "grid": [
           [
             {
               "type": "table",
-              "head": ["見出し X-01", "見出し X-02", "見出し X-03", "見出し X-04"],
+              "head": ["見出し1", "見出し2", "見出し3", "見出し4"],
               "rows": [
-                ["テキスト A-01", "テキスト B-01", "テキスト C-01", "テキスト D-01"],
-                ["テキスト A-02", "テキスト B-02", "テキスト C-02", "テキスト D-02"],
-                ["テキスト A-03", "テキスト B-03", "テキスト C-03", "テキスト D-03"],
-                ["テキスト A-04", "テキスト B-04", "テキスト C-04", "テキスト D-04"]
+                ["テキスト", "テキスト", "テキスト", "テキスト"],
+                ["テキスト", "テキスト", "テキスト", "テキスト"],
+                ["テキスト", "テキスト", "テキスト", "テキスト"]
               ]
             }
           ],
           [
             {
               "type": "conclusion",
-              "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。"
+              "markdown": "結論テキスト"
             }
           ]
         ],
@@ -54,21 +53,21 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [1.0],
         "grid": [
           [
             {
               "type": "table",
-              "head": ["見出し X-01", "見出し X-02", "見出し X-03", "見出し X-04"],
+              "head": ["見出し1", "見出し2", "見出し3", "見出し4"],
               "rows": [
-                ["テキスト A-01", "テキスト B-01", "テキスト C-01", "テキスト D-01"],
-                ["テキスト A-02", "テキスト B-02", "テキスト C-02", "テキスト D-02"],
-                ["テキスト A-03", "テキスト B-03", "テキスト C-03", "テキスト D-03"],
-                ["テキスト A-04", "テキスト B-04", "テキスト C-04", "テキスト D-04"],
-                ["テキスト A-05", "テキスト B-05", "テキスト C-05", "テキスト D-05"]
+                ["テキスト", "テキスト", "テキスト", "テキスト"],
+                ["テキスト", "テキスト", "テキスト", "テキスト"],
+                ["テキスト", "テキスト", "テキスト", "テキスト"],
+                ["テキスト", "テキスト", "テキスト", "テキスト"],
+                ["テキスト", "テキスト", "テキスト", "テキスト"]
               ]
             }
           ]
@@ -84,15 +83,15 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
         "page": "1 / 1",
@@ -106,13 +105,13 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            { "type": "plain", "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**と*斜体*）\n- 箇条書き 第2項目（`コード`と~~取り消し~~）\n\n1. 番号リスト 第1項目\n2. 番号リスト 第2項目" }
+            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
         "page": "1 / 1",
@@ -126,14 +125,14 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            { "type": "plain", "markdown": "## 目次 / Table of Contents\n\n1. **第1章 はじめに** ← *現在地*\n   1. 背景と課題\n   2. 目的と範囲\n2. 第2章 分析結果\n   1. データ概要\n   2. ~~旧手法~~ → 新手法\n3. 第3章 まとめ\n   1. 結論（`参照: p.12`）" },
-            { "type": "plain", "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。\n\n1. 番号リスト 第1項目\n   1. サブ第2レベル（*斜体*）\n2. 番号リスト 第2項目（~~取り消し~~）" }
+            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
         "page": "1 / 1",
@@ -147,20 +146,20 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [0.28, 0.72],
         "grid": [
           [
-            { "type": "step_head", "markdown": "ステップ A / Step-A" },
-            { "type": "step_head", "markdown": "ステップ B / Step-B" },
-            { "type": "step_head", "markdown": "ステップ C / Step-C" }
+            { "type": "step_head", "markdown": "ステップA" },
+            { "type": "step_head", "markdown": "ステップB" },
+            { "type": "step_head", "markdown": "ステップC" }
           ],
           [
-            { "type": "card", "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "- **太字 bold** 第1項目 B-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "- **太字 bold** 第1項目 C-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
+            { "type": "card", "markdown": "- テキスト" },
+            { "type": "card", "markdown": "- テキスト" },
+            { "type": "card", "markdown": "- テキスト" }
           ]
         ],
         "page": "1 / 1",
@@ -174,22 +173,22 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [0.28, 0.72],
         "grid": [
           [
-            { "type": "step_head", "markdown": "ステップ A / Step-A" },
-            { "type": "step_head", "markdown": "ステップ B / Step-B" },
-            { "type": "step_head", "markdown": "ステップ C / Step-C" },
-            { "type": "step_head", "markdown": "ステップ D / Step-D" }
+            { "type": "step_head", "markdown": "ステップA" },
+            { "type": "step_head", "markdown": "ステップB" },
+            { "type": "step_head", "markdown": "ステップC" },
+            { "type": "step_head", "markdown": "ステップD" }
           ],
           [
-            { "type": "card", "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "- **太字 bold** 第1項目 B-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "- **太字 bold** 第1項目 C-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
+            { "type": "card", "markdown": "- テキスト" },
+            { "type": "card", "markdown": "- テキスト" },
+            { "type": "card", "markdown": "- テキスト" },
+            { "type": "card", "markdown": "- テキスト" }
           ]
         ],
         "page": "1 / 1",
@@ -203,21 +202,21 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [0.25, 0.08, 0.67],
         "grid": [
           [
-            { "type": "section", "span": 3, "markdown": "**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n> 引用ブロック blockquote。根拠・重要情報の強調に使用。" }
+            { "type": "section", "span": 3, "markdown": "テキスト" }
           ],
           [
             { "type": "arrow", "span": 3 }
           ],
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
         "page": "1 / 1",
@@ -231,21 +230,21 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [0.65, 0.08, 0.27],
         "grid": [
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
           ],
           [
             { "type": "arrow", "span": 3 }
           ],
           [
-            { "type": "conclusion", "span": 3, "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。" }
+            { "type": "conclusion", "span": 3, "markdown": "結論テキスト" }
           ]
         ],
         "page": "1 / 1",
@@ -259,22 +258,16 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [0.23, 0.77],
         "grid": [
           [
-            {
-              "type": "plain",
-              "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
-            }
+            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
           ],
           [
-            {
-              "type": "image",
-              "markdown": "画像 / Image"
-            }
+            { "type": "image", "markdown": "画像" }
           ]
         ],
         "page": "1 / 1",
@@ -288,21 +281,14 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [1.0],
         "grid": [
           [
-            {
-              "type": "plain",
-              "markdown": "## 見出し H2 / Heading\n\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n> 引用テキスト blockquote。重要情報の強調に使用。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**と*斜体*）\n- 箇条書き 第2項目（`コード`と~~取り消し~~）\n\n1. 番号リスト 第1項目\n2. 番号リスト 第2項目"
-            },
-            {
-              "type": "image",
-              "markdown": "画像 / Image",
-              "gridN": 3
-            }
+            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "image", "markdown": "画像", "gridN": 3 }
           ]
         ],
         "page": "1 / 1",
@@ -316,18 +302,18 @@
     "SLIDES": [
       {
         "header": {
-          "title": "スライドタイトル A-01 / Slide Title Placeholder",
-          "message": "サブタイトルテキスト B-02 / Subtitle Text Placeholder"
+          "title": "タイトル",
+          "message": ""
         },
         "rowHeightRatios": [0.25, 0.75],
         "grid": [
           [
-            { "type": "section", "span": 3, "markdown": "**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n> 引用ブロック blockquote。根拠・重要情報の強調に使用。" }
+            { "type": "section", "span": 3, "markdown": "テキスト" }
           ],
           [
-            { "type": "card", "markdown": "## 見出し C-01 / Heading\n\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-02 / Heading\n\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" },
-            { "type": "card", "markdown": "## 見出し C-03 / Heading\n\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目" }
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
+            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
         "page": "1 / 1",
