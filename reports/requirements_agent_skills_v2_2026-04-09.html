@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>要件定義支援 Agent Skill 調査レポート (2026-04-09)</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --head: #0f172a;
+      --accent: #0ea5e9;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #eef6ff 0%, var(--bg) 180px);
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 18px rgba(15,23,42,0.05);
+      margin-bottom: 16px;
+    }
+    h1 { margin: 0 0 8px; color: var(--head); font-size: 1.6rem; }
+    h2 { margin: 0 0 10px; color: var(--head); font-size: 1.1rem; }
+    p, li { line-height: 1.5; }
+    .meta { color: var(--muted); font-size: 0.92rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 0.93rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      vertical-align: top;
+      padding: 10px;
+      word-wrap: break-word;
+    }
+    th {
+      background: #f1f5f9;
+      color: #111827;
+      font-weight: 700;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      border: 1px solid;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+    .yes { color: var(--ok); border-color: #6ee7b7; background: #ecfdf5; }
+    .partial { color: var(--warn); border-color: #fcd34d; background: #fffbeb; }
+    a { color: #0369a1; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .small { font-size: 0.85rem; color: var(--muted); }
+    code { background: #eef2ff; padding: 1px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>要件定義支援 Agent Skill 調査レポート</h1>
+      <div class="meta">
+        調査日: 2026-04-09 / 対象: Claude Code, Cursor, GitHub Copilot, OpenAI GPT Actions, LangChain ほか
+      </div>
+      <p>
+        目的は「SKILL.mdのようなスキル/ツール定義の仕組み」を比較し、要件定義（要件抽出・PRD化・受け入れ条件化）に使える既存スキルがあるかを確認すること。
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>1. 仕組み比較（要件定義への適用可能性）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 13%;">エコシステム</th>
+            <th style="width: 20%;">スキル/ツール定義の仕組み</th>
+            <th style="width: 13%;">要件定義向けの既存スキル</th>
+            <th style="width: 25%;">要件定義での実運用イメージ</th>
+            <th style="width: 29%;">一次情報/公開情報</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Claude (Agent Skills)</b></td>
+            <td>
+              <code>SKILL.md</code>（YAML frontmatter + Markdown手順）を中核に、scripts/templates等を同梱。<br/>
+              Claudeが説明文に基づき自動発火。
+            </td>
+            <td>
+              <span class="tag yes">存在（公式で作成可能）</span><br/>
+              <span class="tag yes">存在（コミュニティ実例あり）</span>
+            </td>
+            <td>
+              要件ヒアリング手順、ユーザーストーリー化、Given-When-Then受入条件、トレーサビリティ表生成をSkill化可能。<br/>
+              Jira/Linear連携前提のカスタムSkill設計が可能。
+            </td>
+            <td>
+              <a href="https://docs.claude.com/en/docs/claude-code/skills">Claude Code Agent Skills</a><br/>
+              <a href="https://claude.com/docs/skills/overview">Claude Skills Overview</a><br/>
+              <a href="https://claude.com/docs/skills/how-to">Creating custom skills</a>
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>Cursor</b></td>
+            <td>
+              Rules（<code>.cursor/rules</code> / User Rules / AGENTS.md）+ Custom Modes + MCP接続。<br/>
+              SKILL.md互換を前提にした公式仕様ではなく、挙動制御と外部ツール接続中心。
+            </td>
+            <td><span class="tag partial">専用公式カタログは未確認</span></td>
+            <td>
+              要件定義専用モード（質問テンプレ、非機能要件チェックリスト）をCustom Mode化し、Jira/Confluence MCPで実データ連携。
+            </td>
+            <td>
+              <a href="https://docs.cursor.com/context/rules-for-ai">Cursor Rules</a><br/>
+              <a href="https://docs.cursor.com/agent/custom-modes">Cursor Custom Modes</a><br/>
+              <a href="https://docs.cursor.com/ja/context/mcp">Cursor MCP</a>
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>GitHub Copilot Extensions</b></td>
+            <td>
+              Skillset（最大5 skill）/ Agentで拡張。API endpoint + schemaで実装。<br/>
+              ただしGitHub App型Extensionsは2025-11-10に無効化済み（公式告知）。
+            </td>
+            <td><span class="tag partial">方式はあるが移行期</span></td>
+            <td>
+              要件抽出API（例: issue分類、AC生成）をSkillset化する設計は可能。<br/>
+              現状はVS Code Chat participantやMCP移行前提で検討が必要。
+            </td>
+            <td>
+              <a href="https://docs.github.com/en/copilot/concepts/extensions/about-extensions">About Extensions（終了日程）</a><br/>
+              <a href="https://docs.github.com/en/copilot/building-copilot-extensions/building-a-copilot-skillset-for-your-copilot-extension/about-copilot-skillsets">About Copilot Skillsets</a><br/>
+              <a href="https://docs.github.com/en/copilot/how-tos/use-copilot-extensions/build-a-copilot-skillset/build-copilot-skillsets">Build Copilot Skillsets</a>
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>OpenAI (GPT Actions / Connectors / MCP)</b></td>
+            <td>
+              GPT Actions（OpenAPI schema + auth）で外部API操作。<br/>
+              Responses APIではConnectors/Remote MCP server対応。
+            </td>
+            <td><span class="tag partial">専用「要件定義Skill」は未確認</span></td>
+            <td>
+              Jira/Confluence API連携で「会議メモ→課題化」「PRD草案→Issue分解」「受入条件テンプレ適用」が実装可能。
+            </td>
+            <td>
+              <a href="https://platform.openai.com/docs/actions/introduction">GPT Actions</a><br/>
+              <a href="https://platform.openai.com/docs/actions/getting-started/getting-started">Getting started with GPT Actions</a><br/>
+              <a href="https://platform.openai.com/docs/guides/tools-connectors-mcp?lang=javascript">Connectors and MCP servers</a><br/>
+              <a href="https://cookbook.openai.com/examples/chatgpt/gpt_actions_library/gpt_action_jira">GPT Actions Library - Jira</a>
+            </td>
+          </tr>
+
+          <tr>
+            <td><b>LangChain / LangGraph</b></td>
+            <td>
+              Tool abstraction（関数+schema）、ToolNode、MCP Tool読込、Jira toolkit等の統合。<br/>
+              「スキル定義ファイル」というより、ツール合成で要件支援エージェントを構築。
+            </td>
+            <td><span class="tag partial">専用プリセットは限定的</span></td>
+            <td>
+              Jira toolkit + Confluence/外部知識 + validationチェーンで、要件レビュー自動化（曖昧語検知、テスト可能性チェック）に向く。
+            </td>
+            <td>
+              <a href="https://docs.langchain.com/oss/python/langchain/tools">LangChain Tools (Python)</a><br/>
+              <a href="https://docs.langchain.com/oss/python/integrations/tools/jira">LangChain Jira toolkit integration</a><br/>
+              <a href="https://docs.langchain.com/oss/python/deepagents/cli/mcp-tools">LangChain MCP Tools</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>2. 要件定義タスクに直結する公開スキル実例</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 22%;">実例</th>
+            <th style="width: 16%;">種別</th>
+            <th style="width: 40%;">要件定義への有効性</th>
+            <th style="width: 22%;">出典</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>requirements-elicitation</b></td>
+            <td>Agent Skill（SKILL.md）</td>
+            <td>
+              ステークホルダー分析、5 Whys、ユーザーストーリー、受入条件、トレーサビリティまで含む。<br/>
+              「曖昧要求→テスト可能な仕様」への変換を直接支援。
+            </td>
+            <td>
+              <a href="https://playbooks.com/skills/rsmdt/the-startup/requirements-elicitation">Playbooks: requirements-elicitation</a>
+            </td>
+          </tr>
+          <tr>
+            <td><b>requirements-analysis</b></td>
+            <td>Agent Skill（SKILL.md）</td>
+            <td>
+              PRD作成・検証、受入基準、レビューサイクルを明示。<br/>
+              docs/specs配下の要件文書運用に適合。
+            </td>
+            <td>
+              <a href="https://playbooks.com/skills/rsmdt/the-startup/requirements-analysis">Playbooks: requirements-analysis</a>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Atlassian Rovo MCP Server 活用</b></td>
+            <td>MCP連携（要件作業の実行基盤）</td>
+            <td>
+              Jira/Confluenceの要約、Issue作成更新、meeting notes/specsからのチケット生成を公式に案内。<br/>
+              要件定義から実行管理への橋渡しに有効。
+            </td>
+            <td>
+              <a href="https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/">Atlassian Rovo MCP Server Getting Started</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small">
+        注: Atlassian資料では <b>2026-06-30</b> 以降に <code>/v1/sse</code> が非推奨となり、<code>/v1/mcp</code> への更新が必要。
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>3. 結論（要件定義支援の可否）</h2>
+      <ul>
+        <li><b>結論A:</b> 要件定義を直接支援するAgent Skillは公開実例として存在する（requirements-elicitation / requirements-analysis）。</li>
+        <li><b>結論B:</b> 主要基盤（Claude/OpenAI/Cursor/LangChain）は、専用Skillがなくても「MCP + Jira/Confluence連携」で要件定義ワークフローを実装可能。</li>
+        <li><b>結論C:</b> GitHub Copilotは方式自体は強力だが、GitHub App型Extensionsの終了（2025-11-10）を前提に、MCP/VS Code側へ設計を寄せる必要がある。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>4. 参照リンク一覧</h2>
+      <ul>
+        <li><a href="https://docs.claude.com/en/docs/claude-code/skills">https://docs.claude.com/en/docs/claude-code/skills</a></li>
+        <li><a href="https://claude.com/docs/skills/overview">https://claude.com/docs/skills/overview</a></li>
+        <li><a href="https://claude.com/docs/skills/how-to">https://claude.com/docs/skills/how-to</a></li>
+        <li><a href="https://docs.cursor.com/context/rules-for-ai">https://docs.cursor.com/context/rules-for-ai</a></li>
+        <li><a href="https://docs.cursor.com/agent/custom-modes">https://docs.cursor.com/agent/custom-modes</a></li>
+        <li><a href="https://docs.cursor.com/ja/context/mcp">https://docs.cursor.com/ja/context/mcp</a></li>
+        <li><a href="https://docs.github.com/en/copilot/concepts/extensions/about-extensions">https://docs.github.com/en/copilot/concepts/extensions/about-extensions</a></li>
+        <li><a href="https://docs.github.com/en/copilot/building-copilot-extensions/building-a-copilot-skillset-for-your-copilot-extension/about-copilot-skillsets">https://docs.github.com/en/copilot/building-copilot-extensions/building-a-copilot-skillset-for-your-copilot-extension/about-copilot-skillsets</a></li>
+        <li><a href="https://docs.github.com/en/copilot/how-tos/use-copilot-extensions/build-a-copilot-skillset/build-copilot-skillsets">https://docs.github.com/en/copilot/how-tos/use-copilot-extensions/build-a-copilot-skillset/build-copilot-skillsets</a></li>
+        <li><a href="https://platform.openai.com/docs/actions/introduction">https://platform.openai.com/docs/actions/introduction</a></li>
+        <li><a href="https://platform.openai.com/docs/actions/getting-started/getting-started">https://platform.openai.com/docs/actions/getting-started/getting-started</a></li>
+        <li><a href="https://platform.openai.com/docs/guides/tools-connectors-mcp?lang=javascript">https://platform.openai.com/docs/guides/tools-connectors-mcp?lang=javascript</a></li>
+        <li><a href="https://cookbook.openai.com/examples/chatgpt/gpt_actions_library/gpt_action_jira">https://cookbook.openai.com/examples/chatgpt/gpt_actions_library/gpt_action_jira</a></li>
+        <li><a href="https://docs.langchain.com/oss/python/langchain/tools">https://docs.langchain.com/oss/python/langchain/tools</a></li>
+        <li><a href="https://docs.langchain.com/oss/python/integrations/tools/jira">https://docs.langchain.com/oss/python/integrations/tools/jira</a></li>
+        <li><a href="https://docs.langchain.com/oss/python/deepagents/cli/mcp-tools">https://docs.langchain.com/oss/python/deepagents/cli/mcp-tools</a></li>
+        <li><a href="https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/">https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/</a></li>
+        <li><a href="https://playbooks.com/skills/rsmdt/the-startup/requirements-elicitation">https://playbooks.com/skills/rsmdt/the-startup/requirements-elicitation</a></li>
+        <li><a href="https://playbooks.com/skills/rsmdt/the-startup/requirements-analysis">https://playbooks.com/skills/rsmdt/the-startup/requirements-analysis</a></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
