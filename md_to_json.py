@@ -234,6 +234,7 @@ def apply_layout_mapping(
         warn(f"Layout '{layout}': grid is not a list. Returning slide as-is.")
         return slide
 
+    step_head_cursor = 0
     flow_step_cursor = 0
     normal_card_cursor = 0
     plain_cursor = 0
@@ -248,11 +249,11 @@ def apply_layout_mapping(
             cell_type = cell.get("type")
 
             if cell_type == "step_head":
-                if flow_step_cursor < len(STEP_TAGS):
-                    section = tags.get(STEP_TAGS[flow_step_cursor])
+                if step_head_cursor < len(STEP_TAGS):
+                    section = tags.get(STEP_TAGS[step_head_cursor])
                     if section is not None:
                         cell["label"] = section["tag"]
-                flow_step_cursor += 1
+                step_head_cursor += 1
                 continue
 
             if cell_type == "card":
