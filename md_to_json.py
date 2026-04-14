@@ -15,6 +15,8 @@ from pathlib import Path
 from typing import Any
 
 SECTION_LINE_RE = re.compile(r"(?m)^##\s+(.*)$")
+FENCE_OPEN_RE  = re.compile(r"(?m)^```([\w-]+)\s*$")
+FENCE_CLOSE_RE = re.compile(r"(?m)^```\s*$")
 TABLE_SEPARATOR_RE = re.compile(
     r"^\|\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$"
 )
@@ -91,10 +93,8 @@ def parse_slide_blocks(markdown_text: str) -> list[dict[str, Any]]:
                 if cursor < len(lines):
                     message_match = re.match(r"^\s*##\s+(.+?)\s*$", lines[cursor])
                     if message_match:
-                        candidate = message_match.group(1).strip()
-                        if candidate not in CONTENT_SECTION_TAGS:
-                            metadata["message"] = candidate
-                            cursor += 1
+                        metadata["message"] = message_match.group(1).strip()
+                        cursor += 1
 
         while cursor < len(lines) and not lines[cursor].strip():
             cursor += 1
@@ -135,22 +135,28 @@ def parse_slide_blocks(markdown_text: str) -> list[dict[str, Any]]:
 
 
 def parse_sections(body: str) -> list[dict[str, str]]:
-    """Parse markdown body into sections split by level-2 headings."""
+    """Parse :::tag fenced blocks from slide body."""
     content = body.strip()
     if not content:
         return []
-
-    matches = list(SECTION_LINE_RE.finditer(content))
-    if not matches:
-        return []
-
     sections: list[dict[str, str]] = []
-    for idx, match in enumerate(matches):
-        tag = match.group(1).strip()
-        start = match.end()
-        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(content)
-        section_body = content[start:end].strip()
-        sections.append({"tag": tag, "body": section_body})
+    lines = content.splitlines()
+    i = 0
+    while i < len(lines):
+        m = FENCE_OPEN_RE.match(lines[i])
+        if m:
+            tag = m.group(1).strip()
+            i += 1
+            body_lines: list[str] = []
+            while i < len(lines):
+                if FENCE_CLOSE_RE.match(lines[i]):
+                    i += 1
+                    break
+                body_lines.append(lines[i])
+                i += 1
+            sections.append({"tag": tag, "body": "\n".join(body_lines).strip()})
+        else:
+            i += 1
     return sections
 
 
@@ -294,11 +300,11 @@ def apply_layout_mapping(
             if cell_type == "table":
                 section = tags.get("table")
                 if section is None:
-                    warn(f"Layout '{layout}': missing '## table' section.")
+                    warn(f"Layout '{layout}': missing ':::table' section.")
                     continue
                 head, rows, _ = split_markdown_table(section["body"])
                 if not head:
-                    warn(f"Layout '{layout}': '## table' has no markdown table.")
+                    warn(f"Layout '{layout}': ':::table' has no markdown table.")
                     continue
                 cell["head"] = head
                 cell["rows"] = rows

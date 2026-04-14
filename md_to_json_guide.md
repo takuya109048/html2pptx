@@ -22,11 +22,11 @@
 1. `# タイトル`（必須推奨）
 2. `## メッセージ`（任意）
 3. メタデータテーブル（`layout` 必須）
-4. コンテンツセクション（`## card-a` など）
+4. コンテンツセクション（` ```card-a ` など）
 
 例:
 
-```md
+````md
 # スライドタイトル
 ## サブメッセージ
 
@@ -34,9 +34,10 @@
 |-----|-------|
 | layout | list_3card |
 
-## card-a
+```card-a
 ...
 ```
+````
 
 ### スライド区切り
 
@@ -173,7 +174,7 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 
 ### list_3card
 
-```md
+````md
 # 重点アクション
 ## 並行実行する3テーマ
 
@@ -182,22 +183,25 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 | layout | list_3card |
 | note | 3つの施策は並行して進めますが、優先度は可視化→標準化→自動化の順です。 |
 
-## card-a
+```card-a
 ### 可視化
 - 経営指標を一元表示
+```
 
-## card-b
+```card-b
 ### 標準化
 - 業務手順をテンプレート化
+```
 
-## card-c
+```card-c
 ### 自動化
 - 手作業集計をバッチ化
 ```
+````
 
 ### flow_3step
 
-```md
+````md
 # 3ステップ実行計画
 ## 段階的に展開
 
@@ -205,19 +209,22 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 |-----|-------|
 | layout | flow_3step |
 
-## step-a
+```step-a
 - 対象業務を選定
+```
 
-## step-b
+```step-b
 - ダッシュボードを構築
+```
 
-## step-c
+```step-c
 - 週次レビューを運用化
 ```
+````
 
 ### table_conclusion
 
-```md
+````md
 # 現状分析の要点
 ## 指標比較と結論
 
@@ -225,13 +232,15 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 |-----|-------|
 | layout | table_conclusion |
 
-## table
+```table
 | 指標 | 現状 | 目標 | 補足 |
 | --- | ---: | ---: | --- |
 | 月次報告作成時間 | 16時間 | 6時間 | 自動集計導入 |
 | 誤入力件数 | 22件 | 7件 | 入力ルール統一 |
+```
 
-## conclusion
+```conclusion
 - 最優先はデータ入力工程の標準化
 - 並行してダッシュボード統合を進める
 ```
+````
