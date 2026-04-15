@@ -344,25 +344,6 @@ def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
     return slide
 
 
-def assign_pages(slides: list[dict[str, Any]]) -> None:
-    """Assign default page labels to non-cover slides."""
-    non_cover_indices = [
-        idx for idx, slide in enumerate(slides) if slide.get("layout") != "cover"
-    ]
-    total_non_cover = len(non_cover_indices)
-
-    page_no = 1
-    for idx in non_cover_indices:
-        slide = slides[idx]
-        if "page" not in slide or slide["page"] in (None, ""):
-            slide["page"] = f"{page_no} / {total_non_cover}"
-        page_no += 1
-
-    for slide in slides:
-        if slide.get("layout") == "cover":
-            slide.pop("page", None)
-
-
 def convert_markdown_to_slides(
     markdown_text: str, templates: dict[str, Any]
 ) -> list[dict[str, Any]]:
@@ -398,13 +379,9 @@ def convert_markdown_to_slides(
             continue
 
         converted = apply_layout_mapping(layout, front_matter, body, base_slide)
-        if "page" in front_matter:
-            converted["page"] = str(front_matter["page"])
-        else:
-            converted.pop("page", None)
+        converted.pop("page", None)
         slides.append(converted)
 
-    assign_pages(slides)
     return slides
 
 

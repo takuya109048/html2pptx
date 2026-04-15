@@ -42,7 +42,6 @@
             }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -72,7 +71,6 @@
             }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -94,7 +92,6 @@
             { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -114,7 +111,6 @@
             { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -135,7 +131,6 @@
             { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -162,7 +157,6 @@
             { "type": "card", "markdown": "- テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -191,7 +185,6 @@
             { "type": "card", "markdown": "- テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -219,7 +212,6 @@
             { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -247,7 +239,6 @@
             { "type": "conclusion", "span": 3, "markdown": "結論テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -270,7 +261,6 @@
             { "type": "image", "markdown": "画像" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -291,7 +281,6 @@
             { "type": "image", "markdown": "画像", "gridN": 3 }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]
@@ -316,7 +305,6 @@
             { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
           ]
         ],
-        "page": "1 / 1",
         "logo": "logo.png"
       }
     ]

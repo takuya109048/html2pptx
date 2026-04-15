@@ -632,14 +632,52 @@ def render_header(slide, sd):
          F["message"]["size"], F["message"]["bold"], C["headerText"])
 
 
-def render_footer(slide, sd):
+def render_footer(slide, sd, total: int = 0):
     footer_cy = L["footerY"] + L["footerH"] / 2
     page_h    = 0.3
     hline(slide, 0, L["footerY"], L["slideW"], C["border"], 0.75)
-    box = text(slide, sd.get("page", ""),
-               L["footerPadX"], footer_cy - page_h / 2, 2, page_h,
-               F["footer"]["size"], False, C["textMuted"])
-    box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    # ページ番号: <a:fld type="slidenum"> / 総枚数(静的)
+    import uuid
+    box = slide.shapes.add_textbox(
+        Inches(L["footerPadX"]),
+        Inches(footer_cy - page_h / 2),
+        Inches(2),
+        Inches(page_h),
+    )
+    tf = box.text_frame
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    para = tf.paragraphs[0]
+    _NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    sz_val = str(int(F["footer"]["size"] * 100))
+    # 現在ページフィールド
+    fld = _etree.SubElement(para._p, f"{{{_NS_A}}}fld",
+                            attrib={"id": f"{{{str(uuid.uuid4()).upper()}}}",
+                                    "type": "slidenum"})
+    rPr = _etree.SubElement(fld, f"{{{_NS_A}}}rPr",
+                            attrib={"lang": "ja-JP", "smtClean": "0", "sz": sz_val})
+    clr_el = _etree.SubElement(rPr, f"{{{_NS_A}}}solidFill")
+    _etree.SubElement(clr_el, f"{{{_NS_A}}}srgbClr", attrib={"val": C["textMuted"]})
+    t = _etree.SubElement(fld, f"{{{_NS_A}}}t")
+    t.text = "<#>"
+    # "/" セパレーター（静的ラン）
+    r_sep = _etree.SubElement(para._p, f"{{{_NS_A}}}r")
+    rPr_sep = _etree.SubElement(r_sep, f"{{{_NS_A}}}rPr",
+                                attrib={"lang": "ja-JP", "smtClean": "0", "sz": sz_val})
+    clr_sep = _etree.SubElement(rPr_sep, f"{{{_NS_A}}}solidFill")
+    _etree.SubElement(clr_sep, f"{{{_NS_A}}}srgbClr", attrib={"val": C["textMuted"]})
+    t_sep = _etree.SubElement(r_sep, f"{{{_NS_A}}}t")
+    t_sep.text = "/"
+    # 総スライド数フィールド: type="slidecount" で自動更新、<a:t> に実数を入れてフォールバック
+    fld2 = _etree.SubElement(para._p, f"{{{_NS_A}}}fld",
+                             attrib={"id": f"{{{str(uuid.uuid4()).upper()}}}",
+                                     "type": "slidecount"})
+    rPr2 = _etree.SubElement(fld2, f"{{{_NS_A}}}rPr",
+                             attrib={"lang": "ja-JP", "smtClean": "0", "sz": sz_val})
+    clr2 = _etree.SubElement(rPr2, f"{{{_NS_A}}}solidFill")
+    _etree.SubElement(clr2, f"{{{_NS_A}}}srgbClr", attrib={"val": C["textMuted"]})
+    t2 = _etree.SubElement(fld2, f"{{{_NS_A}}}t")
+    t2.text = str(total)  # フォールバック: PowerPoint が slidecount を認識しない場合もここを表示
     logo_path = os.path.join(HERE, sd.get("logo", "logo.png"))
     if os.path.exists(logo_path):
         pic = slide.shapes.add_picture(
@@ -712,12 +750,15 @@ def main():
     prs = Presentation()
     prs.slide_width  = Inches(L["slideW"])
     prs.slide_height = Inches(L["slideH"])
+    # 1スライド目を 0 ページ目として扱う
+    prs.element.attrib["firstSlideNum"] = "0"
 
     targets = {k: v for k, v in TEMPLATES.items()
                if _arg is None or k == _arg}
     if not targets:
         print(f"テンプレートが見つかりません: {_arg}"); return
 
+    total_slides = sum(len(t.get("SLIDES", [])) for t in targets.values())
     total = 0
     print(f"[Info] テンプレート数: {len(targets)}")
     print("=" * 60)
@@ -738,13 +779,13 @@ def main():
                 elif engine == "plain2col":
                     render_header(slide, sd)
                     render_plain2col(slide, sd)
-                    render_footer(slide, sd)
+                    render_footer(slide, sd, total_slides)
                 else:
                     render_header(slide, sd)
                     if "grid" in sd:
                         for ci in compute_cells(sd):
                             render_cell(slide, ci)
-                    render_footer(slide, sd)
+                    render_footer(slide, sd, total_slides)
 
                 # ノート（発表者原稿）の書き込み
                 note_text = sd.get("note", "")
