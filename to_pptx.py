@@ -406,6 +406,7 @@ def _set_table_cell(cell, cell_text, size, bold, text_color, bg_color, border_co
     _add_inline_runs(tf.paragraphs[0], cell_text, size, text_color, base_bold=bold)
     tc   = cell._tc
     tcPr = tc.get_or_add_tcPr()
+    tcPr.set("anchor", "ctr")
     for old in tcPr.findall(qn("a:solidFill")):
         tcPr.remove(old)
     tcPr.insert(0, _px(
@@ -702,7 +703,7 @@ def render_cover(slide, sd):
     tf  = box.text_frame
     tf.word_wrap = False
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
-    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.vertical_anchor = MSO_ANCHOR.BOTTOM
     _fix_bodyPr(tf)
     for i, line in enumerate(title_lines):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()

@@ -31,8 +31,152 @@
 </div>
 
 <script>
-// __SLIDES__
-// __DESIGN__
+const SLIDES = [
+  {
+    "header": {
+      "title": "タイトル",
+      "message": ""
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "## 見出し\n\n- テキスト"
+        },
+        {
+          "type": "image",
+          "markdown": "画像",
+          "gridN": 3
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "page": 1
+  }
+];
+const DESIGN = {
+  "COLORS": {
+    "headerBg": "4A4A4A",
+    "headerText": "FFFFFF",
+    "surface": "F5F5F5",
+    "text": "333333",
+    "textMuted": "888888",
+    "border": "E0E0E0",
+    "bg": "FFFFFF",
+    "area1Bg": "FFFFFF",
+    "area2Bg": "FFFFFF",
+    "area3Bg": "FFFFFF",
+    "bgBox": "E8EDF2",
+    "arrow": "6B7A99",
+    "stepFill": "D0D0D0",
+    "stepBorder": "CCCCCC",
+    "stepText": "333333",
+    "tableHead": "6B7A99",
+    "tableHeadText": "FFFFFF",
+    "tableRow": "FFFFFF",
+    "tableRowAlt": "F5F5F5",
+    "tableText": "333333",
+    "tableBorder": "D0D0D0",
+    "conclusionBg": "EEF2FF",
+    "conclusionBorder": "6B7A99",
+    "conclusionText": "1A2A5A",
+    "coverTitle": "000000",
+    "coverDivider": "000000",
+    "coverMeta": "333333"
+  },
+  "FONTS": {
+    "family": "Segoe UI",
+    "title": {
+      "size": 24,
+      "bold": true
+    },
+    "message": {
+      "size": 12,
+      "bold": false
+    },
+    "bgTitle": {
+      "size": 13,
+      "bold": true
+    },
+    "bgBody": {
+      "size": 12,
+      "bold": false
+    },
+    "bodyHead": {
+      "size": 12,
+      "bold": true
+    },
+    "bodyText": {
+      "size": 12,
+      "bold": false
+    },
+    "cardTitle": {
+      "size": 14,
+      "bold": true
+    },
+    "cardBody": {
+      "size": 11,
+      "bold": false
+    },
+    "tableHead": {
+      "size": 12,
+      "bold": true
+    },
+    "tableBody": {
+      "size": 12,
+      "bold": false
+    },
+    "stepLabel": {
+      "size": 14,
+      "bold": true
+    },
+    "bullet": {
+      "size": 12,
+      "bold": false
+    },
+    "conclTitle": {
+      "size": 13,
+      "bold": true
+    },
+    "conclBody": {
+      "size": 12,
+      "bold": false
+    },
+    "coverTitle": {
+      "size": 28,
+      "bold": true
+    },
+    "coverMeta": {
+      "size": 16,
+      "bold": false
+    },
+    "footer": {
+      "size": 10,
+      "bold": false
+    }
+  },
+  "LAYOUT": {
+    "slideW": 10.0,
+    "slideH": 5.625,
+    "headerH": 0.85,
+    "headerPadX": 0.25,
+    "headerPadY": 0.08,
+    "footerY": 5.225,
+    "footerH": 0.4,
+    "footerPadX": 0.25,
+    "mainPadX": 0.1,
+    "mainPadY": 0.1,
+    "gridGap": 0.08,
+    "cardPadX": 0.15,
+    "cardPadY": 0.12,
+    "cardDivY": 0.4,
+    "logoH": 0.25,
+    "conclusionAccentW": 0.07
+  }
+};
 
 const D = (() => {
   const L = DESIGN.LAYOUT;
@@ -214,7 +358,7 @@ const D = (() => {
       const titleBox = el("div", {
         left: D.px(cx), top: D.py(titleY),
         width: D.px(cw), height: D.py(titleH),
-        display: "flex", alignItems: "flex-end",
+        display: "flex", alignItems: "center",
         fontSize: ptToCqw(D.FONTS.coverTitle.size), fontWeight: "700",
         color: "#" + D.COLORS.coverTitle,
         lineHeight: "1.4", whiteSpace: "pre-wrap", wordWrap: "break-word",
