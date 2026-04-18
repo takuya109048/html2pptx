@@ -249,10 +249,14 @@
 |-----|-------|
 | layout | plain_image_row |
 | image_label_1 | **画像プレースホルダー** / *Image* `Placeholder` |
-| note | plain_image_rowレイアウトのデモです。テキスト＋画像（縦）のサンプルです。 |
+| note | plain_image_rowレイアウトのデモです。2カラムテキスト＋画像（縦）のサンプルです。 |
 
 ```card-a
-### 見出し H2 / **Heading**
+### 見出し H2-左 / **Heading**
+通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+```
+```card-b
+### 見出し H2-右 / **Heading**
 通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
 ```
 ---
@@ -273,6 +277,23 @@
 - 箇条書き 第1項目（**太字**）
 - 箇条書き 第2項目（*斜体*）
 - 箇条書き 第3項目（`コード`）
+```
+---
+
+# スライドタイトル A-01 / **Slide** *Title* Placeholder
+## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+
+| key | value |
+|-----|-------|
+| layout | matrix_3x3 |
+| note | matrix_3x3レイアウトのデモです。3×3マトリックスのサンプルです。 |
+
+```matrix
+| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| --- | --- | --- | --- |
+| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
+| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
+| 行ラベル3 / Row 3 | 内容A-3 | 内容B-3 | 内容C-3 |
 ```
 ---
 

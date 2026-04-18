@@ -296,6 +296,116 @@ def arrow_shape(slide, x, y, w, h, fill_hex, border_hex="CCCCCC", border_w=0.75)
     slide.shapes._spTree.append(parse_xml(sp_xml))
 
 
+def down_arrow_shape(slide, x, y, w, h, fill_hex, border_hex="CCCCCC", border_w=0.75):
+    """下向きペンタゴン型シェイプ（縦フロー行ラベル用）"""
+    from pptx.oxml import parse_xml
+    x_emu = int(Inches(x)); y_emu = int(Inches(y))
+    w_emu = int(Inches(w)); h_emu = int(Inches(h))
+    fill = fill_hex.upper(); border = border_hex.upper()
+    border_emu = int(border_w * 12700)
+    ids = [int(e.get("id")) for e in slide.shapes._spTree.iter()
+           if e.get("id") and e.get("id").isdigit()]
+    shape_id = (max(ids) + 1) if ids else 100
+    NS_P = "http://schemas.openxmlformats.org/presentationml/2006/main"
+    NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    sp_xml = (
+        f'<p:sp xmlns:p="{NS_P}" xmlns:a="{NS_A}">'
+        f'<p:nvSpPr><p:cNvPr id="{shape_id}" name="VStep{shape_id}"/>'
+        '<p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr>'
+        f'<a:xfrm><a:off x="{x_emu}" y="{y_emu}"/>'
+        f'<a:ext cx="{w_emu}" cy="{h_emu}"/></a:xfrm>'
+        '<a:custGeom><a:avLst/><a:gdLst/><a:ahLst/><a:cxnLst/>'
+        '<a:rect l="0" t="0" r="r" b="b"/>'
+        '<a:pathLst><a:path w="100000" h="100000">'
+        '<a:moveTo><a:pt x="0" y="0"/></a:moveTo>'
+        '<a:lnTo><a:pt x="100000" y="0"/></a:lnTo>'
+        '<a:lnTo><a:pt x="100000" y="75000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="50000" y="100000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="0" y="75000"/></a:lnTo>'
+        '<a:close/></a:path></a:pathLst></a:custGeom>'
+        f'<a:solidFill><a:srgbClr val="{fill}"/></a:solidFill>'
+        f'<a:ln w="{border_emu}"><a:solidFill><a:srgbClr val="{border}"/></a:solidFill></a:ln>'
+        '<a:effectLst/></p:spPr>'
+        '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>'
+    )
+    slide.shapes._spTree.append(parse_xml(sp_xml))
+
+
+def right_arrow_shape(slide, x, y, w, h, fill_hex, border_hex="CCCCCC", border_w=0.75):
+    """右向きペンタゴン型シェイプ（横フロー列ラベル用）"""
+    from pptx.oxml import parse_xml
+    x_emu = int(Inches(x)); y_emu = int(Inches(y))
+    w_emu = int(Inches(w)); h_emu = int(Inches(h))
+    fill = fill_hex.upper(); border = border_hex.upper()
+    border_emu = int(border_w * 12700)
+    ids = [int(e.get("id")) for e in slide.shapes._spTree.iter()
+           if e.get("id") and e.get("id").isdigit()]
+    shape_id = (max(ids) + 1) if ids else 100
+    NS_P = "http://schemas.openxmlformats.org/presentationml/2006/main"
+    NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    sp_xml = (
+        f'<p:sp xmlns:p="{NS_P}" xmlns:a="{NS_A}">'
+        f'<p:nvSpPr><p:cNvPr id="{shape_id}" name="HStep{shape_id}"/>'
+        '<p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr>'
+        f'<a:xfrm><a:off x="{x_emu}" y="{y_emu}"/>'
+        f'<a:ext cx="{w_emu}" cy="{h_emu}"/></a:xfrm>'
+        '<a:custGeom><a:avLst/><a:gdLst/><a:ahLst/><a:cxnLst/>'
+        '<a:rect l="0" t="0" r="r" b="b"/>'
+        '<a:pathLst><a:path w="100000" h="100000">'
+        '<a:moveTo><a:pt x="0" y="0"/></a:moveTo>'
+        '<a:lnTo><a:pt x="75000" y="0"/></a:lnTo>'
+        '<a:lnTo><a:pt x="100000" y="50000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="75000" y="100000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="0" y="100000"/></a:lnTo>'
+        '<a:close/></a:path></a:pathLst></a:custGeom>'
+        f'<a:solidFill><a:srgbClr val="{fill}"/></a:solidFill>'
+        f'<a:ln w="{border_emu}"><a:solidFill><a:srgbClr val="{border}"/></a:solidFill></a:ln>'
+        '<a:effectLst/></p:spPr>'
+        '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>'
+    )
+    slide.shapes._spTree.append(parse_xml(sp_xml))
+
+
+def left_right_arrow_shape(slide, x, y, w, h, fill_hex, border_hex="CCCCCC", border_w=0.75):
+    """左右両矢印シェイプ（縦長・対比型区切り用）"""
+    from pptx.oxml import parse_xml
+    x_emu = int(Inches(x)); y_emu = int(Inches(y))
+    w_emu = int(Inches(w)); h_emu = int(Inches(h))
+    fill = fill_hex.upper(); border = border_hex.upper()
+    border_emu = int(border_w * 12700)
+    ids = [int(e.get("id")) for e in slide.shapes._spTree.iter()
+           if e.get("id") and e.get("id").isdigit()]
+    shape_id = (max(ids) + 1) if ids else 100
+    NS_P = "http://schemas.openxmlformats.org/presentationml/2006/main"
+    NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    sp_xml = (
+        f'<p:sp xmlns:p="{NS_P}" xmlns:a="{NS_A}">'
+        f'<p:nvSpPr><p:cNvPr id="{shape_id}" name="CmpArrow{shape_id}"/>'
+        '<p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr>'
+        f'<a:xfrm><a:off x="{x_emu}" y="{y_emu}"/>'
+        f'<a:ext cx="{w_emu}" cy="{h_emu}"/></a:xfrm>'
+        '<a:custGeom><a:avLst/><a:gdLst/><a:ahLst/><a:cxnLst/>'
+        '<a:rect l="0" t="0" r="r" b="b"/>'
+        '<a:pathLst><a:path w="100000" h="100000">'
+        '<a:moveTo><a:pt x="0" y="50000"/></a:moveTo>'
+        '<a:lnTo><a:pt x="35000" y="20000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="35000" y="40000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="65000" y="40000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="65000" y="20000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="100000" y="50000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="65000" y="80000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="65000" y="60000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="35000" y="60000"/></a:lnTo>'
+        '<a:lnTo><a:pt x="35000" y="80000"/></a:lnTo>'
+        '<a:close/></a:path></a:pathLst></a:custGeom>'
+        f'<a:solidFill><a:srgbClr val="{fill}"/></a:solidFill>'
+        f'<a:ln w="{border_emu}"><a:solidFill><a:srgbClr val="{border}"/></a:solidFill></a:ln>'
+        '<a:effectLst/></p:spPr>'
+        '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>'
+    )
+    slide.shapes._spTree.append(parse_xml(sp_xml))
+
+
 _INLINE_RE = re.compile(
     r'\*\*([^*\n]+?)\*\*'
     r'|\*([^*\n]+?)\*'
@@ -423,6 +533,18 @@ def _set_table_cell(cell, cell_text, size, bold, text_color, bg_color, border_co
         ))
 
 
+def _set_box_text_frame(box, cell_text, size, bold, color_hex):
+    tf = box.text_frame
+    tf.clear()
+    tf.word_wrap = True
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.margin_left = tf.margin_right = Pt(7)
+    tf.margin_top = tf.margin_bottom = Pt(4)
+    p = tf.paragraphs[0]
+    _add_inline_runs(p, cell_text, size, color_hex, base_bold=bold)
+    _set_line_spacing(p, size, mult=1.3)
+
+
 # ── グリッド計算 ────────────────────────────────────────
 
 def compute_cells(sd):
@@ -543,6 +665,175 @@ def render_cell(slide, ci):
                         _set_table_cell(tbl.cell(i + row_offset, j), ct,
                                         F["tableBody"]["size"], False,
                                         C["tableText"], bg, C["tableBorder"])
+
+    elif t == "matrix":
+        head_row = cell.get("head") if isinstance(cell.get("head"), list) else []
+        data_rows = [row for row in cell.get("rows", []) if row]
+        all_rows = ([head_row] if head_row else []) + data_rows
+        num_rows = len(all_rows)
+        num_cols = max((len(row) for row in all_rows), default=0)
+        if num_rows > 0 and num_cols > 0:
+            gap = 0.06
+            cell_w = (cw - gap * (num_cols - 1)) / num_cols
+            cell_h = (ch - gap * (num_rows - 1)) / num_rows
+            for i, row in enumerate(all_rows):
+                is_head_row = bool(head_row) and i == 0
+                for j in range(num_cols):
+                    bx = cx + j * (cell_w + gap)
+                    by = cy + i * (cell_h + gap)
+                    if is_head_row and j == 0:
+                        continue  # 左上角セルは描画しない
+                    if is_head_row:
+                        bg = C["tableHead"]
+                        txt_color = C["tableHeadText"]
+                        bold = True
+                        size = F["bodyHead"]["size"]
+                    elif j == 0:
+                        bg = C.get("bgBox", "E8EDF2")
+                        txt_color = C["text"]
+                        bold = True
+                        size = F["bodyHead"]["size"]
+                    else:
+                        bg = C["surface"]
+                        txt_color = C["text"]
+                        bold = False
+                        size = F["tableBody"]["size"]
+                    border = C["tableBorder"]
+                    box = rect(slide, bx, by, cell_w, cell_h, bg, border, 0.75)
+                    _set_box_text_frame(
+                        box,
+                        row[j] if j < len(row) else "",
+                        size, bold, txt_color,
+                    )
+
+    elif t == "flow_matrix":
+        fm_head = cell.get("head") if isinstance(cell.get("head"), list) else []
+        fm_rows = [r for r in cell.get("rows", []) if r]
+        all_rows = ([fm_head] if fm_head else []) + fm_rows
+        num_rows = len(all_rows)
+        num_cols = max((len(row) for row in all_rows), default=0)
+        if num_rows > 0 and num_cols > 0:
+            gap = 0.06
+            cell_w = (cw - gap * (num_cols - 1)) / num_cols
+            cell_h = (ch - gap * (num_rows - 1)) / num_rows
+            has_head = bool(fm_head)
+            for i, row in enumerate(all_rows):
+                is_head_row = has_head and i == 0
+                for j in range(num_cols):
+                    bx = cx + j * (cell_w + gap)
+                    by = cy + i * (cell_h + gap)
+                    val = row[j] if j < len(row) else ""
+                    if is_head_row and j == 0:
+                        continue  # 左上角は描画しない
+                    elif is_head_row:
+                        box = rect(slide, bx, by, cell_w, cell_h,
+                                   C["tableHead"], C["tableBorder"], 0.75)
+                        _set_box_text_frame(box, val, F["bodyHead"]["size"],
+                                            True, C["tableHeadText"])
+                    elif j == 0:
+                        down_arrow_shape(slide, bx, by, cell_w, cell_h,
+                                         C.get("stepFill", "D0D0D0"),
+                                         C.get("stepBorder", "CCCCCC"))
+                        if val:
+                            text(slide, val, bx, by, cell_w, cell_h * 0.75,
+                                 F["stepLabel"]["size"], F["stepLabel"]["bold"],
+                                 C.get("stepText", "333333"),
+                                 anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+                    else:
+                        box = rect(slide, bx, by, cell_w, cell_h,
+                                   C["surface"], C["tableBorder"], 0.75)
+                        _set_box_text_frame(box, val, F["tableBody"]["size"],
+                                            False, C["text"])
+
+    elif t == "h_flow_matrix":
+        hm_head = cell.get("head") if isinstance(cell.get("head"), list) else []
+        hm_rows = [r for r in cell.get("rows", []) if r]
+        all_rows = ([hm_head] if hm_head else []) + hm_rows
+        num_rows = len(all_rows)
+        num_cols = max((len(row) for row in all_rows), default=0)
+        if num_rows > 0 and num_cols > 0:
+            gap = 0.06
+            cell_w = (cw - gap * (num_cols - 1)) / num_cols
+            cell_h = (ch - gap * (num_rows - 1)) / num_rows
+            has_head = bool(hm_head)
+            for i, row in enumerate(all_rows):
+                is_head_row = has_head and i == 0
+                for j in range(num_cols):
+                    bx = cx + j * (cell_w + gap)
+                    by = cy + i * (cell_h + gap)
+                    val = row[j] if j < len(row) else ""
+                    if is_head_row and j == 0:
+                        continue  # 左上角は描画しない
+                    elif is_head_row:
+                        right_arrow_shape(slide, bx, by, cell_w, cell_h,
+                                          C.get("stepFill", "D0D0D0"),
+                                          C.get("stepBorder", "CCCCCC"))
+                        if val:
+                            text(slide, val, bx, by, cell_w * 0.75, cell_h,
+                                 F["stepLabel"]["size"], F["stepLabel"]["bold"],
+                                 C.get("stepText", "333333"),
+                                 anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+                    elif j == 0:
+                        box = rect(slide, bx, by, cell_w, cell_h,
+                                   C.get("bgBox", "E8EDF2"), C["tableBorder"], 0.75)
+                        _set_box_text_frame(box, val, F["bodyHead"]["size"],
+                                            True, C["text"])
+                    else:
+                        box = rect(slide, bx, by, cell_w, cell_h,
+                                   C["surface"], C["tableBorder"], 0.75)
+                        _set_box_text_frame(box, val, F["tableBody"]["size"],
+                                            False, C["text"])
+
+    elif t == "compare":
+        cmp_head = cell.get("head") if isinstance(cell.get("head"), list) else []
+        cmp_rows = [r for r in cell.get("rows", []) if r]
+        num_data = len(cmp_rows)
+        if num_data > 0:
+            gap = 0.06
+            has_head = bool(cmp_head)
+            num_grid_rows = num_data + (1 if has_head else 0)
+            cell_h = (ch - gap * (num_grid_rows - 1)) / num_grid_rows
+            # 列幅: ラベル1 : 左1 : 矢印0.08 : 右1 (total=3.08)
+            total_fr = 3.08
+            avail_w = cw - gap * 3
+            cell_w  = avail_w / total_fr
+            arrow_w = avail_w * 0.08 / total_fr
+            label_x = cx
+            left_x  = cx + cell_w + gap
+            arrow_x = left_x + cell_w + gap
+            right_x = arrow_x + arrow_w + gap
+            # ヘッダー行
+            if has_head:
+                hy = cy
+                box = rect(slide, left_x, hy, cell_w, cell_h,
+                           C["tableHead"], C["tableBorder"], 0.75)
+                _set_box_text_frame(box, cmp_head[1] if len(cmp_head) > 1 else "",
+                                    F["bodyHead"]["size"], True, C["tableHeadText"])
+                box = rect(slide, right_x, hy, cell_w, cell_h,
+                           C["tableHead"], C["tableBorder"], 0.75)
+                _set_box_text_frame(box, cmp_head[2] if len(cmp_head) > 2 else "",
+                                    F["bodyHead"]["size"], True, C["tableHeadText"])
+            # データ行
+            data_top = cy + (cell_h + gap if has_head else 0)
+            for i, row in enumerate(cmp_rows):
+                by = data_top + i * (cell_h + gap)
+                lbl = row[0] if len(row) > 0 else ""
+                lv  = row[1] if len(row) > 1 else ""
+                rv  = row[2] if len(row) > 2 else ""
+                box = rect(slide, label_x, by, cell_w, cell_h,
+                           C.get("bgBox", "E8EDF2"), C["tableBorder"], 0.75)
+                _set_box_text_frame(box, lbl, F["bodyHead"]["size"], True, C["text"])
+                box = rect(slide, left_x, by, cell_w, cell_h,
+                           C["surface"], C["tableBorder"], 0.75)
+                _set_box_text_frame(box, lv, F["tableBody"]["size"], False, C["text"])
+                box = rect(slide, right_x, by, cell_w, cell_h,
+                           C["surface"], C["tableBorder"], 0.75)
+                _set_box_text_frame(box, rv, F["tableBody"]["size"], False, C["text"])
+            # 縦長両矢印（データ行全体にスパン、背景なし）
+            data_h = num_data * cell_h + (num_data - 1) * gap
+            left_right_arrow_shape(slide, arrow_x, data_top, arrow_w, data_h,
+                                   C.get("stepBorder", "CCCCCC"),
+                                   C.get("stepBorder", "CCCCCC"))
 
     elif t == "conclusion":
         accentW = L.get("conclusionAccentW", 0.07)

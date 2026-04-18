@@ -431,26 +431,31 @@ const SLIDES = [
       "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
     },
     "rowHeightRatios": [
-      0.23,
-      0.77
+      0.35,
+      0.65
     ],
     "grid": [
       [
         {
           "type": "plain",
-          "markdown": "### 見出し H2 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
+          "markdown": "### 見出し H2-左 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
+        },
+        {
+          "type": "plain",
+          "markdown": "### 見出し H2-右 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
         }
       ],
       [
         {
           "type": "image",
-          "markdown": "**画像プレースホルダー** / *Image* `Placeholder`"
+          "markdown": "**画像プレースホルダー** / *Image* `Placeholder`",
+          "span": 2
         }
       ]
     ],
     "logo": "logo.png",
     "layout": "plain_image_row",
-    "note": "plain_image_rowレイアウトのデモです。テキスト＋画像（縦）のサンプルです。",
+    "note": "plain_image_rowレイアウトのデモです。2カラムテキスト＋画像（縦）のサンプルです。",
     "page": 11
   },
   {
@@ -478,6 +483,52 @@ const SLIDES = [
     "layout": "plain_image_col",
     "note": "plain_image_colレイアウトのデモです。テキスト＋画像（横）のサンプルです。",
     "page": 12
+  },
+  {
+    "header": {
+      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
+      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "matrix",
+          "head": [
+            "",
+            "列ラベルA / Col A",
+            "列ラベルB / Col B",
+            "列ラベルC / Col C"
+          ],
+          "rows": [
+            [
+              "行ラベル1 / Row 1",
+              "内容A-1",
+              "内容B-1",
+              "内容C-1"
+            ],
+            [
+              "行ラベル2 / Row 2",
+              "内容A-2",
+              "内容B-2",
+              "内容C-2"
+            ],
+            [
+              "行ラベル3 / Row 3",
+              "内容A-3",
+              "内容B-3",
+              "内容C-3"
+            ]
+          ]
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "matrix_3x3",
+    "note": "matrix_3x3レイアウトのデモです。3×3マトリックスのサンプルです。",
+    "page": 13
   },
   {
     "header": {
@@ -514,7 +565,7 @@ const SLIDES = [
     "logo": "logo.png",
     "layout": "bg_3card",
     "note": "bg_3cardレイアウトのデモです。背景ボックス＋横並び3カードのサンプルです。",
-    "page": 13
+    "page": 14
   }
 ];
 const DESIGN = {
@@ -757,6 +808,46 @@ const D = (() => {
     }
     .slide-table tbody tr:nth-child(even) td:not(.th) { background: #${D.COLORS.tableRow}; }
     .slide-table tbody tr:nth-child(odd)  td:not(.th) { background: #${D.COLORS.tableRowAlt}; }
+    .slide-matrix {
+      width: 100%; height: 100%;
+      display: grid;
+      gap: ${pxToCqw(8)};
+    }
+    .slide-matrix-cell {
+      border: ${pxToCqw(1)} solid #${D.COLORS.tableBorder};
+      border-radius: ${pxToCqw(6)};
+      padding: 0.45em 0.55em;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .slide-matrix-empty {
+      background: transparent;
+      border: none;
+    }
+    .slide-matrix-colhead {
+      background: #${D.COLORS.tableHead};
+      color: #${D.COLORS.tableHeadText};
+      font-size: ${ptToCqw(D.FONTS.bodyHead.size)};
+      font-weight: 700;
+      line-height: 1.45;
+      justify-content: center;
+    }
+    .slide-matrix-label {
+      background: #${D.COLORS.bgBox};
+      color: #${D.COLORS.text};
+      font-size: ${ptToCqw(D.FONTS.bodyHead.size)};
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .slide-matrix-item {
+      background: #${D.COLORS.surface};
+      color: #${D.COLORS.text};
+      font-size: ${ptToCqw(D.FONTS.cardBody.size)};
+      font-weight: 400;
+      line-height: 1.6;
+    }
   `;
   document.head.appendChild(mdStyle);
 
@@ -1007,6 +1098,37 @@ const D = (() => {
           });
           table.appendChild(tbody);
           wrap.appendChild(table);
+          slide.appendChild(wrap);
+
+        } else if (cell.type === "matrix") {
+          const head = Array.isArray(cell.head) && cell.head.length > 0 ? [cell.head] : [];
+          const rows = (cell.rows || []).filter(row => Array.isArray(row) && row.length > 0);
+          const allRows = [...head, ...rows];
+          const numMatrixRows = allRows.length;
+          const numMatrixCols = Math.max(0, ...allRows.map(row => row.length));
+          const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
+          wrap.className = "slide-matrix";
+          wrap.style.gridTemplateColumns = `repeat(${numMatrixCols}, minmax(0, 1fr))`;
+          wrap.style.gridTemplateRows = `repeat(${numMatrixRows}, minmax(0, 1fr))`;
+          allRows.forEach((rowData, i) => {
+            const isHeadRow = head.length > 0 && i === 0;
+            for (let j = 0; j < numMatrixCols; j++) {
+              const cellBox = document.createElement("div");
+              let cls = "slide-matrix-cell ";
+              if (isHeadRow && j === 0) {
+                cls = "slide-matrix-cell slide-matrix-empty";
+              } else if (isHeadRow) {
+                cls += "slide-matrix-colhead";
+              } else if (j === 0) {
+                cls += "slide-matrix-label";
+              } else {
+                cls += "slide-matrix-item";
+              }
+              cellBox.className = cls;
+              cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+              wrap.appendChild(cellBox);
+            }
+          });
           slide.appendChild(wrap);
 
         } else if (cell.type === "conclusion") {

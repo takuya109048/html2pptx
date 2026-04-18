@@ -33,12 +33,47 @@
 <script>
 const SLIDES = [
   {
-    "layout": "cover",
-    "title": "タイトル",
-    "affiliation": "所属",
-    "presenter": "発表者名",
-    "date": "日付",
-    "bg": "background.png",
+    "header": {
+      "title": "タイトル",
+      "message": ""
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "matrix",
+          "head": [
+            "",
+            "列ラベルA",
+            "列ラベルB",
+            "列ラベルC"
+          ],
+          "rows": [
+            [
+              "行ラベル1",
+              "内容A-1",
+              "内容B-1",
+              "内容C-1"
+            ],
+            [
+              "行ラベル2",
+              "内容A-2",
+              "内容B-2",
+              "内容C-2"
+            ],
+            [
+              "行ラベル3",
+              "内容A-3",
+              "内容B-3",
+              "内容C-3"
+            ]
+          ]
+        }
+      ]
+    ],
+    "logo": "logo.png",
     "page": 1
   }
 ];

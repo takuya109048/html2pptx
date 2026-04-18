@@ -206,8 +206,8 @@ const DESIGN = {
 
 const D = (() => {
   const L = DESIGN.LAYOUT;
-  const px = (inch) => (inch / L.slideW * 100) + "%";
-  const py = (inch) => (inch / L.slideH * 100) + "%";
+  const px = (inch) => (inch / L.slideW * 100) + "cqw";
+  const py = (inch) => (inch / L.slideW * 100) + "cqw";
   return { ...L, "COLORS": DESIGN.COLORS, "FONTS": DESIGN.FONTS, px, py };
 })();
 
@@ -260,7 +260,7 @@ const D = (() => {
       font-size: ${ptToCqw(D.FONTS.bgTitle.size)};
       font-weight: 700; line-height: 1.3;
       margin-bottom: 0.4em; padding-bottom: 0.2em;
-      border-bottom: 1px solid #${D.COLORS.border};
+      border-bottom: ${pxToCqw(1)} solid #${D.COLORS.border};
     }
     .md-bg p {
       font-size: ${ptToCqw(D.FONTS.bgBody.size)};
@@ -279,7 +279,7 @@ const D = (() => {
       font-size: ${ptToCqw(D.FONTS.conclTitle.size)};
       font-weight: 700; line-height: 1.3;
       margin-bottom: 0.35em; padding-bottom: 0.15em;
-      border-bottom: 1px solid #${D.COLORS.conclusionBorder};
+      border-bottom: ${pxToCqw(1)} solid #${D.COLORS.conclusionBorder};
     }
     .md-concl p {
       font-size: ${ptToCqw(D.FONTS.conclBody.size)};
@@ -323,6 +323,69 @@ const D = (() => {
     }
     .slide-table tbody tr:nth-child(even) td:not(.th) { background: #${D.COLORS.tableRow}; }
     .slide-table tbody tr:nth-child(odd)  td:not(.th) { background: #${D.COLORS.tableRowAlt}; }
+    .slide-matrix {
+      width: 100%; height: 100%;
+      display: grid;
+      gap: ${pxToCqw(8)};
+    }
+    .slide-matrix-cell {
+      border: ${pxToCqw(1)} solid #${D.COLORS.tableBorder};
+      border-radius: ${pxToCqw(6)};
+      padding: 0.45em 0.55em;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .slide-matrix-empty {
+      background: transparent;
+      border: none;
+    }
+    .slide-matrix-colhead {
+      background: #${D.COLORS.tableHead};
+      color: #${D.COLORS.tableHeadText};
+      font-size: ${ptToCqw(D.FONTS.bodyHead.size)};
+      font-weight: 700;
+      line-height: 1.45;
+      justify-content: center;
+    }
+    .slide-matrix-label {
+      background: #${D.COLORS.bgBox};
+      color: #${D.COLORS.text};
+      font-size: ${ptToCqw(D.FONTS.bodyHead.size)};
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .slide-matrix-item {
+      background: #${D.COLORS.surface};
+      color: #${D.COLORS.text};
+      font-size: ${ptToCqw(D.FONTS.tableBody.size)};
+      font-weight: 400;
+      line-height: 1.6;
+    }
+    .slide-fmatrix-label {
+      position: relative;
+      overflow: hidden;
+    }
+    .slide-h-fmatrix-head {
+      position: relative;
+      overflow: hidden;
+    }
+    .slide-compare-left {
+      background: #${D.COLORS.bgBox};
+      color: #${D.COLORS.text};
+      font-size: ${ptToCqw(D.FONTS.tableBody.size)};
+      font-weight: 400;
+      line-height: 1.6;
+    }
+    .slide-compare-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: ${ptToCqw(D.FONTS.stepLabel.size)};
+      font-weight: 700;
+      color: #${D.COLORS.stepBorder};
+    }
   `;
   document.head.appendChild(mdStyle);
 
@@ -331,7 +394,7 @@ const D = (() => {
     slide.appendChild(el("div", {
       left: D.px(bx), top: D.py(by), width: D.px(bw), height: D.py(bh),
       background: "#" + bg,
-      borderWidth: opts.borderW || "1px", borderStyle: "solid", borderColor: "#" + border,
+      borderWidth: opts.borderW || pxToCqw(1), borderStyle: "solid", borderColor: "#" + border,
       ...(opts.radius   ? { borderRadius: opts.radius }  : {}),
       ...(opts.overflow ? { overflow:     opts.overflow } : {}),
     }));
@@ -372,7 +435,7 @@ const D = (() => {
       bgImg.setAttribute("data-role", "element");
       Object.assign(bgImg.style, {
         position: "absolute", left: "0", top: "0",
-        width: "100%", height: "100%", objectFit: "cover",
+        width: D.px(D.slideW), height: D.px(D.slideH), objectFit: "cover",
       });
       slide.appendChild(bgImg);
 
@@ -384,7 +447,7 @@ const D = (() => {
       const titleBox = el("div", {
         left: D.px(cx), top: D.py(titleY),
         width: D.px(cw), height: D.py(titleH),
-        display: "flex", alignItems: "center",
+        display: "flex", alignItems: "flex-end",
         fontSize: ptToCqw(D.FONTS.coverTitle.size), fontWeight: "700",
         color: "#" + D.COLORS.coverTitle,
         lineHeight: "1.4", whiteSpace: "pre-wrap", wordWrap: "break-word",
@@ -394,7 +457,7 @@ const D = (() => {
 
       slide.appendChild(el("div", {
         left: D.px(cx), top: D.py(divY),
-        width: D.px(divW), height: "1px",
+        width: D.px(divW), height: pxToCqw(1),
         background: "#" + D.COLORS.coverDivider,
       }));
 
@@ -575,9 +638,212 @@ const D = (() => {
           wrap.appendChild(table);
           slide.appendChild(wrap);
 
+        } else if (cell.type === "matrix") {
+          const head = Array.isArray(cell.head) && cell.head.length > 0 ? [cell.head] : [];
+          const rows = (cell.rows || []).filter(row => Array.isArray(row) && row.length > 0);
+          const allRows = [...head, ...rows];
+          const numMatrixRows = allRows.length;
+          const numMatrixCols = Math.max(0, ...allRows.map(row => row.length));
+          const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
+          wrap.className = "slide-matrix";
+          wrap.style.gridTemplateColumns = `repeat(${numMatrixCols}, minmax(0, 1fr))`;
+          wrap.style.gridTemplateRows = `repeat(${numMatrixRows}, minmax(0, 1fr))`;
+          allRows.forEach((rowData, i) => {
+            const isHeadRow = head.length > 0 && i === 0;
+            for (let j = 0; j < numMatrixCols; j++) {
+              const cellBox = document.createElement("div");
+              let cls = "slide-matrix-cell ";
+              if (isHeadRow && j === 0) {
+                cls = "slide-matrix-cell slide-matrix-empty";
+              } else if (isHeadRow) {
+                cls += "slide-matrix-colhead";
+              } else if (j === 0) {
+                cls += "slide-matrix-label";
+              } else {
+                cls += "slide-matrix-item";
+              }
+              cellBox.className = cls;
+              cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+              wrap.appendChild(cellBox);
+            }
+          });
+          slide.appendChild(wrap);
+
+        } else if (cell.type === "flow_matrix") {
+          const fmHead = Array.isArray(cell.head) && cell.head.length > 0 ? [cell.head] : [];
+          const fmDataRows = (cell.rows || []).filter(r => Array.isArray(r) && r.length > 0);
+          const allFmRows = [...fmHead, ...fmDataRows];
+          const numFmAllRows = allFmRows.length;
+          const numFmCols = Math.max(0, ...allFmRows.map(row => row.length));
+          if (numFmAllRows > 0 && numFmCols > 0) {
+            const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
+            wrap.className = "slide-matrix";
+            wrap.style.gridTemplateColumns = `repeat(${numFmCols}, minmax(0, 1fr))`;
+            wrap.style.gridTemplateRows = `repeat(${numFmAllRows}, minmax(0, 1fr))`;
+            const hasHead = fmHead.length > 0;
+            allFmRows.forEach((rowData, i) => {
+              const isHeadRow = hasHead && i === 0;
+              const clip = "polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%)";
+              for (let j = 0; j < numFmCols; j++) {
+                if (isHeadRow && j === 0) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-empty";
+                  wrap.appendChild(cellBox);
+                } else if (isHeadRow) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-colhead";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                } else if (j === 0) {
+                  const gridCell = document.createElement("div");
+                  gridCell.className = "slide-fmatrix-label";
+                  const borderDiv = document.createElement("div");
+                  Object.assign(borderDiv.style, { position: "absolute", inset: "0", background: "#" + D.COLORS.stepBorder, clipPath: clip });
+                  const fillDiv = document.createElement("div");
+                  Object.assign(fillDiv.style, { position: "absolute", inset: pxToCqw(2), background: "#" + D.COLORS.stepFill, clipPath: clip });
+                  const textDiv = document.createElement("div");
+                  Object.assign(textDiv.style, {
+                    position: "absolute", top: "0", left: "0", right: "0", height: "75%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
+                    color: "#" + D.COLORS.stepText,
+                    overflow: "hidden", textAlign: "center",
+                    padding: `0 ${pxToCqw(4)}`, boxSizing: "border-box",
+                  });
+                  textDiv.textContent = rowData[j] || "";
+                  gridCell.appendChild(borderDiv);
+                  gridCell.appendChild(fillDiv);
+                  gridCell.appendChild(textDiv);
+                  wrap.appendChild(gridCell);
+                } else {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-item";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                }
+              }
+            });
+            slide.appendChild(wrap);
+          }
+
+        } else if (cell.type === "h_flow_matrix") {
+          const hmHead = Array.isArray(cell.head) && cell.head.length > 0 ? [cell.head] : [];
+          const hmDataRows = (cell.rows || []).filter(r => Array.isArray(r) && r.length > 0);
+          const allHmRows = [...hmHead, ...hmDataRows];
+          const numHmAllRows = allHmRows.length;
+          const numHmCols = Math.max(0, ...allHmRows.map(row => row.length));
+          if (numHmAllRows > 0 && numHmCols > 0) {
+            const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
+            wrap.className = "slide-matrix";
+            wrap.style.gridTemplateColumns = `repeat(${numHmCols}, minmax(0, 1fr))`;
+            wrap.style.gridTemplateRows = `repeat(${numHmAllRows}, minmax(0, 1fr))`;
+            const hasHmHead = hmHead.length > 0;
+            const rClip = "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)";
+            allHmRows.forEach((rowData, i) => {
+              const isHeadRow = hasHmHead && i === 0;
+              for (let j = 0; j < numHmCols; j++) {
+                if (isHeadRow && j === 0) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-empty";
+                  wrap.appendChild(cellBox);
+                } else if (isHeadRow) {
+                  const gridCell = document.createElement("div");
+                  gridCell.className = "slide-h-fmatrix-head";
+                  const borderDiv = document.createElement("div");
+                  Object.assign(borderDiv.style, { position: "absolute", inset: "0", background: "#" + D.COLORS.stepBorder, clipPath: rClip });
+                  const fillDiv = document.createElement("div");
+                  Object.assign(fillDiv.style, { position: "absolute", inset: pxToCqw(2), background: "#" + D.COLORS.stepFill, clipPath: rClip });
+                  const textDiv = document.createElement("div");
+                  Object.assign(textDiv.style, {
+                    position: "absolute", top: "0", left: "0", width: "75%", height: "100%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
+                    color: "#" + D.COLORS.stepText,
+                    overflow: "hidden", textAlign: "center",
+                    padding: `0 ${pxToCqw(4)}`, boxSizing: "border-box",
+                  });
+                  textDiv.textContent = rowData[j] || "";
+                  gridCell.appendChild(borderDiv);
+                  gridCell.appendChild(fillDiv);
+                  gridCell.appendChild(textDiv);
+                  wrap.appendChild(gridCell);
+                } else if (j === 0) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-label";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                } else {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-item";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                }
+              }
+            });
+            slide.appendChild(wrap);
+          }
+
+        } else if (cell.type === "compare") {
+          const cmpHead = Array.isArray(cell.head) && cell.head.length > 0 ? cell.head : [];
+          const cmpRows = (cell.rows || []).filter(r => Array.isArray(r) && r.length > 0);
+          const numDataRows = cmpRows.length;
+          if (numDataRows > 0) {
+            const hasHead = cmpHead.length > 0;
+            const gap = D.gridGap;
+            const numGridRows = numDataRows + (hasHead ? 1 : 0);
+            const cellH = (ch - gap * (numGridRows - 1)) / numGridRows;
+            // 列幅: ラベル1 : 左1 : 矢印0.08 : 右1 (total=3.08)
+            const totalFr = 3.08;
+            const availW = cw - gap * 3;
+            const cellW  = availW / totalFr;
+            const arrowW = availW * 0.08 / totalFr;
+            const labelX = cx;
+            const leftX  = cx + cellW + gap;
+            const arrowX = leftX + cellW + gap;
+            const rightX = arrowX + arrowW + gap;
+            // ヘッダー行
+            if (hasHead) {
+              const hy = cy;
+              const lhBox = el("div", { left: D.px(leftX), top: D.py(hy), width: D.px(cellW), height: D.py(cellH) });
+              lhBox.className = "slide-matrix-cell slide-matrix-colhead";
+              lhBox.innerHTML = marked.parseInline(cmpHead[1] || "");
+              slide.appendChild(lhBox);
+              const rhBox = el("div", { left: D.px(rightX), top: D.py(hy), width: D.px(cellW), height: D.py(cellH) });
+              rhBox.className = "slide-matrix-cell slide-matrix-colhead";
+              rhBox.innerHTML = marked.parseInline(cmpHead[2] || "");
+              slide.appendChild(rhBox);
+            }
+            // データ行
+            const dataTop = hasHead ? cy + cellH + gap : cy;
+            cmpRows.forEach((row, i) => {
+              const rowY = dataTop + i * (cellH + gap);
+              const lbl = row[0] || "", lv = row[1] || "", rv = row[2] || "";
+              const lblBox = el("div", { left: D.px(labelX), top: D.py(rowY), width: D.px(cellW), height: D.py(cellH) });
+              lblBox.className = "slide-matrix-cell slide-matrix-label";
+              lblBox.innerHTML = marked.parseInline(lbl);
+              slide.appendChild(lblBox);
+              const lBox = el("div", { left: D.px(leftX), top: D.py(rowY), width: D.px(cellW), height: D.py(cellH) });
+              lBox.className = "slide-matrix-cell slide-matrix-item";
+              lBox.innerHTML = marked.parseInline(lv);
+              slide.appendChild(lBox);
+              const rBox = el("div", { left: D.px(rightX), top: D.py(rowY), width: D.px(cellW), height: D.py(cellH) });
+              rBox.className = "slide-matrix-cell slide-matrix-item";
+              rBox.innerHTML = marked.parseInline(rv);
+              slide.appendChild(rBox);
+            });
+            // 縦長両矢印（データ行全体にスパン、背景なし・clip-path形状）
+            const dataH = numDataRows * cellH + (numDataRows - 1) * gap;
+            const arrowEl = el("div", {
+              left: D.px(arrowX), top: D.py(dataTop), width: D.px(arrowW), height: D.py(dataH),
+              background: "#" + D.COLORS.stepBorder,
+              clipPath: "polygon(0% 50%, 35% 20%, 35% 40%, 65% 40%, 65% 20%, 100% 50%, 65% 80%, 65% 60%, 35% 60%, 35% 80%)",
+            });
+            slide.appendChild(arrowEl);
+          }
+
         } else if (cell.type === "conclusion") {
           const accentW = D.conclusionAccentW;
-          addBorderedBox(cx, cy, cw, ch, D.COLORS.conclusionBg, D.COLORS.conclusionBorder, { borderW: "1.5px", radius: "4px" });
+          addBorderedBox(cx, cy, cw, ch, D.COLORS.conclusionBg, D.COLORS.conclusionBorder, { borderW: pxToCqw(1.5), radius: "4px" });
           slide.appendChild(el("div", {
             left: D.px(cx), top: D.py(cy),
             width: D.px(accentW), height: D.py(ch),
@@ -594,7 +860,7 @@ const D = (() => {
           if (col + span < numCols && !(nextCell && nextCell.type === "image")) {
             slide.appendChild(el("div", {
               left: D.px(cx + cw + gap / 2), top: D.py(cy),
-              width: "1px", height: D.py(ch),
+              width: pxToCqw(1), height: D.py(ch),
               background: "#" + D.COLORS.border,
             }));
           }
@@ -669,7 +935,7 @@ const D = (() => {
     footerRow.appendChild(pageSpan);
     const logo = document.createElement("img");
     logo.src = sd.logo; logo.alt = "Logo";
-    logo.style.height = (D.logoH / D.slideW * 100) + "cqw";
+    logo.style.height = D.px(D.logoH);
     logo.style.width = "auto"; logo.style.objectFit = "contain";
     footerRow.appendChild(logo);
     slide.appendChild(footerRow);

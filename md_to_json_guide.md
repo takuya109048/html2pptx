@@ -74,6 +74,7 @@
 - `section`: `section` セルに割り当て
 - `conclusion`: `conclusion` セルに割り当て
 - `table`: `table` セルに割り当て（セクション内に Markdown テーブル必須）
+- `matrix`: `matrix` セルに割り当て。**1行目が列ラベル行（head）、2行目以降がデータ行**。各データ行の先頭セルが行ラベル（左列）。左上角セルは空欄 `| |` とする。
 
 ### imageセルのフィールド
 
@@ -118,8 +119,9 @@
 | flow_4step | `step-a`, `step-b`, `step-c`, `step-d` |
 | diffuse_3card | `section`, `card-a`, `card-b`, `card-c` |
 | converge_3card | `card-a`, `card-b`, `card-c`, `conclusion` |
-| plain_image_row | `card-a` |
+| plain_image_row | `card-a`, `card-b` |
 | plain_image_col | `card-a` |
+| matrix_3x3 | `matrix` |
 | bg_3card | `section`, `card-a`, `card-b`, `card-c` |
 
 ## 使い方（CLIリファレンス）
@@ -241,5 +243,26 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 ```conclusion
 - 最優先はデータ入力工程の標準化
 - 並行してダッシュボード統合を進める
+```
+````
+
+### matrix_3x3
+
+1行目が列ラベル（先頭セルは空欄）、2行目以降の先頭セルが行ラベル。
+
+````md
+# 施策×軸マトリックス
+## 3軸×3施策の整理
+
+| key | value |
+|-----|-------|
+| layout | matrix_3x3 |
+
+```matrix
+| | コスト軸 | スピード軸 | 品質軸 |
+| --- | --- | --- | --- |
+| 施策A | 低コスト | 高速 | 標準 |
+| 施策B | 中コスト | 標準 | 高品質 |
+| 施策C | 高コスト | 低速 | 最高品質 |
 ```
 ````

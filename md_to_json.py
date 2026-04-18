@@ -23,7 +23,7 @@ TABLE_SEPARATOR_RE = re.compile(
 
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
 STEP_TAGS = ["step-a", "step-b", "step-c", "step-d"]
-CONTENT_SECTION_TAGS = set(CARD_TAGS + STEP_TAGS + ["section", "conclusion", "table"])
+CONTENT_SECTION_TAGS = set(CARD_TAGS + STEP_TAGS + ["section", "conclusion", "table", "matrix", "flow_matrix", "h_flow_matrix", "compare"])
 
 
 def warn(message: str) -> None:
@@ -204,6 +204,17 @@ def split_markdown_table(body: str) -> tuple[list[str], list[list[str]], str]:
     return head, rows, remaining_body
 
 
+def parse_markdown_matrix(body: str) -> list[list[str]]:
+    """Extract pipe-delimited rows for matrix content, skipping separator rows."""
+    rows: list[list[str]] = []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if not stripped or not is_table_row(stripped) or TABLE_SEPARATOR_RE.match(stripped):
+            continue
+        rows.append([cell.strip() for cell in stripped.strip("|").split("|")])
+    return rows
+
+
 def section_map(sections: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     """Build a tag -> section mapping. Last section with same tag wins."""
     result: dict[str, dict[str, str]] = {}
@@ -308,6 +319,21 @@ def apply_layout_mapping(
                     continue
                 cell["head"] = head
                 cell["rows"] = rows
+                continue
+
+            if cell_type in ("matrix", "flow_matrix", "h_flow_matrix", "compare"):
+                tag_name = cell_type
+                section = tags.get(tag_name) or tags.get("matrix")
+                if section is None:
+                    warn(f"Layout '{layout}': missing '```{tag_name}' section.")
+                    continue
+                rows = parse_markdown_matrix(section["body"])
+                if not rows:
+                    warn(f"Layout '{layout}': '```{tag_name}' has no pipe-delimited rows.")
+                    continue
+                # 1行目を列ヘッダー(head)、残りをデータ行(rows)として分割
+                cell["head"] = rows[0]
+                cell["rows"] = rows[1:]
                 continue
 
             if cell_type == "image":

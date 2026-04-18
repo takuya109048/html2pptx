@@ -244,7 +244,7 @@
     ]
   },
   "plain_image_row": {
-    "name": "テキスト＋画像（縦）",
+    "name": "2カラムテキスト＋画像（縦）",
     "engine": "area",
     "SLIDES": [
       {
@@ -252,13 +252,14 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.23, 0.77],
+        "rowHeightRatios": [0.35, 0.65],
         "grid": [
           [
+            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" },
             { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
           ],
           [
-            { "type": "image", "markdown": "画像" }
+            { "type": "image", "markdown": "画像", "span": 2 }
           ]
         ],
         "logo": "logo.png"
@@ -279,6 +280,166 @@
           [
             { "type": "plain", "markdown": "## 見出し\n\n- テキスト" },
             { "type": "image", "markdown": "画像", "gridN": 3 }
+          ]
+        ],
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "matrix_3x3": {
+    "name": "3×3マトリックス",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "タイトル",
+          "message": ""
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "matrix",
+              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
+              "rows": [
+                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
+                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"],
+                ["行ラベル3", "内容A-3", "内容B-3", "内容C-3"]
+              ]
+            }
+          ]
+        ],
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "flow_matrix_3x3": {
+    "name": "縦フローマトリックス（3×3）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "タイトル",
+          "message": ""
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "flow_matrix",
+              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
+              "rows": [
+                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
+                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"],
+                ["行ラベル3", "内容A-3", "内容B-3", "内容C-3"]
+              ]
+            }
+          ]
+        ],
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "compare_2col_3row": {
+    "name": "対比型（2列×3行）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "タイトル",
+          "message": ""
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "compare",
+              "head": ["", "左タイトル", "右タイトル"],
+              "rows": [
+                ["行ラベル1", "左テキスト", "右テキスト"],
+                ["行ラベル2", "左テキスト", "右テキスト"],
+                ["行ラベル3", "左テキスト", "右テキスト"]
+              ]
+            }
+          ]
+        ],
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "h_flow_matrix_3x2": {
+    "name": "横フローマトリックス（3列×2行）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "タイトル",
+          "message": ""
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "h_flow_matrix",
+              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
+              "rows": [
+                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
+                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"]
+              ]
+            }
+          ]
+        ],
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "h_flow_matrix_3x3": {
+    "name": "横フローマトリックス（3列×3行）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "タイトル",
+          "message": ""
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "h_flow_matrix",
+              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
+              "rows": [
+                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
+                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"],
+                ["行ラベル3", "内容A-3", "内容B-3", "内容C-3"]
+              ]
+            }
+          ]
+        ],
+        "logo": "logo.png"
+      }
+    ]
+  },
+  "h_flow_matrix_4x2": {
+    "name": "横フローマトリックス（4列×2行）",
+    "engine": "area",
+    "SLIDES": [
+      {
+        "header": {
+          "title": "タイトル",
+          "message": ""
+        },
+        "rowHeightRatios": [1.0],
+        "grid": [
+          [
+            {
+              "type": "h_flow_matrix",
+              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC", "列ラベルD"],
+              "rows": [
+                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1", "内容D-1"],
+                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2", "内容D-2"]
+              ]
+            }
           ]
         ],
         "logo": "logo.png"
