@@ -302,6 +302,89 @@
 
 | key | value |
 |-----|-------|
+| layout | flow_matrix_3x3 |
+| note | flow_matrix_3x3レイアウトのデモです。縦フローマトリックス（3×3）のサンプルです。 |
+
+```matrix
+| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| --- | --- | --- | --- |
+| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
+| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
+| 行ラベル3 / Row 3 | 内容A-3 | 内容B-3 | 内容C-3 |
+```
+---
+
+# スライドタイトル A-01 / **Slide** *Title* Placeholder
+## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+
+| key | value |
+|-----|-------|
+| layout | h_flow_matrix_3x2 |
+| note | h_flow_matrix_3x2レイアウトのデモです。横フローマトリックス（3列×2行）のサンプルです。 |
+
+```matrix
+| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| --- | --- | --- | --- |
+| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
+| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
+```
+---
+
+# スライドタイトル A-01 / **Slide** *Title* Placeholder
+## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+
+| key | value |
+|-----|-------|
+| layout | h_flow_matrix_3x3 |
+| note | h_flow_matrix_3x3レイアウトのデモです。横フローマトリックス（3列×3行）のサンプルです。 |
+
+```matrix
+| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| --- | --- | --- | --- |
+| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
+| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
+| 行ラベル3 / Row 3 | 内容A-3 | 内容B-3 | 内容C-3 |
+```
+---
+
+# スライドタイトル A-01 / **Slide** *Title* Placeholder
+## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+
+| key | value |
+|-----|-------|
+| layout | h_flow_matrix_4x2 |
+| note | h_flow_matrix_4x2レイアウトのデモです。横フローマトリックス（4列×2行）のサンプルです。 |
+
+```matrix
+| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C | 列ラベルD / Col D |
+| --- | --- | --- | --- | --- |
+| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 | 内容D-1 |
+| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 | 内容D-2 |
+```
+---
+
+# スライドタイトル A-01 / **Slide** *Title* Placeholder
+## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+
+| key | value |
+|-----|-------|
+| layout | compare_2col_3row |
+| note | compare_2col_3rowレイアウトのデモです。対比型（2列×3行）のサンプルです。 |
+
+```compare
+| | 左タイトル / Left | 右タイトル / Right |
+| --- | --- | --- |
+| 行ラベル1 / Row 1 | 左テキスト L-01 | 右テキスト R-01 |
+| 行ラベル2 / Row 2 | 左テキスト L-02 | 右テキスト R-02 |
+| 行ラベル3 / Row 3 | 左テキスト L-03 | 右テキスト R-03 |
+```
+---
+
+# スライドタイトル A-01 / **Slide** *Title* Placeholder
+## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+
+| key | value |
+|-----|-------|
 | layout | bg_3card |
 | note | bg_3cardレイアウトのデモです。背景ボックス＋横並び3カードのサンプルです。 |
 

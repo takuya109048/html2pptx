@@ -74,7 +74,8 @@
 - `section`: `section` セルに割り当て
 - `conclusion`: `conclusion` セルに割り当て
 - `table`: `table` セルに割り当て（セクション内に Markdown テーブル必須）
-- `matrix`: `matrix` セルに割り当て。**1行目が列ラベル行（head）、2行目以降がデータ行**。各データ行の先頭セルが行ラベル（左列）。左上角セルは空欄 `| |` とする。
+- `matrix`: `matrix` / `flow_matrix` / `h_flow_matrix` セルに割り当て。**1行目が列ラベル行（head）、2行目以降がデータ行**。各データ行の先頭セルが行ラベル（左列）。左上角セルは空欄 `| |` とする。
+- `compare`: `compare` セルに割り当て。`matrix` と同じ構造。**1行目が列ラベル行（head）**、先頭列がラベル列、2・3列目が左右の比較対象。
 
 ### imageセルのフィールド
 
@@ -122,6 +123,11 @@
 | plain_image_row | `card-a`, `card-b` |
 | plain_image_col | `card-a` |
 | matrix_3x3 | `matrix` |
+| flow_matrix_3x3 | `matrix` |
+| h_flow_matrix_3x2 | `matrix` |
+| h_flow_matrix_3x3 | `matrix` |
+| h_flow_matrix_4x2 | `matrix` |
+| compare_2col_3row | `compare` |
 | bg_3card | `section`, `card-a`, `card-b`, `card-c` |
 
 ## 使い方（CLIリファレンス）
@@ -264,5 +270,67 @@ python md_to_json.py sample_deck.md --templates custom_templates.json
 | 施策A | 低コスト | 高速 | 標準 |
 | 施策B | 中コスト | 標準 | 高品質 |
 | 施策C | 高コスト | 低速 | 最高品質 |
+```
+````
+
+### flow_matrix_3x3
+
+縦フローマトリックス。先頭列がフロー（下矢印）形状。`matrix` タグを使用。
+
+````md
+# 工程別評価マトリックス
+## 3工程×3軸の整理
+
+| key | value |
+|-----|-------|
+| layout | flow_matrix_3x3 |
+
+```matrix
+| | 評価軸A | 評価軸B | 評価軸C |
+| --- | --- | --- | --- |
+| 工程1 | 内容A-1 | 内容B-1 | 内容C-1 |
+| 工程2 | 内容A-2 | 内容B-2 | 内容C-2 |
+| 工程3 | 内容A-3 | 内容B-3 | 内容C-3 |
+```
+````
+
+### h_flow_matrix_3x2 / h_flow_matrix_3x3 / h_flow_matrix_4x2
+
+横フローマトリックス。先頭行がフロー（右矢印）形状。`matrix` タグを使用。列数・行数に応じてレイアウトを選択。
+
+````md
+# フェーズ別施策マトリックス
+## 3フェーズ×2施策
+
+| key | value |
+|-----|-------|
+| layout | h_flow_matrix_3x2 |
+
+```matrix
+| | フェーズA | フェーズB | フェーズC |
+| --- | --- | --- | --- |
+| 施策1 | 内容A-1 | 内容B-1 | 内容C-1 |
+| 施策2 | 内容A-2 | 内容B-2 | 内容C-2 |
+```
+````
+
+### compare_2col_3row
+
+対比型。左右2列を縦長両矢印で対比表示。`compare` タグを使用。1行目が列ラベル、先頭列がラベル列。
+
+````md
+# 現状 vs 目標の比較
+## 3観点での対比
+
+| key | value |
+|-----|-------|
+| layout | compare_2col_3row |
+
+```compare
+| | 現状 | 目標 |
+| --- | --- | --- |
+| コスト | 高コスト | 低コスト |
+| スピード | 低速 | 高速 |
+| 品質 | 標準 | 高品質 |
 ```
 ````
