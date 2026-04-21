@@ -42,7 +42,8 @@ Step 5: MDファイル保存
          └ ファイル名: deck_YYYYMMDD.md（例: deck_20260420.md）
          ↓
 Step 6: ユーザーへ変換コマンド案内
-         └ python md_to_json.py deck_YYYYMMDD.md
+         └ cp md_to_json.py to_pptx.py ... /mnt/data/
+         └ python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data
 ```
 
 ---
@@ -109,7 +110,12 @@ Step 6: ユーザーへ変換コマンド案内
 生成したMDを `deck_YYYYMMDD.md` として保存し、ユーザーに以下を案内する:
 
 ```bash
-python md_to_json.py deck_YYYYMMDD.md
+# 1. 必要ファイルを /mnt/data にコピー（初回のみ）
+cp md_to_json.py to_pptx.py template_engine_area.html \
+   templates.json design.json logo.png background.png /mnt/data/
+
+# 2. JSON変換 → PPTX生成（--assets-dir を必ず明示）
+python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data
 ```
 
-このコマンドでJSON変換→PPTX生成まで一括実行される。
+`--assets-dir /mnt/data` を指定することで `to_pptx.py`・`templates.json`・`logo.png`・`background.png` がすべて `/mnt/data` から参照される。

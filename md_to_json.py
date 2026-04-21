@@ -61,6 +61,13 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip PPTX conversion and output JSON only.",
     )
+    parser.add_argument(
+        "--assets-dir",
+        dest="assets_dir",
+        type=Path,
+        default=None,
+        help="Directory containing to_pptx.py, templates.json, logo.png, etc. (default: script directory).",
+    )
     return parser.parse_args()
 
 
@@ -450,9 +457,9 @@ def resolve_output_pptx_path(input_md: Path, explicit_output_pptx: Path | None) 
     return input_md.with_suffix(".pptx")
 
 
-def invoke_to_pptx(slides: list[dict[str, Any]], output_pptx: Path) -> int:
+def invoke_to_pptx(slides: list[dict[str, Any]], output_pptx: Path, assets_dir: Path | None = None) -> int:
     """Call to_pptx.py through subprocess with temporary template injection."""
-    project_root = Path(__file__).resolve().parent
+    project_root = assets_dir.resolve() if assets_dir is not None else Path(__file__).resolve().parent
     to_pptx_path = project_root / "to_pptx.py"
     templates_path = project_root / "templates.json"
     generated_key = "__md_to_json_generated__"
@@ -524,6 +531,8 @@ def invoke_to_pptx(slides: list[dict[str, Any]], output_pptx: Path) -> int:
 def main() -> int:
     """CLI entry point."""
     args = parse_args()
+    if args.assets_dir is not None and args.templates == Path(__file__).resolve().parent / "templates.json":
+        args.templates = args.assets_dir / "templates.json"
     templates = load_json(args.templates)
     if not templates:
         warn("No templates loaded. Output will be empty.")
@@ -553,7 +562,7 @@ def main() -> int:
         return 0
 
     output_pptx = resolve_output_pptx_path(args.input_md, args.output_pptx)
-    rc = invoke_to_pptx(slides, output_pptx)
+    rc = invoke_to_pptx(slides, output_pptx, args.assets_dir)
     if rc != 0:
         return rc
 
