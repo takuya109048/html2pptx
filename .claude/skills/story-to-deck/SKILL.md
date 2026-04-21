@@ -110,12 +110,17 @@ Step 6: ユーザーへ変換コマンド案内
 生成したMDを `deck_YYYYMMDD.md` として保存し、ユーザーに以下を案内する:
 
 ```bash
-# 1. 必要ファイルを /mnt/data にコピー（初回のみ）
-cp md_to_json.py to_pptx.py template_engine_area.html \
-   templates.json design.json logo.png background.png /mnt/data/
+# 1. スキルフォルダ内のファイルを /mnt/data にコピー（初回のみ）
+#    SKILL_DIR = このSKILL.mdと同じフォルダのパス
+#    （例: ~/.claude/skills/story-to-deck/ または プロジェクトの .claude/skills/story-to-deck/）
+SKILL_DIR="<このSKILL.mdのあるフォルダのパス>"
+cp "$SKILL_DIR/md_to_json.py" "$SKILL_DIR/to_pptx.py" \
+   "$SKILL_DIR/template_engine_area.html" "$SKILL_DIR/templates.json" \
+   "$SKILL_DIR/design.json" "$SKILL_DIR/logo.png" "$SKILL_DIR/background.png" \
+   /mnt/data/
 
 # 2. JSON変換 → PPTX生成（--assets-dir を必ず明示）
 python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data
 ```
 
-`--assets-dir /mnt/data` を指定することで `to_pptx.py`・`templates.json`・`logo.png`・`background.png` がすべて `/mnt/data` から参照される。
+`md_to_json.py`・`to_pptx.py`・`templates.json`・`design.json`・`logo.png`・`background.png`・`template_engine_area.html` はすべてこの `SKILL.md` と同じフォルダに置かれている。`--assets-dir /mnt/data` を指定することでこれらすべてが `/mnt/data` から参照される。
