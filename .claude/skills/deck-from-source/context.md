@@ -734,7 +734,7 @@ Step 1でnanobanana2使用が確認された場合、手順12・13で `plain_1co
 Step 6①でプロジェクトルートに以下のコードを `setup_deck.py` として Write する（既存ファイルがあっても上書き）。
 
 ```python
-"""story-to-deck の実行ファイル群を /mnt/data にコピーするセットアップスクリプト。
+"""deck-from-source の実行ファイル群を /mnt/data にコピーするセットアップスクリプト。
 Colab / Jupyter 等の環境で初回セットアップ時に一度実行する。
 """
 
@@ -742,7 +742,7 @@ import shutil
 import sys
 from pathlib import Path
 
-SKILL_DIR = Path(__file__).resolve().parent / ".claude" / "skills" / "story-to-deck"
+SKILL_DIR = Path(__file__).resolve().parent / ".claude" / "skills" / "deck-from-source"
 DEST_DIR = Path("/mnt/data")
 
 FILES = [
@@ -784,4 +784,4 @@ if __name__ == "__main__":
 - `/mnt/data` が存在しない環境（ローカルWindowsなど）では失敗する場合があるが、その旨をユーザーに伝えればよい
 - Step 6③では、`setup_deck.py` の出力に表示される「PPTX生成コマンド」をそのまま実行すること（パスをハードコードしない）
 - Windowsでは `pathlib.Path("/mnt/data").resolve()` は `C:\mnt\data` になるため、出力されたパスを使えば環境差異を吸収できる
-- スクリプトファイル群（`md_to_json.py`, `to_pptx.py`, `templates.json`, `design.json`, `logo.png`, `background.png`, `template_engine_area.html`）はすべて `.claude/skills/story-to-deck/` に置かれている
+- スクリプトファイル群（`md_to_json.py`, `to_pptx.py`, `templates.json`, `design.json`, `logo.png`, `background.png`, `template_engine_area.html`）はすべて `.claude/skills/deck-from-source/` に置かれている
