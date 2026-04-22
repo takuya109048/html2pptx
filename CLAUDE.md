@@ -358,6 +358,34 @@ SKILL を作成する際の共通ルールを定義する。
   * `/mnt/data` 直下にコピー配置する
 * Python 実行時は、必ず `/mnt/data` 直下のファイルを利用する。
 
+#### アップロードファイルのパス解決
+
+カスタムGPTsのcode interpreter環境では、ユーザーがアップロードしたファイルは
+**`assistant-{ユニークID}-{元のファイル名}`** という形式に自動リネームされる。
+ユニークIDは実行時まで不明なため、パスをハードコードできない。
+
+以下のパターンでファイルを動的に検索する:
+
+```python
+import glob
+from pathlib import Path
+
+def find_file(filename: str) -> Path:
+    """アップロードファイルをプレフィックス付き名前で検索して返す。"""
+    # プレフィックスなしでそのまま存在する場合（/mnt/data 生成ファイル等）
+    exact = Path(f"/mnt/data/{filename}")
+    if exact.exists():
+        return exact
+    # assistant-{id}- プレフィックス付きを検索
+    matches = glob.glob(f"/mnt/data/assistant-*-{filename}")
+    if matches:
+        return Path(matches[0])
+    raise FileNotFoundError(f"{filename} が /mnt/data に見つかりません")
+```
+
+* この `find_file()` ヘルパーをスクリプト冒頭に定義し、アップロードファイルへのアクセスはすべてこれ経由にする。
+* `/mnt/data` 内で生成したファイル（スクリプトが書き出したもの）はプレフィックスが付かないため、`exact` チェックを先に行う。
+
 #### ダウンロードリンクの貼り方
 
 カスタムGPTs（code interpreter）でユーザーにファイルをダウンロードさせるには、以下のコードを code interpreter で実行する。
