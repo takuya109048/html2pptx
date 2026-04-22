@@ -358,6 +358,24 @@ SKILL を作成する際の共通ルールを定義する。
   * `/mnt/data` 直下にコピー配置する
 * Python 実行時は、必ず `/mnt/data` 直下のファイルを利用する。
 
+#### ダウンロードリンクの貼り方
+
+カスタムGPTs（code interpreter）でユーザーにファイルをダウンロードさせるには、以下のコードを code interpreter で実行する。
+
+```python
+print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
+```
+
+* `filename` にはファイル名（例: `deck_20260422.pptx`）を入れる。
+* 複数ファイルをまとめて提示する場合はループで出力する:
+
+```python
+for filename in ["deck_20260422.md", "deck_20260422.json", "deck_20260422.pptx"]:
+    print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
+```
+
+* `sandbox:/mnt/data/` プレフィックスがカスタムGPTsのダウンロードリンクとして機能する。このプレフィックスなしでは通常のリンクとして扱われダウンロードできない。
+
 ### SKILL のディレクトリ構成ルール
 
 * 作成する各 SKILL では、**その SKILL 用フォルダの直下にすべてのファイルを置く**。
