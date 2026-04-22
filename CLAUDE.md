@@ -386,6 +386,53 @@ def find_file(filename: str) -> Path:
 * この `find_file()` ヘルパーをスクリプト冒頭に定義し、アップロードファイルへのアクセスはすべてこれ経由にする。
 * `/mnt/data` 内で生成したファイル（スクリプトが書き出したもの）はプレフィックスが付かないため、`exact` チェックを先に行う。
 
+#### スクリプト内部でプレフィックスを吸収する設計
+
+**NG: 呼び出し側でクリーン名にコピーする方式**
+
+```python
+# SKILL.md や呼び出しコードでコピーしてからスクリプトを実行する
+for fname in ["to_pptx.py", "templates.json", "logo.png"]:
+    clean = Path(f"/mnt/data/{fname}")
+    if not clean.exists():
+        hits = glob.glob(f"/mnt/data/assistant-*-{fname}")
+        if hits:
+            shutil.copy(hits[0], clean)
+subprocess.run(["python", "/mnt/data/to_pptx.py", ...])
+```
+
+この方式は呼び出し側の責任が増え、スクリプトが複数の場所から使われると毎回コピー処理が必要になる。
+
+**OK: スクリプト内部でプレフィックスを吸収する方式**
+
+スクリプト自身が `_find_file()` / `_find_prefixed()` を持ち、ファイル参照をすべて内部で解決する。呼び出し側はプレフィックスを意識しなくて良い。
+
+`os` ベース（`to_pptx.py` のように既存コードが `os.path` を使う場合）:
+
+```python
+def _find_file(base_dir: str, filename: str) -> str:
+    exact = os.path.join(base_dir, filename)
+    if os.path.exists(exact):
+        return exact
+    import glob as _glob
+    matches = _glob.glob(os.path.join(base_dir, f"assistant-*-{filename}"))
+    return matches[0] if matches else exact
+```
+
+`pathlib` ベース（`md_to_json.py` のように `Path` を使う場合）:
+
+```python
+def _find_prefixed(directory: Path, filename: str) -> Path:
+    exact = directory / filename
+    if exact.exists():
+        return exact
+    matches = list(directory.glob(f"assistant-*-{filename}"))
+    return matches[0] if matches else exact
+```
+
+* モジュールロード時に読み込むファイル（例: `templates.json`）も `_find_file()` 経由にする。
+* スクリプトが見つからない場合のフォールバックとして `exact`（クリーン名）を返すことで、ローカル環境（プレフィックスなし）でも動作する。
+
 #### ダウンロードリンクの貼り方
 
 カスタムGPTs（code interpreter）でユーザーにファイルをダウンロードさせるには、以下のコードを code interpreter で実行する。
