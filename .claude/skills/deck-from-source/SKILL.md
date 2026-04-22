@@ -91,10 +91,20 @@ context.mdのSTORY_ANALYSIS・TEMPLATE_WORKFLOW・MD_SYNTAXセクションに従
 以下をすべて1つのコードインタープリター実行ブロックで行う。
 
 ① `deck.md` を `/mnt/data/deck.md` に書き出す
-② アップロードファイルには `assistant-{id}-` プレフィックスが付くため、globで実際のパスを特定してから実行する:
+② アップロードファイルには `assistant-{id}-` プレフィックスが付く。`to_pptx.py` 内部がクリーン名（`logo.png` / `background.png` 等）で参照するため、実行前にプレフィックスなしのコピーを作成してから実行する:
 
 ```python
-import glob, subprocess
+import glob, shutil, subprocess
+from pathlib import Path
+
+for fname in ["to_pptx.py", "templates.json", "design.json",
+              "template_engine_area.html", "logo.png", "background.png"]:
+    clean = Path(f"/mnt/data/{fname}")
+    if not clean.exists():
+        hits = glob.glob(f"/mnt/data/assistant-*-{fname}")
+        if hits:
+            shutil.copy(hits[0], clean)
+
 matches = glob.glob("/mnt/data/assistant-*-md_to_json.py")
 script = matches[0] if matches else "/mnt/data/md_to_json.py"
 subprocess.run(["python", script, "deck.md", "--assets-dir", "/mnt/data"], check=True)
