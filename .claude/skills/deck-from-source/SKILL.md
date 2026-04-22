@@ -88,9 +88,11 @@ context.mdのSTORY_ANALYSIS・TEMPLATE_WORKFLOW・MD_SYNTAXセクションに従
 
 ① `deck_YYYYMMDD.md` を `/mnt/data/deck_YYYYMMDD.md` に書き出す
 ② `python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data` を実行
-③ 生成された以下のファイルのダウンロードリンクをすべて提示する:
-   - `deck_YYYYMMDD.md`
-   - `deck_YYYYMMDD.json`
-   - `deck_YYYYMMDD.pptx`
+③ 以下のコードを実行してダウンロードリンクを出力する:
+
+```python
+for filename in ["deck_YYYYMMDD.md", "deck_YYYYMMDD.json", "deck_YYYYMMDD.pptx"]:
+    print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
+```
 
 `/mnt/data` にスクリプト群が存在しない場合は、context.mdのSETUP_SCRIPTに従い先に `setup_deck.py` を実行してコピーする。
