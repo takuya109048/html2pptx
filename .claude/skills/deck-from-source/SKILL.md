@@ -76,14 +76,13 @@ context.mdのSTORY_ANALYSIS・TEMPLATE_WORKFLOW・MD_SYNTAXセクションに従
 
 ### B-3: MDファイル保存
 
-**B-2で生成したスライドMDのみを `deck_YYYYMMDD.md` として保存する。**
+**B-2で生成したスライドMDのみを `deck.md` として保存する。**
 
-- `YYYYMMDD` は会話コンテキスト（システムプロンプトの日付情報）から直接読み取る。code interpreterで日付を取得する必要はない
 - ファイルの先頭は最初のスライドの `# タイトル` から始まる
 - B-1の思考過程テキストはチャット出力のみ。ファイルには一切含めない
 - ファイル内容は `---` 区切りのスライド群だけで構成される純粋なデッキMD
 
-**ターンB中はコードインタープリターの使用を一切禁止する。** 日付取得・ファイル保存・スクリプト実行・変換処理を含むあらゆるコードインタープリター操作はターンCまで行わない。
+**ターンB中はコードインタープリターの使用を一切禁止する。** ファイル保存・スクリプト実行・変換処理を含むあらゆるコードインタープリター操作はターンCまで行わない。
 
 ---
 
@@ -91,12 +90,12 @@ context.mdのSTORY_ANALYSIS・TEMPLATE_WORKFLOW・MD_SYNTAXセクションに従
 
 以下をすべて1つのコードインタープリター実行ブロックで行う。
 
-① `deck_YYYYMMDD.md` を `/mnt/data/deck_YYYYMMDD.md` に書き出す
-② `python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data` を実行
+① `deck.md` を `/mnt/data/deck.md` に書き出す
+② `python /mnt/data/md_to_json.py deck.md --assets-dir /mnt/data` を実行
 ③ 以下のコードを実行してダウンロードリンクを出力する:
 
 ```python
-for filename in ["deck_YYYYMMDD.md", "deck_YYYYMMDD.json", "deck_YYYYMMDD.pptx"]:
+for filename in ["deck.md", "deck.json", "deck.pptx"]:
     print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
 ```
 
