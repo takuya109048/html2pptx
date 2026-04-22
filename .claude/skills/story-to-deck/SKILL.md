@@ -41,9 +41,10 @@ Step 4: MDコンテンツ生成
 Step 5: MDファイル保存
          └ ファイル名: deck_YYYYMMDD.md（例: deck_20260420.md）
          ↓
-Step 6: ユーザーへ変換コマンド案内
-         └ python setup_deck.py  （初回のみ）
-         └ python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data
+Step 6: setup_deck.py をプロジェクトルートに生成 → AI が順に実行
+         └ SKILL.md に埋め込まれたコードをそのままプロジェクトルートに Write
+         └ python setup_deck.py を実行（/mnt/data へファイルをコピー）
+         └ python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data を実行
 ```
 
 ---
@@ -107,14 +108,80 @@ Step 6: ユーザーへ変換コマンド案内
 
 ## Step 5 & 6: 出力
 
-生成したMDを `deck_YYYYMMDD.md` として保存し、ユーザーに以下を案内する:
+### Step 5: MDファイル保存
 
-```bash
-# 1. セットアップ（初回のみ）— スキルフォルダのファイルを /mnt/data にコピー
-python setup_deck.py
+生成したMDを `deck_YYYYMMDD.md` としてプロジェクトルートに保存する。
 
-# 2. JSON変換 → PPTX生成
-python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data
+### Step 6: setup_deck.py を生成 → AI が順に実行
+
+**① Write ツールでプロジェクトルートに `setup_deck.py` を作成する。**  
+ファイルがすでに存在する場合も上書きして最新の状態にする。
+
+```python
+"""story-to-deck の実行ファイル群を /mnt/data にコピーするセットアップスクリプト。
+Colab / Jupyter 等の環境で初回セットアップ時に一度実行する。
+"""
+
+import shutil
+import sys
+from pathlib import Path
+
+SKILL_DIR = Path(__file__).resolve().parent / ".claude" / "skills" / "story-to-deck"
+DEST_DIR = Path("/mnt/data")
+
+FILES = [
+    "md_to_json.py",
+    "to_pptx.py",
+    "template_engine_area.html",
+    "templates.json",
+    "design.json",
+    "logo.png",
+    "background.png",
+]
+
+
+def main() -> None:
+    missing = [f for f in FILES if not (SKILL_DIR / f).exists()]
+    if missing:
+        print(f"[エラー] スキルフォルダに以下のファイルが見つかりません: {missing}", file=sys.stderr)
+        print(f"  スキルフォルダ: {SKILL_DIR}", file=sys.stderr)
+        sys.exit(1)
+
+    DEST_DIR.mkdir(parents=True, exist_ok=True)
+    for name in FILES:
+        src = SKILL_DIR / name
+        dst = DEST_DIR / name
+        shutil.copy2(src, dst)
+        print(f"  copied: {name}")
+
+    dest = DEST_DIR.resolve()
+    print(f"\nセットアップ完了 → {dest}")
+    print("\nPPTX生成コマンド:")
+    print(f'  python "{dest}/md_to_json.py" deck_YYYYMMDD.md --assets-dir "{dest}"')
+
+
+if __name__ == "__main__":
+    main()
 ```
 
-`setup_deck.py` はプロジェクトルートに置かれたセットアップスクリプト。実行すると `md_to_json.py`・`to_pptx.py`・`templates.json`・`design.json`・`logo.png`・`background.png`・`template_engine_area.html` をこの `SKILL.md` と同じフォルダから `/mnt/data` へ自動コピーする。`--assets-dir /mnt/data` を指定することでこれらすべてが `/mnt/data` から参照される。
+**② `setup_deck.py` を実行する（/mnt/data へのコピー）。**
+
+```
+python setup_deck.py
+```
+
+エラーが出た場合はメッセージを確認してユーザーに報告する。  
+`/mnt/data` が存在しない環境（ローカルWindowsなど）では失敗する場合があるが、その旨をユーザーに伝えれば良い。
+
+**③ JSON 変換 → PPTX 生成を実行する。**
+
+`setup_deck.py` の出力に表示される「PPTX生成コマンド」をそのまま実行する。  
+Windowsでは `C:\mnt\data\md_to_json.py`、Colab/Linux では `/mnt/data/md_to_json.py` のように環境によってパスが異なるため、ハードコードせず `setup_deck.py` の出力を参照すること。
+
+```
+python "<DEST_DIR>/md_to_json.py" deck_YYYYMMDD.md --assets-dir "<DEST_DIR>"
+```
+
+生成された `.pptx` のパスを最後にユーザーへ伝える。
+
+`md_to_json.py`・`to_pptx.py`・`templates.json`・`design.json`・`logo.png`・`background.png`・`template_engine_area.html` はすべてこの `SKILL.md` と同じフォルダに置かれている。`--assets-dir /mnt/data` を指定することでこれらすべてが `/mnt/data` から参照される。

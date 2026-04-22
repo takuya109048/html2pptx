@@ -34,9 +34,10 @@ def main() -> None:
         shutil.copy2(src, dst)
         print(f"  copied: {name}")
 
-    print(f"\nセットアップ完了 → {DEST_DIR}")
+    dest = DEST_DIR.resolve()
+    print(f"\nセットアップ完了 → {dest}")
     print("\nPPTX生成コマンド:")
-    print("  python /mnt/data/md_to_json.py deck_YYYYMMDD.md --assets-dir /mnt/data")
+    print(f'  python "{dest}/md_to_json.py" deck_YYYYMMDD.md --assets-dir "{dest}"')
 
 
 if __name__ == "__main__":
