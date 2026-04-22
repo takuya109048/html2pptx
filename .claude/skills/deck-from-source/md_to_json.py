@@ -31,6 +31,15 @@ def warn(message: str) -> None:
     print(f"[警告] {message}", file=sys.stderr)
 
 
+def _find_prefixed(directory: Path, filename: str) -> Path:
+    """カスタムGPTs環境の assistant-{id}- プレフィックスに対応したファイル検索。"""
+    exact = directory / filename
+    if exact.exists():
+        return exact
+    matches = list(directory.glob(f"assistant-*-{filename}"))
+    return matches[0] if matches else exact
+
+
 def parse_args() -> argparse.Namespace:
     """Parse CLI arguments."""
     parser = argparse.ArgumentParser(
@@ -460,8 +469,8 @@ def resolve_output_pptx_path(input_md: Path, explicit_output_pptx: Path | None) 
 def invoke_to_pptx(slides: list[dict[str, Any]], output_pptx: Path, assets_dir: Path | None = None) -> int:
     """Call to_pptx.py through subprocess with temporary template injection."""
     project_root = assets_dir.resolve() if assets_dir is not None else Path(__file__).resolve().parent
-    to_pptx_path = project_root / "to_pptx.py"
-    templates_path = project_root / "templates.json"
+    to_pptx_path = _find_prefixed(project_root, "to_pptx.py")
+    templates_path = _find_prefixed(project_root, "templates.json")
     generated_key = "__md_to_json_generated__"
     generated_name = "Generated from markdown"
     generated_pptx = project_root / f"{generated_key}.pptx"
@@ -532,7 +541,7 @@ def main() -> int:
     """CLI entry point."""
     args = parse_args()
     if args.assets_dir is not None and args.templates == Path(__file__).resolve().parent / "templates.json":
-        args.templates = args.assets_dir / "templates.json"
+        args.templates = _find_prefixed(args.assets_dir, "templates.json")
     templates = load_json(args.templates)
     if not templates:
         warn("No templates loaded. Output will be empty.")

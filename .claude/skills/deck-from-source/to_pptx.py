@@ -44,10 +44,21 @@ def _el(tag, attrib=None):
 HERE = os.path.dirname(os.path.abspath(__file__))
 _arg = sys.argv[1] if len(sys.argv) > 1 else None
 
+
+def _find_file(base_dir: str, filename: str) -> str:
+    """カスタムGPTs環境の assistant-{id}- プレフィックスに対応したファイル検索。"""
+    exact = os.path.join(base_dir, filename)
+    if os.path.exists(exact):
+        return exact
+    import glob as _glob
+    matches = _glob.glob(os.path.join(base_dir, f"assistant-*-{filename}"))
+    return matches[0] if matches else exact
+
+
 # ── JSON 読み込み ──────────────────────────────────────
-with open(os.path.join(HERE, "templates.json"), encoding="utf-8") as f:
+with open(_find_file(HERE, "templates.json"), encoding="utf-8") as f:
     TEMPLATES = json.load(f)
-with open(os.path.join(HERE, "design.json"), encoding="utf-8") as f:
+with open(_find_file(HERE, "design.json"), encoding="utf-8") as f:
     DESIGN = json.load(f)
 
 C = DESIGN["COLORS"]
@@ -970,7 +981,7 @@ def render_footer(slide, sd, total: int = 0):
     _etree.SubElement(clr2, f"{{{_NS_A}}}srgbClr", attrib={"val": C["textMuted"]})
     t2 = _etree.SubElement(fld2, f"{{{_NS_A}}}t")
     t2.text = str(total)  # フォールバック: PowerPoint が slidecount を認識しない場合もここを表示
-    logo_path = os.path.join(HERE, sd.get("logo", "logo.png"))
+    logo_path = _find_file(HERE, sd.get("logo", "logo.png"))
     if os.path.exists(logo_path):
         pic = slide.shapes.add_picture(
             logo_path,
@@ -982,7 +993,7 @@ def render_footer(slide, sd, total: int = 0):
 
 
 def render_cover(slide, sd):
-    bg_path = os.path.join(HERE, sd.get("bg", "background.png"))
+    bg_path = _find_file(HERE, sd.get("bg", "background.png"))
     if os.path.exists(bg_path):
         slide.shapes.add_picture(
             bg_path, Inches(0), Inches(0),
