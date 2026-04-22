@@ -40,6 +40,27 @@ def _find_prefixed(directory: Path, filename: str) -> Path:
     return matches[0] if matches else exact
 
 
+def _resolve_input(input_md: Path, assets_dir: Path | None) -> Path:
+    """入力MDの絶対パスを解決する。
+
+    優先順位:
+      1. 与えられたパスがそのまま存在すればそれを使う（絶対パス or CWD基準の相対パス）
+      2. assets_dir があれば `assets_dir / input_md.name` を試す
+      3. それでも無ければ assistant-*-<name> プレフィックス版を探す
+      4. 見つからない場合は元のパスを返す（読み込み時にエラー扱い）
+    """
+    if input_md.exists():
+        return input_md
+    if assets_dir is not None:
+        candidate = assets_dir / input_md.name
+        if candidate.exists():
+            return candidate
+        prefixed = _find_prefixed(assets_dir, input_md.name)
+        if prefixed.exists():
+            return prefixed
+    return input_md
+
+
 def parse_args() -> argparse.Namespace:
     """Parse CLI arguments."""
     parser = argparse.ArgumentParser(
@@ -546,15 +567,16 @@ def main() -> int:
     if not templates:
         warn("No templates loaded. Output will be empty.")
 
+    input_md = _resolve_input(args.input_md, args.assets_dir)
     try:
-        markdown_text = args.input_md.read_text(encoding="utf-8")
+        markdown_text = input_md.read_text(encoding="utf-8")
     except Exception as exc:
-        warn(f"Failed to read input markdown '{args.input_md}': {exc}")
+        warn(f"Failed to read input markdown '{args.input_md}' (resolved: '{input_md}'): {exc}")
         markdown_text = ""
 
     slides = convert_markdown_to_slides(markdown_text, templates)
     output_json, json_is_temp = resolve_output_json_path(
-        args.input_md, args.output_json, args.no_pptx
+        input_md, args.output_json, args.no_pptx
     )
 
     try:
@@ -570,7 +592,7 @@ def main() -> int:
         print(str(output_json))
         return 0
 
-    output_pptx = resolve_output_pptx_path(args.input_md, args.output_pptx)
+    output_pptx = resolve_output_pptx_path(input_md, args.output_pptx)
     rc = invoke_to_pptx(slides, output_pptx, args.assets_dir)
     if rc != 0:
         return rc

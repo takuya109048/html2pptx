@@ -99,24 +99,48 @@ B-3のファイル保存が完了したら、**このターンの最後に以下
 
 ## ターンC: コードインタープリターで変換・出力（1ターンで完結）
 
-B-4の質問に「Yes」と回答されたら、以下をすべて1つのコードインタープリター実行ブロックで行う。
+B-4に「Yes」と回答されたら、以下を **1つのコードインタープリター実行ブロック** で行う。
 
-① `deck.md` を `/mnt/data/deck.md` に書き出す
-② `md_to_json.py` を実行する（スクリプト内部でプレフィックス付きファイルを自動検索する）:
-
-```python
-import glob, subprocess
-
-matches = glob.glob("/mnt/data/assistant-*-md_to_json.py")
-script = matches[0] if matches else "/mnt/data/md_to_json.py"
-subprocess.run(["python", script, "deck.md", "--assets-dir", "/mnt/data"], check=True)
-```
-
-③ 以下のコードを実行してダウンロードリンクを出力する:
+**設計方針（重要）:** カスタムGPTsのアップロードファイルは `assistant-{id}-<name>` にリネームされる。スクリプト間で個別にglob解決すると片側だけ解決に失敗しやすい。そこで **処理冒頭で `/mnt/data` の `assistant-*-*` を一括でクリーン名にコピーして正規化** し、以降の全処理を **絶対パス + `cwd=/mnt/data`** で実行する。これでスクリプト間連携が単純化され失敗ポイントが消える。
 
 ```python
+import glob, os, shutil, subprocess, sys
+
+MNT = "/mnt/data"
+
+# ① assistant-{id}-<name> を <name> にコピー（存在ならスキップ・元ファイルは温存）
+for src in glob.glob(f"{MNT}/assistant-*-*"):
+    parts = os.path.basename(src).split("-", 2)  # ["assistant","{id}","clean.ext"]
+    if len(parts) == 3 and parts[2]:
+        dst = os.path.join(MNT, parts[2])
+        if not os.path.exists(dst):
+            shutil.copy2(src, dst)
+
+# ② B-3 で作成したデッキ本文を /mnt/data/deck.md として書き出す
+#    DECK_MD は同じブロック直前で DECK_MD = """..B-3のMD全文.."""  として定義しておく
+deck_path = os.path.join(MNT, "deck.md")
+with open(deck_path, "w", encoding="utf-8") as f:
+    f.write(DECK_MD)
+
+# ③ md_to_json.py を絶対パス・CWD固定で実行
+#    正規化済みのクリーン名を優先、万一欠けていたら prefixed 版にフォールバック
+script = os.path.join(MNT, "md_to_json.py")
+if not os.path.exists(script):
+    matches = glob.glob(f"{MNT}/assistant-*-md_to_json.py")
+    if matches:
+        script = matches[0]
+subprocess.run(
+    [sys.executable, script, deck_path, "--assets-dir", MNT],
+    check=True,
+    cwd=MNT,
+)
+
+# ④ ダウンロードリンク
 for filename in ["deck.md", "deck.json", "deck.pptx"]:
     print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
 ```
 
-`/mnt/data` にスクリプト群が存在しない場合は、context.mdのSETUP_SCRIPTに従い先に `setup_deck.py` を実行してコピーする。
+**補足:**
+- `DECK_MD` は同じブロックで `DECK_MD = """..."""` と定義してから使う。本文内の三重バッククオートは三重クオート文字列内でも素通りする（Pythonの特殊文字ではない）ので、B-3のMDをそのまま貼り付けて良い。
+- `md_to_json.py` / `to_pptx.py` には `_find_file` / `_find_prefixed` の保険が入っており、正規化が一部しか効かなくても即座には壊れない。
+- `/mnt/data` にスクリプト群が存在しない環境では、context.md の SETUP_SCRIPT に従い先に `setup_deck.py` を実行してコピーする。
