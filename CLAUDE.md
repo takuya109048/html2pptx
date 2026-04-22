@@ -5,304 +5,6 @@
 
 ---
 
-## プロジェクト概要
-
-<!-- TODO: プロジェクトの目的・概要を記載 -->
-<!-- 例: このリポジトリは〇〇を目的としたPythonアプリケーションです -->
-
----
-
-## 開発環境
-
-### Pythonバージョン・パッケージ管理
-
-<!-- TODO: 使用するツールに合わせてコメントを外す -->
-
-```bash
-# パッケージ管理 (いずれか1つを選択)
-# uv sync                          # uv を使う場合（推奨）
-# pip install -r requirements.txt  # pip を使う場合
-# poetry install                   # Poetry を使う場合
-```
-
-- Python: `3.11+`  <!-- TODO: バージョンを確認して修正 -->
-- パッケージ管理: `uv` / `pip` / `poetry`  <!-- TODO: 使用するものだけ残す -->
-
-### よく使うコマンド
-
-```bash
-# 開発サーバー / アプリ起動
-# python -m uvicorn app.main:app --reload   # FastAPI
-# python manage.py runserver                # Django
-# python src/main.py                        # スクリプト
-
-# テスト
-pytest                                          # 全テスト実行
-pytest tests/unit/                              # ユニットテストのみ
-pytest -k "test_login"                          # 特定テストのみ
-pytest --cov=src --cov-report=term-missing      # カバレッジ付き
-
-# Lint / フォーマット
-ruff check .          # lint
-ruff format .         # フォーマット
-mypy src/             # 型チェック
-```
-
----
-
-## 実装ポリシー
-
-Claude は **Read / Edit / Write / Bash ツールを直接使って**コーディング・ファイル操作を行う。
-
-### 実装の原則
-
-- 変更前に必ず対象ファイルを `Read` で確認する
-- 変更は最小限にとどめ、指示された箇所のみ修正する
-- 実行して結果を確認してからユーザーに報告する
-
----
-
-## Agent Skills
-
-### Skill: Pythonコード生成・開発支援
-
-**トリガー**: 以下の依頼があれば必ずこのスキルの手順に従うこと。
-- 新しいモジュール・クラス・関数の作成
-- 既存コードのリファクタリング・最適化
-- バグ修正・デバッグ支援
-- テストコードの生成
-- 型アノテーションの追加・修正
-
-> **注意**: 以下はコーディング規約。実装時はこの規約に従って Claude が直接コードを書く。
-
----
-
-#### Step 1: 実装前の確認
-
-コードを書き始める前に必ず行うこと:
-
-1. `src/` 以下に同様の処理が既にないか `grep` で調査する
-2. `requirements.txt` / `pyproject.toml` で利用可能なライブラリを確認する
-3. 既存コードのスタイル（型アノテーション有無、docstringスタイル等）に合わせる
-
----
-
-#### Step 2: コーディング規約
-
-**スタイル**:
-- フォーマッター: `ruff format`（Black互換）
-- Linter: `ruff check`
-- 型チェック: `mypy`（strict推奨）
-- 1行の最大文字数: 88文字
-
-**命名規則**:
-| 対象 | 規則 | 例 |
-|------|------|----|
-| 変数・関数 | `snake_case` | `get_user_by_id` |
-| クラス | `PascalCase` | `UserRepository` |
-| 定数 | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| プライベート | `_` プレフィックス | `_internal_state` |
-| 型エイリアス | `PascalCase` | `UserId = NewType("UserId", int)` |
-
-**型アノテーション**:
-```python
-# 必ず付ける。Anyは極力使わない
-def fetch_users(limit: int, offset: int = 0) -> list[User]:
-    ...
-
-# 戻り値がない場合
-def send_notification(message: str) -> None:
-    ...
-
-# Optional より X | None を使う（Python 3.10+）
-def find_user(user_id: int) -> User | None:
-    ...
-```
-
-**docstring**: Google スタイルを使用する
-```python
-def calculate_discount(price: float, rate: float) -> float:
-    """割引後の価格を計算する。
-
-    Args:
-        price: 元の価格（税抜）
-        rate: 割引率（0.0〜1.0）
-
-    Returns:
-        割引後の価格
-
-    Raises:
-        ValueError: rate が 0〜1 の範囲外の場合
-    """
-    if not 0.0 <= rate <= 1.0:
-        raise ValueError(f"rate must be between 0 and 1, got {rate}")
-    return price * (1 - rate)
-```
-
----
-
-#### Step 3: エラーハンドリング
-
-```python
-# NG: 広すぎるexcept
-try:
-    result = process()
-except Exception:
-    pass  # サイレント失敗は厳禁
-
-# OK: 具体的な例外を捕捉し、ログを残す
-import logging
-logger = logging.getLogger(__name__)
-
-try:
-    result = process()
-except ValueError as e:
-    logger.error("Invalid input: %s", e)
-    raise
-except httpx.TimeoutException:
-    logger.warning("Request timed out, retrying...")
-    raise RetryableError("upstream timeout") from None
-```
-
-カスタム例外はプロジェクト共通の基底クラスを継承する:
-```python
-# src/exceptions.py に定義
-class AppError(Exception):
-    """アプリケーション共通の基底例外"""
-
-class NotFoundError(AppError):
-    """リソースが見つからない場合"""
-
-class ValidationError(AppError):
-    """入力値が不正な場合"""
-```
-
----
-
-#### Step 4: テストコード生成
-
-**ファイル構成**:
-```
-tests/
-├── unit/          # 外部依存なし・高速
-├── integration/   # DB・外部APIを含む
-└── conftest.py    # 共通フィクスチャ
-```
-
-**テスト名**: `test_<対象>_<条件>_<期待結果>` 形式
-```python
-# pytest + AAA パターン
-def test_calculate_discount_valid_rate_returns_discounted_price():
-    # Arrange
-    price = 1000.0
-    rate = 0.1
-
-    # Act
-    result = calculate_discount(price, rate)
-
-    # Assert
-    assert result == 900.0
-
-
-def test_calculate_discount_rate_over_1_raises_value_error():
-    with pytest.raises(ValueError, match="rate must be between 0 and 1"):
-        calculate_discount(1000.0, 1.5)
-```
-
-**外部依存はモックする**:
-```python
-from unittest.mock import AsyncMock, patch
-
-async def test_fetch_user_not_found_raises_not_found_error():
-    with patch("src.repository.UserRepository.find") as mock_find:
-        mock_find.return_value = None
-
-        with pytest.raises(NotFoundError):
-            await get_user_service(user_id=999)
-```
-
-**カバレッジ目標**: 単体テスト 80% 以上（`pytest --cov` で確認）
-
----
-
-#### Step 5: リファクタリング方針
-
-1. **変更前にテストを実行**し、全パスを確認する
-2. **1コミット1変更**: リファクタリングと機能追加を混在させない
-3. **段階的に変更**: 一度に全部書き直さず、小さく変えてはテストする
-4. 変更後は `ruff check .` と `mypy src/` を実行してエラーがないことを確認する
-
----
-
-#### Step 6: デバッグ支援
-
-バグ修正の手順:
-
-1. エラーメッセージ・トレースバックをそのままコピーして提示する
-2. 最小再現コードを特定する
-3. 修正は最小限の変更にとどめる（関係ない改善は別PRで）
-4. 修正後、同種のバグが他の箇所にないか確認する
-5. 原因と修正内容をコミットメッセージに記載する
-
----
-
-## Skills 管理
-
-**すべての skills はプロジェクト内の `.claude/skills/` で管理する。**
-グローバル（`~/.claude/skills/`）には置かない。
-
-```
-.claude/
-└── skills/
-    ├── slide-deck-creator/       # スライドデッキJSON生成スキル
-    │   ├── SKILL.md
-    │   └── references/
-    ├── slide-deck-creator-workspace/  # eval ワークスペース
-    ├── skill-creator/            # スキル作成・改善スキル
-    ├── pptx/                     # PPTX操作スキル
-    ├── pdf/                      # PDF操作スキル
-    └── ...                       # その他スキル
-```
-
-新しいスキルを作成する際は `.claude/skills/<skill-name>/` に作成すること。
-
----
-
-## ディレクトリ構成
-
-```
-.
-├── CLAUDE.md
-└── .claude/
-    ├── settings.json
-    └── skills/
-        ├── slide-deck-creator/      # スライドデッキ生成スキル（メイン）
-        │   ├── SKILL.md
-        │   ├── to_pptx.py           # PPTX生成スクリプト
-        │   ├── templates.json       # スライドテンプレート定義
-        │   ├── design.json          # デザイントークン
-        │   ├── background.png       # 表紙背景画像
-        │   ├── logo.png             # ロゴ画像
-        │   ├── template_engine_area.html  # プレビューエンジン
-        │   ├── server.js            # プレビューサーバー
-        │   ├── templates/           # HTMLテンプレート群
-        │   ├── references/          # テンプレートリファレンス
-        │   └── evals/               # evalデータ
-        └── ...                      # その他スキル
-```
-
----
-
-## セキュリティ・注意事項
-
-- **APIキー・パスワードは絶対にコードに書かない** → `.env` を使い `.gitignore` に追加する
-- 外部入力は必ず `pydantic` 等でバリデーションする
-- SQLクエリは必ずパラメータバインドを使う（文字列結合でのSQL組み立て禁止）
-- 300行を超える実装は先に設計をユーザーと確認してから書く
-- 既存の公開APIのシグネチャを変更する前にユーザーに確認する
-
----
-
 ## SKILL 設計ルール（カスタムGPTs流用前提）
 
 ### 目的
@@ -386,28 +88,28 @@ def find_file(filename: str) -> Path:
 * この `find_file()` ヘルパーをスクリプト冒頭に定義し、アップロードファイルへのアクセスはすべてこれ経由にする。
 * `/mnt/data` 内で生成したファイル（スクリプトが書き出したもの）はプレフィックスが付かないため、`exact` チェックを先に行う。
 
-#### スクリプト内部でプレフィックスを吸収する設計
+#### プレフィックス対応に必要な2つの対処
 
-**NG: 呼び出し側でクリーン名にコピーする方式**
+**スクリプト内部のファイル参照だけを対応しても不十分。** スクリプト自体（`.py` ファイル）も `assistant-{id}-` プレフィックスが付いており、`python <script>` の実行パスにもプレフィックスを使う必要がある。以下の2点がセットで必要になる。
+
+**① スクリプト実行パス: globで検索してから実行する**
 
 ```python
-# SKILL.md や呼び出しコードでコピーしてからスクリプトを実行する
-for fname in ["to_pptx.py", "templates.json", "logo.png"]:
-    clean = Path(f"/mnt/data/{fname}")
-    if not clean.exists():
-        hits = glob.glob(f"/mnt/data/assistant-*-{fname}")
-        if hits:
-            shutil.copy(hits[0], clean)
-subprocess.run(["python", "/mnt/data/to_pptx.py", ...])
+import glob, subprocess
+
+# md_to_json.py を呼ぶ側（SKILL.md / code interpreter）
+matches = glob.glob("/mnt/data/assistant-*-md_to_json.py")
+script = matches[0] if matches else "/mnt/data/md_to_json.py"
+subprocess.run(["python", script, "deck.md", "--assets-dir", "/mnt/data"], check=True)
 ```
 
-この方式は呼び出し側の責任が増え、スクリプトが複数の場所から使われると毎回コピー処理が必要になる。
+スクリプトAがスクリプトBをサブプロセス呼び出しする場合も同様に `_find_prefixed()` でBのパスを取得してから実行する（`python /mnt/data/to_pptx.py` ではなく `python /mnt/data/assistant-{id}-to_pptx.py` のように）。
 
-**OK: スクリプト内部でプレフィックスを吸収する方式**
+**② スクリプト内部のファイル参照: `_find_file()` / `_find_prefixed()` を使う**
 
-スクリプト自身が `_find_file()` / `_find_prefixed()` を持ち、ファイル参照をすべて内部で解決する。呼び出し側はプレフィックスを意識しなくて良い。
+スクリプトが実行されると、`HERE = os.path.dirname(__file__)` は `/mnt/data` に解決される（プレフィックスはディレクトリではなくファイル名に付いているため）。しかし `os.path.join(HERE, "templates.json")` = `/mnt/data/templates.json` は存在しない（`assistant-{id}-templates.json` のみ）。そのため、スクリプト内のすべてのファイル参照にもプレフィックス対応ヘルパーを使う。
 
-`os` ベース（`to_pptx.py` のように既存コードが `os.path` を使う場合）:
+`os.path` ベース（既存コードが `os.path` を使う場合）:
 
 ```python
 def _find_file(base_dir: str, filename: str) -> str:
@@ -419,7 +121,7 @@ def _find_file(base_dir: str, filename: str) -> str:
     return matches[0] if matches else exact
 ```
 
-`pathlib` ベース（`md_to_json.py` のように `Path` を使う場合）:
+`pathlib` ベース（`Path` を使う場合）:
 
 ```python
 def _find_prefixed(directory: Path, filename: str) -> Path:
@@ -430,8 +132,8 @@ def _find_prefixed(directory: Path, filename: str) -> Path:
     return matches[0] if matches else exact
 ```
 
-* モジュールロード時に読み込むファイル（例: `templates.json`）も `_find_file()` 経由にする。
-* スクリプトが見つからない場合のフォールバックとして `exact`（クリーン名）を返すことで、ローカル環境（プレフィックスなし）でも動作する。
+* `exact` が存在する場合を先にチェックすることで、ローカル環境（プレフィックスなし）でも動作する。
+* モジュールロード時に読み込むファイル（例: `templates.json`）も必ず `_find_file()` 経由にする。
 
 #### ダウンロードリンクの貼り方
 

@@ -470,7 +470,7 @@ def invoke_to_pptx(slides: list[dict[str, Any]], output_pptx: Path, assets_dir: 
     """Call to_pptx.py through subprocess with temporary template injection."""
     project_root = assets_dir.resolve() if assets_dir is not None else Path(__file__).resolve().parent
     to_pptx_path = _find_prefixed(project_root, "to_pptx.py")
-    templates_path = _find_prefixed(project_root, "templates.json")
+    templates_path = project_root / "templates.json"  # 書き込みターゲットは常にクリーン名
     generated_key = "__md_to_json_generated__"
     generated_name = "Generated from markdown"
     generated_pptx = project_root / f"{generated_key}.pptx"
