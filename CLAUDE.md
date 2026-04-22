@@ -374,15 +374,27 @@ skill-name/
 
 * `skill-name/refs/` や `skill-name/docs/` のような下位ディレクトリは作成しない。
 
+### 文字数の計測方法
+
+**文字数チェックには必ず `count_chars.py` を使う。**  
+`wc -c` はバイト数を返すため日本語文字を正確にカウントできない。
+
+```bash
+python count_chars.py .claude/skills/<skill-name>/SKILL.md
+python count_chars.py .claude/skills/<skill-name>/SKILL.md .claude/skills/<skill-name>/context.md
+```
+
+`SKILL.md`（上限 5,000文字）と `context.md`（上限 20,000文字）については上限に対する OK / OVER を自動判定して表示する。
+
 ### SKILL 作成時の必須ルール
 
 1. カスタムGPTsへの流用を前提にする。
 2. `SKILL.md` をシステムプロンプトとして使う前提で設計する。
-3. `SKILL.md` は 5000 文字以内に収める。
+3. `SKILL.md` は 5000 文字以内に収める（計測は `python count_chars.py` を使う）。
 4. `SKILL.md` には最小限の指示のみを書く。
 5. 詳細コンテキストは `context.md` に集約する。
 6. 各ターン開始時に必ず `file search` で `context.md` を再読込する。
 7. `file search` では `queries` のみを使う。
-8. `context.md` は1ファイルに絞り、20000文字以内にする。
+8. `context.md` は1ファイルに絞り、20000文字以内にする（計測は `python count_chars.py` を使う）。
 9. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
 10. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
