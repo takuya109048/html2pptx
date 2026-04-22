@@ -91,7 +91,15 @@ context.mdのSTORY_ANALYSIS・TEMPLATE_WORKFLOW・MD_SYNTAXセクションに従
 以下をすべて1つのコードインタープリター実行ブロックで行う。
 
 ① `deck.md` を `/mnt/data/deck.md` に書き出す
-② `python /mnt/data/md_to_json.py deck.md --assets-dir /mnt/data` を実行
+② アップロードファイルには `assistant-{id}-` プレフィックスが付くため、globで実際のパスを特定してから実行する:
+
+```python
+import glob, subprocess
+matches = glob.glob("/mnt/data/assistant-*-md_to_json.py")
+script = matches[0] if matches else "/mnt/data/md_to_json.py"
+subprocess.run(["python", script, "deck.md", "--assets-dir", "/mnt/data"], check=True)
+```
+
 ③ 以下のコードを実行してダウンロードリンクを出力する:
 
 ```python
