@@ -2,6 +2,174 @@
 
 ---
 
+## SAMPLE_REFERENCE — レイアウト別サンプル構文
+
+各レイアウトの正しいブロック構文を示す。実際のMD生成時はこのパターンに従うこと。
+
+### cover
+```markdown
+# デッキタイトル
+| key | value |
+|-----|-------|
+| layout | cover |
+| affiliation | 所属名 |
+| presenter | 発表者名 |
+| date | 2026-01-01 |
+| note | 発表の背景・目的。 |
+```
+
+### plain_1col
+```markdown
+# タイトル
+## サブタイトル
+| key | value |
+|-----|-------|
+| layout | plain_1col |
+| note | 発表者ノート。 |
+
+```card-a
+### 見出し
+通常テキスト。**太字**、*斜体*、`コード`、~~取り消し~~。
+- 箇条書き第1項目
+  - ネスト第2レベル
+1. 番号リスト
+```
+
+### plain_2col
+```markdown
+```card-a
+### 左カラム見出し
+- 項目（**太字**）
+```
+```card-b
+### 右カラム見出し
+- 項目（*斜体*）
+```
+
+### list_3card
+```markdown
+```card-a
+### 見出しA
+- 項目1
+```
+```card-b
+### 見出しB
+- 項目1
+```
+```card-c
+### 見出しC
+- 項目1
+```
+
+### flow_3step / flow_4step
+```markdown
+```step-a
+- **ステップA** 説明
+```
+```step-b
+- **ステップB** 説明
+```
+```step-c
+- **ステップC** 説明
+```
+（flow_4stepは step-d を追加）
+
+### diffuse_3card / bg_3card（section + 3card）
+```markdown
+```section
+共通テーマ・背景テキスト。**太字**、*斜体*。
+```
+```card-a
+### 見出しA
+- 項目
+```
+```card-b
+### 見出しB
+- 項目
+```
+```card-c
+### 見出しC
+- 項目
+```
+
+### converge_3card（3card + conclusion）
+```markdown
+```card-a
+### 見出しA
+- 根拠
+```
+```card-b
+### 見出しB
+- 根拠
+```
+```card-c
+### 見出しC
+- 根拠
+```
+```conclusion
+**結論テキスト**。*補足*、`参照コード`。
+```
+
+### table
+```markdown
+```table
+| 見出し1 | 見出し2 | 見出し3 |
+| --- | ---: | --- |
+| データA | **強調** | *補足* |
+| データB | `コード` | ~~旧情報~~ |
+```
+
+### table_conclusion（table + conclusion）
+```markdown
+```table
+| 見出し1 | 見出し2 |
+| --- | --- |
+| データ | データ |
+```
+```conclusion
+**結論**。*補足説明*。
+```
+
+### plain_image_row（テキスト+横長画像）
+```markdown
+| image_label_1 | 画像プレースホルダーまたはnanobanana2プロンプト |
+```card-a
+### 見出し
+テキスト説明。
+```
+
+### plain_image_col（テキスト+縦目画像）
+```markdown
+| image_label_1 | 画像プレースホルダーまたはnanobanana2プロンプト |
+```card-a
+### 見出し
+- 箇条書き項目
+```
+
+### compare_2col_3row
+⚠️ タグは `compare`（`matrix`ではない）
+```markdown
+```compare
+| | 左タイトル | 右タイトル |
+| --- | --- | --- |
+| 観点1 | 左の内容 | 右の内容 |
+| 観点2 | 左の内容 | 右の内容 |
+| 観点3 | 左の内容 | 右の内容 |
+```
+
+### matrix_3x3 / flow_matrix_3x3 / h_flow_matrix_*
+```markdown
+```matrix
+| | 列A | 列B | 列C |
+| --- | --- | --- | --- |
+| 行1 | 内容 | 内容 | 内容 |
+| 行2 | 内容 | 内容 | 内容 |
+| 行3 | 内容 | 内容 | 内容 |
+```
+（h_flow_matrix_4x2 は列を4つ、行を2つにする）
+
+---
+
 ## STORY_ANALYSIS — GLOBISストーリー分析手法
 
 ### Step 2-1: プレゼンテーション文脈の把握
