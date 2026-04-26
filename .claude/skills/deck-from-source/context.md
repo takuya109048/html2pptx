@@ -7,423 +7,401 @@
 各レイアウトの正しいブロック構文を示す完全サンプル。MD生成時はこのパターンに厳密に従うこと。
 ⚠️ compare_2col_3rowのタグは `compare`（`matrix`ではない）
 
-# スライドタイトル A-01 / **Title** *Placeholder*
+# タイトル
 
 | key | value |
 |-----|-------|
 | layout | cover |
-| affiliation | 所属 X-01 / Affiliation |
-| presenter | 発表者 Y-01 / Presenter Name |
-| date | Date Z-01 / 2026-00-00 |
-| note | ノートテキスト。**太字**、*斜体*、`コード`のデモ用サンプルです。 |
+| affiliation | 所属 |
+| presenter | 発表者 |
+| date | 2026-01-01 |
+| note | ノート |
 
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | table_conclusion |
-| note | table_conclusionレイアウトのデモです。表と結論を組み合わせます。 |
+| note | ノート |
 
 ```table
-| 見出し X-01 | 見出し X-02 | 見出し X-03 | 見出し X-04 |
+| 見出し1 | 見出し2 | 見出し3 | 見出し4 |
 | --- | ---: | ---: | --- |
-| テキスト A-01 | **テキスト B-01** | *テキスト C-01* | テキスト D-01 |
-| テキスト A-02 | **テキスト B-02** | *テキスト C-02* | `テキスト D-02` |
-| テキスト A-03 | **テキスト B-03** | *テキスト C-03* | ~~テキスト D-03~~ |
-| テキスト A-04 | **テキスト B-04** | *テキスト C-04* | テキスト D-04 |
+| A-01 | B-01 | C-01 | D-01 |
+| A-02 | B-02 | C-02 | D-02 |
+| A-03 | B-03 | C-03 | D-03 |
+| A-04 | B-04 | C-04 | D-04 |
 ```
 ```conclusion
-**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。
+**結論テキスト**。補足テキスト。
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | table |
-| note | tableレイアウトのデモです。表のみのスライドです。 |
+| note | ノート |
 
 ```table
-| 見出し X-01 | 見出し X-02 | 見出し X-03 | 見出し X-04 |
+| 見出し1 | 見出し2 | 見出し3 | 見出し4 |
 | --- | ---: | ---: | --- |
-| テキスト A-01 | **テキスト B-01** | *テキスト C-01* | テキスト D-01 |
-| テキスト A-02 | **テキスト B-02** | *テキスト C-02* | `テキスト D-02` |
-| テキスト A-03 | **テキスト B-03** | *テキスト C-03* | ~~テキスト D-03~~ |
-| テキスト A-04 | **テキスト B-04** | *テキスト C-04* | テキスト D-04 |
-| テキスト A-05 | **テキスト B-05** | *テキスト C-05* | テキスト D-05 |
+| A-01 | B-01 | C-01 | D-01 |
+| A-02 | B-02 | C-02 | D-02 |
+| A-03 | B-03 | C-03 | D-03 |
+| A-04 | B-04 | C-04 | D-04 |
+| A-05 | B-05 | C-05 | D-05 |
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` ~~Placeholder~~
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | list_3card |
-| note | list_3cardレイアウトのデモです。横並び3カードのサンプルです。 |
+| note | ノート |
 
 ```card-a
-### 見出し C-01 / **Heading**
-- **太字 bold** 第1項目 D-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しA
+- 項目1
+- 項目2
 ```
 ```card-b
-### 見出し C-02 / **Heading**
-- **太字 bold** 第1項目 E-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しB
+- 項目1
+- 項目2
 ```
 ```card-c
-### 見出し C-03 / **Heading**
-- **太字 bold** 第1項目 F-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しC
+- 項目1
+- 項目2
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | plain_1col |
-| note | plain_1colレイアウトのデモです。1カラムテキストのサンプルです。 |
+| note | ノート |
 
 ```card-a
-### 見出し H2 / **Heading**
-通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+### 見出し
+テキスト本文。
 
-- 箇条書き 第1項目
-  - ネスト第2レベル（**太字**と*斜体*）
-- 箇条書き 第2項目（`コード`と~~取り消し~~）
+- 箇条書き1
+  - ネスト項目
+- 箇条書き2
 
-1. 番号リスト 第1項目
-2. 番号リスト 第2項目
+1. 番号リスト1
+2. 番号リスト2
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | plain_2col |
-| note | plain_2colレイアウトのデモです。2カラムテキストのサンプルです。 |
+| note | ノート |
 
 ```card-a
-### 見出し H2-左 / **Heading**
-通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+### 見出し（左）
+テキスト本文。
 
-1. 番号リスト 第1項目（*斜体*）
-   1. サブ第2レベル
-2. 番号リスト 第2項目（~~取り消し~~）
+- 箇条書き1
+- 箇条書き2
 ```
 ```card-b
-### 見出し H2-右 / **Heading**
-通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+### 見出し（右）
+テキスト本文。
 
-- 箇条書き 第1項目
-  - ネスト第2レベル（**太字**）
-- 箇条書き 第2項目（`コード`）
+- 箇条書き1
+- 箇条書き2
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* ~~Text~~ Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | flow_3step |
-| note | flow_3stepレイアウトのデモです。3ステップフローのサンプルです。 |
+| note | ノート |
 
 ```step-a
-### ステップラベル A-01 / **Step** *Label*
-- **太字 bold** 第1項目 A-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### ステップA
+- 項目1
+- 項目2
 ```
 ```step-b
-### ステップラベル B-01 / **Step** *Label*
-- **太字 bold** 第1項目 B-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### ステップB
+- 項目1
+- 項目2
 ```
 ```step-c
-### ステップラベル C-01 / **Step** *Label*
-- **太字 bold** 第1項目 C-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### ステップC
+- 項目1
+- 項目2
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | flow_4step |
-| note | flow_4stepレイアウトのデモです。4ステップフローのサンプルです。 |
+| note | ノート |
 
 ```step-a
-### ステップラベル A-01 / **Step** *Label*
-- **太字 bold** 第1項目 A-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### ステップA
+- 項目1
+- 項目2
 ```
 ```step-b
-### ステップラベル B-01 / **Step** *Label*
-- **太字 bold** 第1項目 B-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### ステップB
+- 項目1
+- 項目2
 ```
 ```step-c
-### ステップラベル C-01 / **Step** *Label*
-- **太字 bold** 第1項目 C-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### ステップC
+- 項目1
+- 項目2
 ```
 ```step-d
-### ステップラベル D-01 / **Step** *Label*
-- **太字 bold** 第1項目 D-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### ステップD
+- 項目1
+- 項目2
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | diffuse_3card |
-| note | diffuse_3cardレイアウトのデモです。共通方針から3カードへ拡散するサンプルです。 |
+| note | ノート |
 
 ```section
-**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+共通方針テキスト
 ```
 ```card-a
-### 見出し C-01 / **Heading**
-- **太字 bold** 第1項目 D-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しA
+- 項目1
+- 項目2
 ```
 ```card-b
-### 見出し C-02 / **Heading**
-- **太字 bold** 第1項目 E-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しB
+- 項目1
+- 項目2
 ```
 ```card-c
-### 見出し C-03 / **Heading**
-- **太字 bold** 第1項目 F-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しC
+- 項目1
+- 項目2
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | converge_3card |
-| note | converge_3cardレイアウトのデモです。3カードから結論へ収束するサンプルです。 |
+| note | ノート |
 
 ```card-a
-### 見出し C-01 / **Heading**
-- **太字 bold** 第1項目 D-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しA
+- 項目1
+- 項目2
 ```
 ```card-b
-### 見出し C-02 / **Heading**
-- **太字 bold** 第1項目 E-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しB
+- 項目1
+- 項目2
 ```
 ```card-c
-### 見出し C-03 / **Heading**
-- **太字 bold** 第1項目 F-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しC
+- 項目1
+- 項目2
 ```
 ```conclusion
-**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。
+**結論テキスト**。補足テキスト。
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | plain_image_row |
-| image_label_1 | **画像プレースホルダー** / *Image* `Placeholder` |
-| note | plain_image_rowレイアウトのデモです。2カラムテキスト＋画像（縦）のサンプルです。 |
+| image_label_1 | 画像プレースホルダー |
+| note | ノート |
 
 ```card-a
-### 見出し H2-左 / **Heading**
-通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+### 見出し（左）
+テキスト本文。
 ```
 ```card-b
-### 見出し H2-右 / **Heading**
-通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+### 見出し（右）
+テキスト本文。
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | plain_image_col |
-| image_label_1 | **画像プレースホルダー** / *Image* `Placeholder` |
-| note | plain_image_colレイアウトのデモです。テキスト＋画像（横）のサンプルです。 |
+| image_label_1 | 画像プレースホルダー |
+| note | ノート |
 
 ```card-a
-### 見出し H2 / **Heading**
-通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+### 見出し
+テキスト本文。
 
-- 箇条書き 第1項目（**太字**）
-- 箇条書き 第2項目（*斜体*）
-- 箇条書き 第3項目（`コード`）
+- 箇条書き1
+- 箇条書き2
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | matrix_3x3 |
-| note | matrix_3x3レイアウトのデモです。3×3マトリックスのサンプルです。 |
+| note | ノート |
 
 ```matrix
-| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| | 列A | 列B | 列C |
 | --- | --- | --- | --- |
-| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
-| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
-| 行ラベル3 / Row 3 | 内容A-3 | 内容B-3 | 内容C-3 |
+| 行1 | A-1 | B-1 | C-1 |
+| 行2 | A-2 | B-2 | C-2 |
+| 行3 | A-3 | B-3 | C-3 |
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | flow_matrix_3x3 |
-| note | flow_matrix_3x3レイアウトのデモです。縦フローマトリックス（3×3）のサンプルです。 |
+| note | ノート |
 
 ```matrix
-| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| | 列A | 列B | 列C |
 | --- | --- | --- | --- |
-| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
-| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
-| 行ラベル3 / Row 3 | 内容A-3 | 内容B-3 | 内容C-3 |
+| 行1 | A-1 | B-1 | C-1 |
+| 行2 | A-2 | B-2 | C-2 |
+| 行3 | A-3 | B-3 | C-3 |
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | h_flow_matrix_3x2 |
-| note | h_flow_matrix_3x2レイアウトのデモです。横フローマトリックス（3列×2行）のサンプルです。 |
+| note | ノート |
 
 ```matrix
-| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| | 列A | 列B | 列C |
 | --- | --- | --- | --- |
-| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
-| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
+| 行1 | A-1 | B-1 | C-1 |
+| 行2 | A-2 | B-2 | C-2 |
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | h_flow_matrix_3x3 |
-| note | h_flow_matrix_3x3レイアウトのデモです。横フローマトリックス（3列×3行）のサンプルです。 |
+| note | ノート |
 
 ```matrix
-| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C |
+| | 列A | 列B | 列C |
 | --- | --- | --- | --- |
-| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 |
-| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 |
-| 行ラベル3 / Row 3 | 内容A-3 | 内容B-3 | 内容C-3 |
+| 行1 | A-1 | B-1 | C-1 |
+| 行2 | A-2 | B-2 | C-2 |
+| 行3 | A-3 | B-3 | C-3 |
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | h_flow_matrix_4x2 |
-| note | h_flow_matrix_4x2レイアウトのデモです。横フローマトリックス（4列×2行）のサンプルです。 |
+| note | ノート |
 
 ```matrix
-| | 列ラベルA / Col A | 列ラベルB / Col B | 列ラベルC / Col C | 列ラベルD / Col D |
+| | 列A | 列B | 列C | 列D |
 | --- | --- | --- | --- | --- |
-| 行ラベル1 / Row 1 | 内容A-1 | 内容B-1 | 内容C-1 | 内容D-1 |
-| 行ラベル2 / Row 2 | 内容A-2 | 内容B-2 | 内容C-2 | 内容D-2 |
+| 行1 | A-1 | B-1 | C-1 | D-1 |
+| 行2 | A-2 | B-2 | C-2 | D-2 |
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | compare_2col_3row |
-| note | compare_2col_3rowレイアウトのデモです。対比型（2列×3行）のサンプルです。 |
+| note | ノート |
 
 ```compare
-| | 左タイトル / Left | 右タイトル / Right |
+| | 左 | 右 |
 | --- | --- | --- |
-| 行ラベル1 / Row 1 | 左テキスト L-01 | 右テキスト R-01 |
-| 行ラベル2 / Row 2 | 左テキスト L-02 | 右テキスト R-02 |
-| 行ラベル3 / Row 3 | 左テキスト L-03 | 右テキスト R-03 |
+| 観点1 | 内容A-1 | 内容B-1 |
+| 観点2 | 内容A-2 | 内容B-2 |
+| 観点3 | 内容A-3 | 内容B-3 |
 ```
 ---
 
-# スライドタイトル A-01 / **Slide** *Title* Placeholder
-## サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder
+# タイトル
+## メッセージ
 
 | key | value |
 |-----|-------|
 | layout | bg_3card |
-| note | bg_3cardレイアウトのデモです。背景ボックス＋横並び3カードのサンプルです。 |
+| note | ノート |
 
 ```section
-**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。
+背景・文脈テキスト
 ```
 ```card-a
-### 見出し C-01 / **Heading**
-- **太字 bold** 第1項目 D-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しA
+- 項目1
+- 項目2
 ```
 ```card-b
-### 見出し C-02 / **Heading**
-- **太字 bold** 第1項目 E-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しB
+- 項目1
+- 項目2
 ```
 ```card-c
-### 見出し C-03 / **Heading**
-- **太字 bold** 第1項目 F-01
-- *斜体 italic* 第2項目（`コード`）
-- ~~取り消し~~ → 更新 第3項目
+### 見出しC
+- 項目1
+- 項目2
 ```
 
 ---
@@ -661,7 +639,7 @@ python-pptxは `noAutofit`（自動縮小なし）のため、上限超過は文
 
 | レイアウト | セル | 最大項目数 | 1項目の最大文字数 |
 |-----------|-----|----------|----------------|
-| list_3card / converge_3card / bg_3card 各カード | card | 7 | 全角15字 / 半角27字 |
+| list_3card / converge_3card / bg_3card 各カード | card | 9 | 全角17字 / 半角31字 |
 | diffuse_3card 各カード | card | 5 | 全角15字 / 半角27字 |
 | flow_3step 各カード | card | 5 | 全角15字 / 半角27字 |
 | flow_4step 各カード | card | 3 | 全角10字 / 半角18字 |
@@ -678,6 +656,23 @@ python-pptxは `noAutofit`（自動縮小なし）のため、上限超過は文
 - **card系**: 箇条書き最低**2項目**（各5字以上）
 - **plain系**: 箇条書き最低**3項目**、または段落テキスト100字以上
 - **section / conclusion**: 1〜2文（15〜80字程度）
+
+### 参照: overflow_analysis.py 実測値（bullet-only）
+
+上限テーブルの根拠数値。`@N全角` = N文字の項目が最大何個収容できるか。長い項目は折り返しが発生し収容数が減る。
+
+| layout | cell | 全角/行 | max行 | @15全角 | @40全角 |
+|--------|------|--------|-------|--------|--------|
+| list_3card | card | 17 | 10 | 10 | 3 |
+| plain_1col | plain | 53 | 10 | 10 | 10 |
+| plain_2col | plain | 24 | 10 | 10 | 5 |
+| flow_3step | card | 17 | 6 | 6 | 2 |
+| flow_4step | card | 11 | 6 | 3 | 1 |
+| diffuse_3card | card | 17 | 6 | 6 | 2 |
+| flow_3step step_head | — | 13 | 4 | 2 | — |
+| flow_4step step_head | — | 10 | 4 | 2 | — |
+
+design.json / templates.json 変更時は `.claude/tests/deck-from-source/overflow_analysis.py` を再実行して数値を更新する。
 
 ---
 
