@@ -143,16 +143,19 @@
 | note | flow_3stepレイアウトのデモです。3ステップフローのサンプルです。 |
 
 ```step-a
+### ステップラベル A-01 / **Step** *Label*
 - **太字 bold** 第1項目 A-01
 - *斜体 italic* 第2項目（`コード`）
 - ~~取り消し~~ → 更新 第3項目
 ```
 ```step-b
+### ステップラベル B-01 / **Step** *Label*
 - **太字 bold** 第1項目 B-01
 - *斜体 italic* 第2項目（`コード`）
 - ~~取り消し~~ → 更新 第3項目
 ```
 ```step-c
+### ステップラベル C-01 / **Step** *Label*
 - **太字 bold** 第1項目 C-01
 - *斜体 italic* 第2項目（`コード`）
 - ~~取り消し~~ → 更新 第3項目
@@ -168,21 +171,25 @@
 | note | flow_4stepレイアウトのデモです。4ステップフローのサンプルです。 |
 
 ```step-a
+### ステップラベル A-01 / **Step** *Label*
 - **太字 bold** 第1項目 A-01
 - *斜体 italic* 第2項目（`コード`）
 - ~~取り消し~~ → 更新 第3項目
 ```
 ```step-b
+### ステップラベル B-01 / **Step** *Label*
 - **太字 bold** 第1項目 B-01
 - *斜体 italic* 第2項目（`コード`）
 - ~~取り消し~~ → 更新 第3項目
 ```
 ```step-c
+### ステップラベル C-01 / **Step** *Label*
 - **太字 bold** 第1項目 C-01
 - *斜体 italic* 第2項目（`コード`）
 - ~~取り消し~~ → 更新 第3項目
 ```
 ```step-d
+### ステップラベル D-01 / **Step** *Label*
 - **太字 bold** 第1項目 D-01
 - *斜体 italic* 第2項目（`コード`）
 - ~~取り消し~~ → 更新 第3項目
@@ -614,8 +621,8 @@ Step 1でnanobanana2使用が確認された場合、手順12・13で `plain_1co
 | `plain_1col` | ` ```card-a ` |
 | `plain_2col` | ` ```card-a `, ` ```card-b ` |
 | `list_3card` | ` ```card-a `, ` ```card-b `, ` ```card-c ` |
-| `flow_3step` | ` ```step-a `, ` ```step-b `, ` ```step-c ` |
-| `flow_4step` | ` ```step-a `, ` ```step-b `, ` ```step-c `, ` ```step-d ` |
+| `flow_3step` | ` ```step-a `, ` ```step-b `, ` ```step-c `（各ブロック先頭行に `### ラベル` 必須） |
+| `flow_4step` | ` ```step-a `, ` ```step-b `, ` ```step-c `, ` ```step-d `（各ブロック先頭行に `### ラベル` 必須） |
 | `diffuse_3card` | ` ```section `, ` ```card-a `, ` ```card-b `, ` ```card-c ` |
 | `converge_3card` | ` ```card-a `, ` ```card-b `, ` ```card-c `, ` ```conclusion ` |
 | `bg_3card` | ` ```section `, ` ```card-a `, ` ```card-b `, ` ```card-c ` |
@@ -629,7 +636,7 @@ Step 1でnanobanana2使用が確認された場合、手順12・13で `plain_1co
 | キー | 必須 | 説明 |
 |-----|------|------|
 | `layout` | 必須 | テンプレート名 |
-| `note` | 任意 | 発表者ノート（PPTX発表者ビューに表示） |
+| `note` | 任意 | 発表者読み上げ原稿（PPTX発表者ビューに表示）。スライドの全内容をそのまま読み上げるだけでオーディエンスに伝わる完全な文章を記述する |
 | `image_label_1` | 画像スライド | 画像プレースホルダーのラベル/nanobanana2プロンプト |
 | `affiliation` | coverのみ | 組織・所属名 |
 | `presenter` | coverのみ | 発表者名 |
@@ -702,7 +709,10 @@ Step 1でnanobanana2使用が確認された場合、手順12・13で `plain_1co
 ### ルールB: note へのアイコン一括生成プロンプト
 
 **対象テンプレート:** `list_3card`, `flow_3step`, `flow_4step`, `diffuse_3card`, `converge_3card`, `bg_3card`
-**書き込み先:** `note` フィールドの末尾に追記
+**書き込み先:** `note` フィールドの末尾に ` --- ` で区切って追記（読み上げ原稿と画像生成プロンプトを視覚的に分離するため）
+
+書き込み形式（テーブル1行に収める）:
+`読み上げ原稿テキスト。 --- [nanobanana2 icon prompt] プロンプトテキスト`
 
 ```
 [nanobanana2 icon prompt]
@@ -746,6 +756,7 @@ SKILL_DIR = Path(__file__).resolve().parent / ".claude" / "skills" / "deck-from-
 DEST_DIR = Path("/mnt/data")
 
 FILES = [
+    "resolve_uploads.py",
     "md_to_json.py",
     "to_pptx.py",
     "template_engine_area.html",

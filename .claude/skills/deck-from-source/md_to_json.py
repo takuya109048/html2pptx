@@ -306,7 +306,14 @@ def apply_layout_mapping(
                 if step_head_cursor < len(STEP_TAGS):
                     section = tags.get(STEP_TAGS[step_head_cursor])
                     if section is not None:
-                        cell["label"] = section["tag"]
+                        body_lines = section["body"].splitlines()
+                        content_start = 0
+                        for i, line in enumerate(body_lines):
+                            if line.strip().startswith("### "):
+                                cell["markdown"] = line.strip()[4:].strip()
+                                content_start = i + 1
+                                break
+                        section["body"] = "\n".join(body_lines[content_start:]).strip()
                 step_head_cursor += 1
                 continue
 

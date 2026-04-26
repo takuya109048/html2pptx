@@ -62,78 +62,34 @@ SKILL を作成する際の共通ルールを定義する。
 
 #### アップロードファイルのパス解決
 
-カスタムGPTsのcode interpreter環境では、ユーザーがアップロードしたファイルは
+カスタムGPTsのcode interpreter環境では、ユーザーがアップロードしたファイル
+（SKILL の Knowledge ファイルを含む）は
 **`assistant-{ユニークID}-{元のファイル名}`** という形式に自動リネームされる。
-ユニークIDは実行時まで不明なため、パスをハードコードできない。
+ユニークIDは実行時まで不明なため、スクリプト内でパスをハードコードできない。
 
-以下のパターンでファイルを動的に検索する:
+これを解消するため、**チャットの一番初めに `resolve_uploads.py` を
+code interpreter で1回だけ実行する**。
+このスクリプトは `/mnt/data` 直下を走査し、`assistant-{ユニークID}-` プレフィックス付き
+ファイルを、プレフィックスなしの元ファイル名で **コピー配置** する。
+以降は `/mnt/data/{元のファイル名}` で安定してファイルにアクセスできる。
+
+* `resolve_uploads.py` はプロジェクトルート（`count_chars.py` と同じ場所）に置く。
+* **新規作成する SKILL には、必ず SKILL フォルダ直下にこのファイルをコピー配置する。**
+* SKILL.md には、チャット冒頭で以下を実行するよう指示を記載する:
 
 ```python
 import glob
-from pathlib import Path
-
-def find_file(filename: str) -> Path:
-    """アップロードファイルをプレフィックス付き名前で検索して返す。"""
-    # プレフィックスなしでそのまま存在する場合（/mnt/data 生成ファイル等）
-    exact = Path(f"/mnt/data/{filename}")
-    if exact.exists():
-        return exact
-    # assistant-{id}- プレフィックス付きを検索
-    matches = glob.glob(f"/mnt/data/assistant-*-{filename}")
-    if matches:
-        return Path(matches[0])
-    raise FileNotFoundError(f"{filename} が /mnt/data に見つかりません")
+matches = glob.glob("/mnt/data/*resolve_uploads.py")
+if matches:
+    exec(open(matches[0]).read())
 ```
 
-* この `find_file()` ヘルパーをスクリプト冒頭に定義し、アップロードファイルへのアクセスはすべてこれ経由にする。
-* `/mnt/data` 内で生成したファイル（スクリプトが書き出したもの）はプレフィックスが付かないため、`exact` チェックを先に行う。
+  （`resolve_uploads.py` 自体もカスタムGPTs環境では
+  `assistant-{id}-resolve_uploads.py` にリネームされる可能性があるため、
+  glob で探してから `exec` する。）
 
-#### プレフィックス対応に必要な2つの対処
-
-**スクリプト内部のファイル参照だけを対応しても不十分。** スクリプト自体（`.py` ファイル）も `assistant-{id}-` プレフィックスが付いており、`python <script>` の実行パスにもプレフィックスを使う必要がある。以下の2点がセットで必要になる。
-
-**① スクリプト実行パス: globで検索してから実行する**
-
-```python
-import glob, subprocess
-
-# md_to_json.py を呼ぶ側（SKILL.md / code interpreter）
-matches = glob.glob("/mnt/data/assistant-*-md_to_json.py")
-script = matches[0] if matches else "/mnt/data/md_to_json.py"
-subprocess.run(["python", script, "deck.md", "--assets-dir", "/mnt/data"], check=True)
-```
-
-スクリプトAがスクリプトBをサブプロセス呼び出しする場合も同様に `_find_prefixed()` でBのパスを取得してから実行する（`python /mnt/data/to_pptx.py` ではなく `python /mnt/data/assistant-{id}-to_pptx.py` のように）。
-
-**② スクリプト内部のファイル参照: `_find_file()` / `_find_prefixed()` を使う**
-
-スクリプトが実行されると、`HERE = os.path.dirname(__file__)` は `/mnt/data` に解決される（プレフィックスはディレクトリではなくファイル名に付いているため）。しかし `os.path.join(HERE, "templates.json")` = `/mnt/data/templates.json` は存在しない（`assistant-{id}-templates.json` のみ）。そのため、スクリプト内のすべてのファイル参照にもプレフィックス対応ヘルパーを使う。
-
-`os.path` ベース（既存コードが `os.path` を使う場合）:
-
-```python
-def _find_file(base_dir: str, filename: str) -> str:
-    exact = os.path.join(base_dir, filename)
-    if os.path.exists(exact):
-        return exact
-    import glob as _glob
-    matches = _glob.glob(os.path.join(base_dir, f"assistant-*-{filename}"))
-    return matches[0] if matches else exact
-```
-
-`pathlib` ベース（`Path` を使う場合）:
-
-```python
-def _find_prefixed(directory: Path, filename: str) -> Path:
-    exact = directory / filename
-    if exact.exists():
-        return exact
-    matches = list(directory.glob(f"assistant-*-{filename}"))
-    return matches[0] if matches else exact
-```
-
-* `exact` が存在する場合を先にチェックすることで、ローカル環境（プレフィックスなし）でも動作する。
-* モジュールロード時に読み込むファイル（例: `templates.json`）も必ず `_find_file()` 経由にする。
+* 実行後は、個別スクリプト側で `assistant-*-{filename}` を glob 検索する
+  従来の回避処理は不要になる（ただし互換のため残しておいても害はない）。
 
 #### ダウンロードリンクの貼り方
 
@@ -143,11 +99,11 @@ def _find_prefixed(directory: Path, filename: str) -> Path:
 print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
 ```
 
-* `filename` にはファイル名（例: `deck_20260422.pptx`）を入れる。
+* `filename` にはファイル名（例: `deck.pptx`）を入れる。
 * 複数ファイルをまとめて提示する場合はループで出力する:
 
 ```python
-for filename in ["deck_20260422.md", "deck_20260422.json", "deck_20260422.pptx"]:
+for filename in ["deck.md", "deck.json", "deck.pptx"]:
     print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
 ```
 
@@ -162,12 +118,27 @@ for filename in ["deck_20260422.md", "deck_20260422.json", "deck_20260422.pptx"]
 skill-name/
   SKILL.md
   context.md
+  resolve_uploads.py
   example.md
   script.py
   ...
 ```
 
 * `skill-name/refs/` や `skill-name/docs/` のような下位ディレクトリは作成しない。
+
+### SKILL フォルダに置いてはいけないもの
+
+SKILL フォルダ（`.claude/skills/<skill-name>/`）には、カスタムGPTsにアップロードする
+ファイルのみを置く。以下のファイルは SKILL フォルダ内に作成してはならない。
+
+* テストスクリプト（`test_*.py`、`*_test.py` など）
+* 実験・計測スクリプト（`overflow_analysis.py`、`measure_*.py` など）
+* 計画・仕様書（`*_plan.md`、`TODO.md` など）
+* テスト実行結果・集計レポート（`*.csv`、`result_*.md` など）
+* 上記を含む一時ファイル全般
+
+これらは `.claude/plans/` または `.claude/tests/` など、
+**SKILL フォルダの外** に配置する。
 
 ### 文字数の計測方法
 
@@ -193,3 +164,5 @@ python count_chars.py .claude/skills/<skill-name>/SKILL.md .claude/skills/<skill
 8. `context.md` は1ファイルに絞り、20000文字以内にする（計測は `python count_chars.py` を使う）。
 9. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
 10. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
+11. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
+12. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。

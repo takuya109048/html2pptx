@@ -890,9 +890,9 @@ def render_cell(slide, ci):
         src    = cell.get("src", "")
         label  = cell.get("markdown", "画像 / Image")
         grid_n = int(cell.get("gridN", 3))
-        rect(slide, cx, cy, cw, ch, C["surface"], C["border"], 0.75)
         img_path = os.path.join(HERE, src) if src else ""
         if src and os.path.exists(img_path):
+            rect(slide, cx, cy, cw, ch, C["surface"], C["border"], 0.75)
             pic = slide.shapes.add_picture(
                 img_path, Inches(cx), Inches(cy), Inches(cw), Inches(ch))
             _no_shadow(pic)
