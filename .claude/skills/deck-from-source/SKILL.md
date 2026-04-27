@@ -50,7 +50,7 @@ if _m:
 
 ---
 
-## ターンB: 分析・MD生成・密度検証・PPTX変換（1ターンで完結）
+## ターンB: 分析・MD生成・プロンプト自己点検・PPTX変換（1ターンで完結）
 
 直近のユーザー返答でnanobanana2のYes/No方針を受け取ったら、以下をすべて1ターン内で実施する。
 
@@ -91,28 +91,15 @@ context.mdのSTORY_ANALYSIS・TEMPLATE_WORKFLOW・MD_SYNTAX・CONTENT_LIMITS・C
 - **読み上げ原稿:** noteはスライド本文の単なる要約ではなく、タイトル・各カード/表/フローの意味・聴衆が取るべき解釈を読み上げだけで理解できる文章にする
 - 生成したMDはコンテキスト内の変数 `DECK_MD` として保持する（ファイル保存は不要）
 
-### B-3: 密度検証ループ（code interpreter使用、最大3回）
+### B-3: プロンプト自己点検（コード実行なし）
 
-context.mdのDENSITY_LOOPセクションに従い実行する。
+context.mdのDENSITY_REVIEWセクションに従い、DECK_MDを目視で自己点検してから修正する。**この段階でPythonスクリプトやcode interpreterによる密度検証を行わない。**
 
-**各ループで実行するコード:**
-```python
-# 初回のみ: resolve_uploads.py を exec
-import glob
-_m = glob.glob("/mnt/data/*resolve_uploads.py")
-if _m: exec(open(_m[0]).read())
-
-DECK_MD = """(コンテキスト内の現在のDECK_MD全文)"""
-NANOBANANA = True  # or False
-_v = glob.glob("/mnt/data/*validate_density.py")
-exec(open(_v[0]).read())
-```
-
-- 出力末尾の `PASS` / `FAIL` を確認する
-- **PASS** → B-4へ進む
-- **FAIL** → FAIL行（件数、低密度、はみ出し、単調ブロック、note不足）を見て**コンテキスト内の DECK_MD** を修正し再実行（最大3回）
-- 3回でPASSしなくてもB-4へ進む
-- **重要:** 修正はコンテキスト内のDECK_MDに対して行う。ファイルへの読み書きで修正してはならない
+- 各カード/カラムが「リード文＋必要件数＋補足」で埋まっているか確認する
+- 3card系は余白が目立たず、converge系は結論とはみ出しが競合しない密度へ整える
+- 箇条書きだけの羅列、`**ラベル**: 説明`の連続、短すぎるnoteを修正する
+- `です/ます/ください`がスライド表示文に残っていないか確認し、である調へ直す
+- 修正後のDECK_MDだけをB-4へ渡す
 
 ### B-4: PPTX変換・ダウンロードリンク（code interpreter）
 
