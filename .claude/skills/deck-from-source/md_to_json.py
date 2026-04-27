@@ -25,6 +25,8 @@ CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
 STEP_TAGS = ["step-a", "step-b", "step-c", "step-d"]
 CONTENT_SECTION_TAGS = set(CARD_TAGS + STEP_TAGS + ["section", "conclusion", "table", "matrix", "flow_matrix", "h_flow_matrix", "compare"])
 
+_PLAIN2COL_MAX_BULLETS = 8  # matches CONTENT_LIMITS max items per column
+
 
 def warn(message: str) -> None:
     """Print a non-fatal warning."""
@@ -260,6 +262,31 @@ def section_map(sections: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     return result
 
 
+def _balance_plain2col(slide: dict[str, Any]) -> None:
+    """Spill excess top-level bullets from plain_2col left cell into right cell."""
+    if slide.get("layout") != "plain_2col":
+        return
+    grid = slide.get("grid", [])
+    if not grid or not isinstance(grid[0], list) or len(grid[0]) < 2:
+        return
+    cell_a, cell_b = grid[0][0], grid[0][1]
+    if cell_a.get("type") != "plain" or cell_b.get("type") != "plain":
+        return
+
+    lines_a = cell_a.get("markdown", "").split("\n")
+    top_bullet_idx = [i for i, l in enumerate(lines_a) if re.match(r"^[-*]\s", l)]
+    if len(top_bullet_idx) <= _PLAIN2COL_MAX_BULLETS:
+        return
+
+    cut_at = top_bullet_idx[_PLAIN2COL_MAX_BULLETS]
+    spill_lines = lines_a[cut_at:]
+    cell_a["markdown"] = "\n".join(lines_a[:cut_at]).rstrip()
+
+    md_b = cell_b.get("markdown", "").rstrip()
+    spill_text = "\n".join(spill_lines).strip()
+    cell_b["markdown"] = (md_b + "\n" + spill_text).strip() if md_b else spill_text
+
+
 def apply_layout_mapping(
     layout: str,
     front_matter: dict[str, Any],
@@ -395,6 +422,7 @@ def apply_layout_mapping(
             if cell_type == "arrow":
                 continue
 
+    _balance_plain2col(slide)
     return slide
 
 
