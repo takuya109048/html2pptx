@@ -36,6 +36,7 @@ SKILL を作成する際の共通ルールを定義する。
 * そのため、`file search` 用のファイルは **1つに絞る**。
 * この単一ファイルの名前は **`context.md`** とする。
 * `context.md` は **20000文字以内** に収める。
+* `context.md` は文字数削減のため、原則として `*` や `` ` `` によるマークアップを使わない。
 
 #### file search の実行方法
 
@@ -162,7 +163,8 @@ python count_chars.py .Codex/skills/<skill-name>/SKILL.md .Codex/skills/<skill-n
 6. 各ターン開始時に必ず `file search` で `context.md` を再読込する。
 7. `file search` では `queries` のみを使う。
 8. `context.md` は1ファイルに絞り、20000文字以内にする（計測は `python count_chars.py` を使う）。
-9. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
-10. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
-11. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
-12. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
+9. `context.md` は文字数削減のため、原則として `*` や `` ` `` によるマークアップを使わない。
+10. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
+11. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
+12. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
+13. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
