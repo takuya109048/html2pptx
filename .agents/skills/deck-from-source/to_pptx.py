@@ -1000,7 +1000,7 @@ def render_cover(slide, sd):
             width=Inches(L["slideW"]), height=Inches(L["slideH"])
         )
     cx, cw = 0.5, 5.5
-    title_lines = sd.get("title", "").split("\n")
+    title_lines = re.split(r"\n|<br\s*/?>", sd.get("title", ""), flags=re.IGNORECASE)
     box = slide.shapes.add_textbox(Inches(cx), Inches(1.36), Inches(cw), Inches(1.35))
     tf  = box.text_frame
     tf.word_wrap = False

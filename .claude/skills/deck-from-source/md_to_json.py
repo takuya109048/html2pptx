@@ -400,9 +400,13 @@ def apply_layout_mapping(
 
 def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
     """Build a cover slide directly from metadata."""
+    title = str(front_matter.get("title", ""))
+    message = str(front_matter.get("message", "")).strip()
+    if message:
+        title = f"{title}\n{message}"
     slide = {
         "layout": "cover",
-        "title": str(front_matter.get("title", "")),
+        "title": title,
         "affiliation": str(front_matter.get("affiliation", "")),
         "presenter": "山田 花子",
         "date": str(front_matter.get("date", "")),
