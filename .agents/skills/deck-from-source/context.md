@@ -16,6 +16,21 @@
 4. 2枚目は必ずplain_2colの目次にする。左カラムへカテゴリを上から積み、入りきらない範囲だけ右へ送る。
 5. card-aなどのコンテンツブロック内にスライド区切りの3連ハイフンを書かない。直後のスライドがlayoutを失うためである。
 6. 原文が箇条書きや表で整理済みでも、そのまま圧縮してスライド化しない。必ずSOURCE_ENRICHMENTで説明密度を増やしてから構成する。
+7. 保存名は表紙スライドのタイトルを短い英語で表したslugにする。ユーザーに提示するダウンロードはmdとpptxだけにし、jsonは提示しない。
+
+## OUTPUT_FILES
+
+保存名:
+- 表紙タイトルから、内容が分かる短い英語名を作る。
+- 3から6語程度に収め、snake_caseまたはkebab-caseを使う。例: CLAUDE.md設計の実務ガイドならclaude_md_design_guide。
+- 英数字、ハイフン、アンダースコアだけを使う。空白、日本語、記号、絵文字は使わない。
+- 原文ファイル名をそのまま使わない。ただし表紙タイトルより明らかに良い短名がユーザー指定に含まれる場合は、その指定を優先する。
+- md、json、pptxは同じベース名にする。jsonは中間生成物として保存してよい。
+
+リンク提示:
+- ユーザーへ提示するダウンロードリンクはmdとpptxだけである。
+- jsonのダウンロードリンクは出さない。最終報告でもjsonを成果物として列挙しない。
+- code interpreterではfor fn in [base + ".md", base + ".pptx"]のようにmdとpptxだけをprintする。
 
 ## STORY_ANALYSIS
 
@@ -57,6 +72,7 @@
 - 導入、分析、提案、実行、まとめなど、内容上のカテゴリを大見出しにする。
 - 各スライドタイトルをカテゴリ配下の小見出しまたは項目にする。
 - 左カラムから順に積み、左に入りきらない残りだけ右カラムへ送る。
+- 目次では番号付きリストを使わない。番号が各項目で1に戻る崩れを避けるため、カテゴリ見出しとハイフン箇条書き、または太字ラベル:説明の形にする。
 
 ## SOURCE_ENRICHMENT
 
@@ -394,7 +410,7 @@ def main() -> None:
     dest = DEST_DIR.resolve()
     print(f"\nセットアップ完了 → {dest}")
     print("\nPPTX生成コマンド:")
-    print(f'  python "{dest}/md_to_json.py" deck.md deck.pptx --json deck.json --assets-dir "{dest}"')
+    print(f'  python "{dest}/md_to_json.py" title_slug.md title_slug.pptx --json title_slug.json --assets-dir "{dest}"')
 
 
 if __name__ == "__main__":
@@ -405,3 +421,4 @@ if __name__ == "__main__":
 - 表示されたPPTX生成コマンドをそのまま使い、パスをハードコードしない。
 - WindowsではPath("/mnt/data").resolve()がC:\mnt\dataになることがあるため、出力されたパスを使って環境差異を吸収する。
 - スクリプトファイル群は.agents/skills/deck-from-sourceまたは.claude/skills/deck-from-sourceに置かれている。
+- title_slugは表紙タイトルを短い英語で表した名前に置換する。ユーザーへ提示するリンクはmdとpptxだけにする。
