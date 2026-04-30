@@ -46,15 +46,17 @@ if _m:
 ## ターンBの作業
 
 1. ソース全体から主張、対象、目的、流れを内部分析する。
-2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、TEMPLATE_WORKFLOW、MD_SYNTAX、CONTENT_LIMITS、CONTENT_VARIATION、SLIDE_STYLE、SPEAKER_NOTESに従ってDECK_MDを作る。
-3. 2枚目は必ずplain_2colの目次にする。カテゴリ見出しと小見出しで構成し、左から積み、入りきらない分だけ右へ送る。
-4. nanobanana2がYesなら、目次以外のplain_1colとplain_2colを残さない。plain_image_colか、table、list、flow、compare系へ再設計する。
+2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、TEMPLATE_WORKFLOW、MD_SYNTAX、CONTENT_LIMITS、CONTENT_VARIATION、SLIDE_STYLE、SPEAKER_NOTESに従ってDECK_MDを作る。薄い原文かどうかに関係なく、先に内部でだらだらと長文の詳細原稿へ書き直し、その厚みからスライドを設計する。
+3. 2枚目は必ずplain_2colの目次にする。大見出しは内容上の章グループ、小見出しは3枚目以降の各スライドタイトルを一字一句そのまま使う。発表順に左カラムから積み、右カラムは入りきらない分だけを送るoverflow欄であり、前半/後半の分割にはしない。
+4. nanobanana2がYesなら、plain_image_colとimage_label_1を使わない。プロンプト貼り付け用途はplain_2colを使い、左カラムに本文、右カラムにインデント式コードブロックのプロンプトを書く。プロンプト不要ならtable、list、flow、compare系へ再設計する。
 5. card-aなどの本文ブロック内にスライド区切りの3連ハイフンを書かない。
-6. 生成後、DENSITY_REVIEWに従って目視で自己点検し、短すぎる本文、弱いnote、単調な箇条書き、ですます調を直す。
+6. 生成後、DENSITY_REVIEWに従って目視で自己点検し、noteではなくスライド本文に厚みが戻っているかを確認する。短すぎる本文、flow系の名詞句だけのstep、弱いnote、単調な箇条書き、ですます調をDECK_MD本文で直す。
 7. 表紙タイトルを短い英語のslugへ変換し、出力ファイル名に使う。詳細はcontext.mdのOUTPUT_FILESに従う。
 8. mdとpptxだけをユーザーへ提示する。jsonは変換中に作ってよいが、ダウンロードリンクや最終報告には出さない。
 
 ## PPTX変換コードの型
+
+nanobanana2がYesの場合、PPTX変換前にDECK_MDを必ず点検する。card/flow系はnote末尾に`[nanobanana2 icon prompt]`ブロックを置く。プロンプト貼り付け用途はplain_2colにし、左を本文、右をインデント式コードブロックのプロンプトにする。plain_image_colとimage_label_1は使わない。note改行に`<br>`を使わず、表セル内では`\n`を書く。2枚目は必ずplain_2colの目次にし、3枚目以降のスライドタイトルを全件そのまま含める。本文密度はPython検証ではなくDECK_MD確定前の編集工程で担保する。
 
 DECK_MDを確定したら、code interpreterで次の型を使う。TITLE_SLUGは表紙タイトルを短い英語で表したsnake_caseまたはkebab-caseにする。
 
@@ -73,7 +75,7 @@ pptx_path = os.path.join(MNT, f"{TITLE_SLUG}.pptx")
 with open(deck_path, "w", encoding="utf-8") as f:
     f.write(DECK_MD)
 subprocess.run(
-    [sys.executable, os.path.join(MNT, "md_to_json.py"), deck_path, pptx_path, "--json", json_path, "--assets-dir", MNT],
+    [sys.executable, os.path.join(MNT, "md_to_json.py"), deck_path, pptx_path, "--json", json_path, "--assets-dir", MNT, "--nanobanana2", "--require-agenda"],
     check=True, cwd=MNT,
 )
 for fn in [f"{TITLE_SLUG}.md", f"{TITLE_SLUG}.pptx"]:

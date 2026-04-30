@@ -24,6 +24,26 @@ TABLE_SEPARATOR_RE = re.compile(
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
 STEP_TAGS = ["step-a", "step-b", "step-c", "step-d"]
 CONTENT_SECTION_TAGS = set(CARD_TAGS + STEP_TAGS + ["section", "conclusion", "table", "matrix", "flow_matrix", "h_flow_matrix", "compare"])
+NANOBANANA_ICON_LAYOUTS = {
+    "list_3card",
+    "flow_3step",
+    "flow_4step",
+    "diffuse_3card",
+    "converge_3card",
+    "bg_3card",
+}
+NANOBANANA_ICON_MARKER = "[nanobanana2 icon prompt]"
+DEPRECATED_NANOBANANA_FIELDS = ["plain_image_col", "image_label_1"]
+AGENDA_FORBIDDEN_LABELS = [
+    "前半",
+    "後半",
+    "part 1",
+    "part 2",
+    "Part 1",
+    "Part 2",
+    "PART 1",
+    "PART 2",
+]
 
 
 def warn(message: str) -> None:
@@ -97,6 +117,16 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help="Directory containing to_pptx.py, templates.json, logo.png, etc. (default: script directory).",
+    )
+    parser.add_argument(
+        "--nanobanana2",
+        action="store_true",
+        help="Validate nanobanana2 icon prompt blocks for card/flow layouts.",
+    )
+    parser.add_argument(
+        "--require-agenda",
+        action="store_true",
+        help="Require the second slide to be a plain_2col agenda slide.",
     )
     return parser.parse_args()
 
@@ -260,6 +290,13 @@ def section_map(sections: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     return result
 
 
+def normalize_note_text(value: Any) -> str:
+    """Normalize markdown-table note escapes into actual speaker-note lines."""
+    text = str(value)
+    text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+    return text.replace("\\n", "\n").strip()
+
+
 def apply_layout_mapping(
     layout: str,
     front_matter: dict[str, Any],
@@ -278,7 +315,7 @@ def apply_layout_mapping(
     slide["logo"] = "logo.png"
     note_val = front_matter.get("note", "")
     if note_val:
-        slide["note"] = str(note_val)
+        slide["note"] = normalize_note_text(note_val)
 
     sections = parse_sections(body)
     tags = section_map(sections)
@@ -398,6 +435,105 @@ def apply_layout_mapping(
     return slide
 
 
+def validate_nanobanana_icon_prompts(slides: list[dict[str, Any]]) -> int:
+    """Warn when card/flow slides are missing nanobanana2 icon prompt notes."""
+    missing_count = 0
+    for index, slide in enumerate(slides, start=1):
+        layout = str(slide.get("layout", "")).strip()
+        if layout not in NANOBANANA_ICON_LAYOUTS:
+            continue
+        note = str(slide.get("note", ""))
+        if NANOBANANA_ICON_MARKER not in note:
+            missing_count += 1
+            title = ""
+            header = slide.get("header")
+            if isinstance(header, dict):
+                title = str(header.get("title", "")).strip()
+            warn(
+                f"Slide #{index} layout '{layout}' is missing "
+                f"'{NANOBANANA_ICON_MARKER}' in note. "
+                "If nanobanana2 is enabled, add the icon prompt block at the note end."
+                + (f" Title: {title}" if title else "")
+            )
+    return missing_count
+
+
+def validate_no_deprecated_nanobanana_image_col(
+    slides: list[dict[str, Any]], markdown_text: str
+) -> int:
+    """Reject old image-column prompt placement when nanobanana2 is enabled."""
+    missing_count = 0
+    for index, slide in enumerate(slides, start=1):
+        if str(slide.get("layout", "")).strip() == "plain_image_col":
+            warn(
+                "nanobanana2 validation failed: slide "
+                f"#{index} uses deprecated layout 'plain_image_col'. "
+                "Use 'plain_2col' with text on the left and the prompt in an "
+                "indented code block on the right."
+            )
+            missing_count += 1
+    for field in DEPRECATED_NANOBANANA_FIELDS:
+        if field in markdown_text:
+            warn(
+                "nanobanana2 validation failed: DECK_MD contains deprecated "
+                f"'{field}'. Use plain_2col and put the prompt in card-b."
+            )
+            missing_count += 1
+    return missing_count
+
+
+def validate_agenda_slide(slides: list[dict[str, Any]]) -> int:
+    """Require slide 2 to be the agenda in plain_2col layout."""
+    if len(slides) < 2:
+        warn("Agenda validation failed: deck has fewer than 2 slides.")
+        return 1
+    layout = str(slides[1].get("layout", "")).strip()
+    if layout != "plain_2col":
+        warn(
+            "Agenda validation failed: slide #2 must use layout 'plain_2col' "
+            f"for the agenda, but found '{layout or '(missing)'}'."
+        )
+        return 1
+    agenda_text_parts: list[str] = []
+    for row in slides[1].get("grid", []):
+        if not isinstance(row, list):
+            continue
+        for cell in row:
+            if isinstance(cell, dict):
+                agenda_text_parts.append(str(cell.get("markdown", "")))
+    agenda_text = "\n".join(agenda_text_parts)
+    for label in AGENDA_FORBIDDEN_LABELS:
+        if label in agenda_text:
+            warn(
+                "Agenda validation failed: agenda must be grouped by meaningful "
+                f"section headings, not broad column labels such as '{label}'."
+            )
+            return 1
+    agenda_entries = set()
+    for line in agenda_text.splitlines():
+        entry = line.strip()
+        entry = re.sub(r"^(#{1,6}\s+|[-*]\s+|\d+[.)]\s+)", "", entry).strip()
+        entry = entry.strip("*_` ")
+        if entry:
+            agenda_entries.add(entry)
+    missing_titles: list[tuple[int, str]] = []
+    for index, slide in enumerate(slides[2:], start=3):
+        header = slide.get("header")
+        if not isinstance(header, dict):
+            continue
+        title = str(header.get("title", "")).strip()
+        if title and title not in agenda_entries:
+            missing_titles.append((index, title))
+    if missing_titles:
+        for index, title in missing_titles:
+            warn(
+                "Agenda validation failed: agenda must include each slide title "
+                f"exactly. Missing slide #{index} title: {title}"
+            )
+        return 1
+    return 0
+
+
 def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
     """Build a cover slide directly from metadata."""
     title = str(front_matter.get("title", ""))
@@ -414,7 +550,7 @@ def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
     }
     note_val = front_matter.get("note", "")
     if note_val:
-        slide["note"] = str(note_val)
+        slide["note"] = normalize_note_text(note_val)
     return slide
 
 
@@ -586,6 +722,23 @@ def main() -> int:
         markdown_text = ""
 
     slides = convert_markdown_to_slides(markdown_text, templates)
+    if args.require_agenda:
+        missing_agenda = validate_agenda_slide(slides)
+        if missing_agenda:
+            return 1
+    if args.nanobanana2:
+        deprecated_image_col = validate_no_deprecated_nanobanana_image_col(
+            slides, markdown_text
+        )
+        if deprecated_image_col:
+            return 1
+        missing_icon_prompts = validate_nanobanana_icon_prompts(slides)
+        if missing_icon_prompts:
+            warn(
+                f"nanobanana2 validation failed: {missing_icon_prompts} "
+                "slide(s) missing icon prompt blocks."
+            )
+            return 1
     output_json, json_is_temp = resolve_output_json_path(
         input_md, args.output_json, args.no_pptx
     )
