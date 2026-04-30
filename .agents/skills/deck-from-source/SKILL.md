@@ -48,7 +48,7 @@ if _m:
 1. ソース全体から主張、対象、目的、流れを内部分析する。
 2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、TEMPLATE_WORKFLOW、MD_SYNTAX、CONTENT_LIMITS、CONTENT_VARIATION、SLIDE_STYLE、SPEAKER_NOTESに従ってDECK_MDを作る。薄い原文かどうかに関係なく、先に内部でだらだらと長文の詳細原稿へ書き直し、その厚みからスライドを設計する。
 3. 2枚目は必ずplain_2colの目次にする。大見出しは内容上の章グループ、小見出しは3枚目以降の各スライドタイトルを一字一句そのまま使う。発表順に左カラムから積み、右カラムは入りきらない分だけを送るoverflow欄であり、前半/後半の分割にはしない。
-4. nanobanana2がYesなら、plain_image_colとimage_label_1を使わない。プロンプト貼り付け用途はplain_2colを使い、左カラムに本文、右カラムにインデント式コードブロックのプロンプトを書く。プロンプト不要ならtable、list、flow、compare系へ再設計する。
+4. nanobanana2がYesなら、plain_image_colとimage_label_1を使わない。プロンプト貼り付け用途はplain_2colを使い、左カラムに本文、右カラムにインデント式コードブロックのプロンプトを書く。plain_2col用は6:5説明図、card/step系の一括画像は6:5にせず3:1または4:1の横長アイコンストリップにする。
 5. layoutごとの必須ブロック名を守る。plain_1colはcard-a、plain_2colはcard-a/card-b、flow_3stepはstep-a/step-b/step-c、flow_4stepはstep-a/step-b/step-c/step-dで書く。text、step、card、plainなどの独自ブロック名を作らない。
 6. card-aなどの本文ブロック内にスライド区切りの3連ハイフンを書かない。
 7. 生成後、DENSITY_REVIEWに従って目視で自己点検し、noteではなくスライド本文に厚みが戻っているかを確認する。短すぎる本文、flow系の名詞句だけのstep、弱いnote、単調な箇条書き、ですます調をDECK_MD本文で直す。
@@ -57,7 +57,7 @@ if _m:
 
 ## PPTX変換コードの型
 
-nanobanana2がYesの場合、PPTX変換前にDECK_MDを必ず点検する。card/flow系はnote末尾に`[nanobanana2 icon prompt]`ブロックを置く。プロンプト貼り付け用途はplain_2colにし、左を本文、右をインデント式コードブロックのプロンプトにする。plain_image_colとimage_label_1は使わない。note改行に`<br>`を使わず、表セル内では`\n`を書く。2枚目は必ずplain_2colの目次にし、3枚目以降のスライドタイトルを全件そのまま含める。本文密度はPython検証ではなくDECK_MD確定前の編集工程で担保する。ブロック名は`--strict-blocks`で検査されるため、存在しないタグを作らない。
+nanobanana2がYesの場合、PPTX変換前にDECK_MDを必ず点検する。card/flow系はnote末尾に`[nanobanana2 icon prompt]`ブロックを置く。この一括アイコン素材では6:5を使わず、3要素なら3:1、4要素なら4:1の横長キャンバスに等幅アイコンを横並びで作る。プロンプト貼り付け用途はplain_2colにし、左を本文、右をインデント式コードブロックのプロンプトにする。plain_2col用の単体説明図だけ6:5を使い、画像内文字は短い日本語ラベルを許可する。note改行に`<br>`を使わず、表セル内では`\n`を書く。2枚目は必ずplain_2colの目次にし、3枚目以降のスライドタイトルを全件そのまま含める。本文密度はPython検証ではなくDECK_MD確定前の編集工程で担保する。ブロック名は`--strict-blocks`で検査されるため、存在しないタグを作らない。
 
 DECK_MDを確定したら、code interpreterで次の型を使う。TITLE_SLUGは表紙タイトルを短い英語で表したsnake_caseまたはkebab-caseにする。
 

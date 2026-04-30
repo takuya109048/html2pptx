@@ -971,16 +971,14 @@ def render_footer(slide, sd, total: int = 0):
     _etree.SubElement(clr_sep, f"{{{_NS_A}}}srgbClr", attrib={"val": C["textMuted"]})
     t_sep = _etree.SubElement(r_sep, f"{{{_NS_A}}}t")
     t_sep.text = "/"
-    # 総スライド数フィールド: type="slidecount" で自動更新、<a:t> に実数を入れてフォールバック
-    fld2 = _etree.SubElement(para._p, f"{{{_NS_A}}}fld",
-                             attrib={"id": f"{{{str(uuid.uuid4()).upper()}}}",
-                                     "type": "slidecount"})
-    rPr2 = _etree.SubElement(fld2, f"{{{_NS_A}}}rPr",
+    # 分母は表紙を除いた本文ページ数。slidecountフィールドは表紙込みで再計算されるため使わない。
+    r_total = _etree.SubElement(para._p, f"{{{_NS_A}}}r")
+    rPr2 = _etree.SubElement(r_total, f"{{{_NS_A}}}rPr",
                              attrib={"lang": "ja-JP", "smtClean": "0", "sz": sz_val})
     clr2 = _etree.SubElement(rPr2, f"{{{_NS_A}}}solidFill")
     _etree.SubElement(clr2, f"{{{_NS_A}}}srgbClr", attrib={"val": C["textMuted"]})
-    t2 = _etree.SubElement(fld2, f"{{{_NS_A}}}t")
-    t2.text = str(total)  # フォールバック: PowerPoint が slidecount を認識しない場合もここを表示
+    t2 = _etree.SubElement(r_total, f"{{{_NS_A}}}t")
+    t2.text = str(total)
     logo_path = _find_file(HERE, sd.get("logo", "logo.png"))
     if os.path.exists(logo_path):
         pic = slide.shapes.add_picture(
@@ -1061,7 +1059,12 @@ def main():
     if not targets:
         print(f"テンプレートが見つかりません: {_arg}"); return
 
-    total_slides = sum(len(t.get("SLIDES", [])) for t in targets.values())
+    total_slides = sum(
+        1
+        for t in targets.values()
+        for sd in t.get("SLIDES", [])
+        if sd.get("layout") != "cover"
+    )
     total = 0
     print(f"[Info] テンプレート数: {len(targets)}")
     print("=" * 60)

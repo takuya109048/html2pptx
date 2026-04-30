@@ -478,6 +478,20 @@ def validate_nanobanana_icon_prompts(slides: list[dict[str, Any]]) -> int:
                 "If nanobanana2 is enabled, add the icon prompt block at the note end."
                 + (f" Title: {title}" if title else "")
             )
+            continue
+        prompt_text = note.split(NANOBANANA_ICON_MARKER, 1)[1]
+        if "6:5" in prompt_text:
+            missing_count += 1
+            title = ""
+            header = slide.get("header")
+            if isinstance(header, dict):
+                title = str(header.get("title", "")).strip()
+            warn(
+                f"Slide #{index} layout '{layout}' uses '6:5' in a card/flow "
+                "nanobanana icon prompt. Use a horizontal icon strip instead: "
+                "3:1 for 3 icons or 4:1 for 4 icons."
+                + (f" Title: {title}" if title else "")
+            )
     return missing_count
 
 
