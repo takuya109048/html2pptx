@@ -24,6 +24,24 @@ TABLE_SEPARATOR_RE = re.compile(
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
 STEP_TAGS = ["step-a", "step-b", "step-c", "step-d"]
 CONTENT_SECTION_TAGS = set(CARD_TAGS + STEP_TAGS + ["section", "conclusion", "table", "matrix", "flow_matrix", "h_flow_matrix", "compare"])
+LAYOUT_REQUIRED_TAGS = {
+    "plain_1col": ["card-a"],
+    "plain_2col": ["card-a", "card-b"],
+    "list_3card": ["card-a", "card-b", "card-c"],
+    "flow_3step": ["step-a", "step-b", "step-c"],
+    "flow_4step": ["step-a", "step-b", "step-c", "step-d"],
+    "diffuse_3card": ["section", "card-a", "card-b", "card-c"],
+    "converge_3card": ["card-a", "card-b", "card-c", "conclusion"],
+    "bg_3card": ["section", "card-a", "card-b", "card-c"],
+    "table": ["table"],
+    "table_conclusion": ["table", "conclusion"],
+    "compare_2col_3row": ["compare"],
+    "matrix_3x3": ["matrix"],
+    "flow_matrix_3x3": ["flow_matrix"],
+    "h_flow_matrix_3x2": ["h_flow_matrix"],
+    "h_flow_matrix_3x3": ["h_flow_matrix"],
+    "h_flow_matrix_4x2": ["h_flow_matrix"],
+}
 NANOBANANA_ICON_LAYOUTS = {
     "list_3card",
     "flow_3step",
@@ -127,6 +145,11 @@ def parse_args() -> argparse.Namespace:
         "--require-agenda",
         action="store_true",
         help="Require the second slide to be a plain_2col agenda slide.",
+    )
+    parser.add_argument(
+        "--strict-blocks",
+        action="store_true",
+        help="Reject unknown block tags and missing required layout blocks.",
     )
     return parser.parse_args()
 
@@ -534,6 +557,42 @@ def validate_agenda_slide(slides: list[dict[str, Any]]) -> int:
     return 0
 
 
+def validate_required_blocks(markdown_text: str) -> int:
+    """Reject invalid or missing fenced content blocks before conversion."""
+    error_count = 0
+    blocks = parse_slide_blocks(markdown_text)
+    for index, block in enumerate(blocks, start=1):
+        front_matter = block.get("front_matter", {})
+        body = str(block.get("body", ""))
+        layout = str(front_matter.get("layout", "")).strip()
+        title = str(front_matter.get("title", "")).strip()
+        if not layout or layout == "cover":
+            continue
+        sections = parse_sections(body)
+        tags = [section["tag"] for section in sections]
+        for tag in tags:
+            if tag not in CONTENT_SECTION_TAGS:
+                warn(
+                    f"Block #{index} layout '{layout}' uses unknown block tag "
+                    f"'```{tag}'. Use only the tags required by the layout."
+                    + (f" Title: {title}" if title else "")
+                )
+                error_count += 1
+        required_tags = LAYOUT_REQUIRED_TAGS.get(layout)
+        if not required_tags:
+            continue
+        tag_set = set(tags)
+        for required_tag in required_tags:
+            if required_tag not in tag_set:
+                warn(
+                    f"Block #{index} layout '{layout}' is missing required block "
+                    f"'```{required_tag}'."
+                    + (f" Title: {title}" if title else "")
+                )
+                error_count += 1
+    return error_count
+
+
 def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
     """Build a cover slide directly from metadata."""
     title = str(front_matter.get("title", ""))
@@ -720,6 +779,15 @@ def main() -> int:
     except Exception as exc:
         warn(f"Failed to read input markdown '{args.input_md}' (resolved: '{input_md}'): {exc}")
         markdown_text = ""
+
+    if args.strict_blocks:
+        block_errors = validate_required_blocks(markdown_text)
+        if block_errors:
+            warn(
+                f"Strict block validation failed: {block_errors} "
+                "invalid or missing block(s)."
+            )
+            return 1
 
     slides = convert_markdown_to_slides(markdown_text, templates)
     if args.require_agenda:

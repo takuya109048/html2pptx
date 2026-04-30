@@ -182,6 +182,7 @@ nanobanana2がYesの場合:
 - 横フローマトリックスはh_flow_matrixを使う。
 - BQ3なしでタグ名だけを書く形式は無効である。
 - flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。
+- ブロック名を自作しない。plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。flow_4stepはstep-a、step-b、step-c、step-dを使う。
 
 ## MD_SYNTAX
 
@@ -215,6 +216,8 @@ DECK_MDでは上のBQ3を実際の半角バッククォート3個にする。BQ3
 ブロック別注意:
 - card系とstep系は先頭に見出し3形式の短い見出しを置く。
 - step系では見出し3がステップラベルとして使われる。
+- plain_1colの本文ブロックはcard-aである。text、plain、bodyは存在しない。
+- flow_3stepの本文ブロックはstep-a、step-b、step-cである。flow_4stepはstep-a、step-b、step-c、step-dである。stepという省略タグは存在しない。
 - tableはMarkdown表を入れる。列名、区切り行、データ行を必ず置く。
 - compareは左端に観点列、右に比較対象2列を置く。
 - matrix系は先頭行を列ヘッダー、以降を行として解釈する。
@@ -243,6 +246,40 @@ BQ3table
 | 列1 | 列2 | 列3 |
 | --- | --- | --- |
 | データ | データ | データ |
+BQ3
+
+plain_1col例の骨格:
+# 単一説明タイトル
+## 本文を一つのカードにまとめる
+| key | value |
+|-----|-------|
+| layout | plain_1col |
+| note | 読み上げ原稿を書く。 |
+BQ3card-a
+### 見出し
+リード文で主張を述べる。
+- 判断材料を1つ置く
+- 注意点や次の行動を置く
+BQ3
+
+flow_3step例の骨格:
+# 3段階タイトル
+## 手順名だけでなく目的も示す
+| key | value |
+|-----|-------|
+| layout | flow_3step |
+| note | 読み上げ原稿を書く。 |
+BQ3step-a
+### 最初の段階
+目的と完了条件を書く。
+BQ3
+BQ3step-b
+### 次の段階
+判断基準と注意点を書く。
+BQ3
+BQ3step-c
+### 最後の段階
+結果と次の行動を書く。
 BQ3
 
 ## NANOBANANA_RULES
