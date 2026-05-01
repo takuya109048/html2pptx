@@ -519,6 +519,28 @@ def validate_no_deprecated_nanobanana_image_col(
     return missing_count
 
 
+def validate_nanobanana_no_plain_1col(slides: list[dict[str, Any]]) -> int:
+    """Reject text-only plain_1col slides when nanobanana2 is enabled."""
+    error_count = 0
+    for index, slide in enumerate(slides, start=1):
+        if index < 3:
+            continue
+        layout = str(slide.get("layout", "")).strip()
+        if layout != "plain_1col":
+            continue
+        title = ""
+        header = slide.get("header")
+        if isinstance(header, dict):
+            title = str(header.get("title", "")).strip()
+        warn(
+            f"Slide #{index} uses plain_1col while nanobanana2 is enabled. "
+            "Use plain_2col with a prompt, or redesign as table/list/flow."
+            + (f" Title: {title}" if title else "")
+        )
+        error_count += 1
+    return error_count
+
+
 def validate_agenda_slide(slides: list[dict[str, Any]]) -> int:
     """Require slide 2 to be the agenda in plain_2col layout."""
     if len(slides) < 2:
@@ -813,6 +835,13 @@ def main() -> int:
             slides, markdown_text
         )
         if deprecated_image_col:
+            return 1
+        text_only_plain = validate_nanobanana_no_plain_1col(slides)
+        if text_only_plain:
+            warn(
+                f"nanobanana2 validation failed: {text_only_plain} "
+                "plain_1col slide(s) found."
+            )
             return 1
         missing_icon_prompts = validate_nanobanana_icon_prompts(slides)
         if missing_icon_prompts:

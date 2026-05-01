@@ -48,16 +48,16 @@ if _m:
 1. ソース全体から主張、対象、目的、流れを内部分析する。
 2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、TEMPLATE_WORKFLOW、MD_SYNTAX、CONTENT_LIMITS、CONTENT_VARIATION、SLIDE_STYLE、SPEAKER_NOTESに従ってDECK_MDを作る。薄い原文かどうかに関係なく、先に内部でだらだらと長文の詳細原稿へ書き直し、その厚みからスライドを設計する。
 3. DECK_MD本文を書く前に3枚目以降のタイトル台帳を内部で確定する。2枚目は必ずplain_2colの目次にし、小見出しはタイトル台帳から一字一句コピーする。発表順に左カラムから積み、右カラムは入りきらない分だけを送るoverflow欄にする。
-4. nanobanana2がYesなら、plain_image_colとimage_label_1を使わない。プロンプト貼り付け用途はplain_2colを使い、左カラムに本文、右カラムにインデント式コードブロックのプロンプトを書く。plain_2col用は6:5説明図、card/step系の一括画像は6:5にせず3:1または4:1の横長アイコンストリップにする。
+4. nanobanana2がYesなら、3枚目以降にplain_1colのテキストのみスライドを作らない。各スライドはplain_2colで右カラムにプロンプトを置くか、card/flow系でnote末尾にアイコンプロンプトを置く。plain_image_colとimage_label_1は使わない。
 5. layoutごとの必須ブロック名を守る。plain_1colはcard-a、plain_2colはcard-a/card-b、flow_3stepはstep-a/step-b/step-c、flow_4stepはstep-a/step-b/step-c/step-dで書く。text、step、card、plainなどの独自ブロック名を作らない。
 6. card-aなどの本文ブロック内にスライド区切りの3連ハイフンを書かない。
-7. 生成後、DENSITY_REVIEWとFINAL_SELF_CHECKに従って目視で自己点検する。noteの改行は必ず`\n`で、`<br>`、note値内の`|`、独立した`[nanobanana2 icon prompt]`メタ行を残さない。
+7. 生成後、DENSITY_REVIEWとFINAL_SELF_CHECKに従って目視で自己点検する。noteの改行は必ず`\n`で、`<br>`、note値内の`|`、独立した`[nanobanana2 icon prompt]`メタ行、Yes時のplain_1colを残さない。
 8. 表紙タイトルを短い英語のslugへ変換し、出力ファイル名に使う。詳細はcontext.mdのOUTPUT_FILESに従う。
 9. mdとpptxだけをユーザーへ提示する。jsonは変換中に作ってよいが、ダウンロードリンクや最終報告には出さない。
 
 ## PPTX変換コードの型
 
-nanobanana2がYesの場合、PPTX変換前にDECK_MDを必ず点検する。card/flow系の`[nanobanana2 icon prompt]`は新しいメタ行や本文ブロックではなく、note値末尾に`\n\n---\n\n`で続けて入れる。この一括アイコン素材では6:5を使わず、3要素なら3:1、4要素なら4:1の横長キャンバスに等幅アイコンを横並びで作る。プロンプト貼り付け用途はplain_2colにし、左を本文、右をインデント式コードブロックのプロンプトにする。plain_2col用の単体説明図だけ6:5を使い、画像内文字は短い日本語ラベルを許可する。note改行に`<br>`を使わず、表セル内では`\n`を書く。2枚目は必ずplain_2colの目次にし、タイトル台帳から全件コピーする。本文密度はDECK_MD確定前の編集工程で担保する。
+nanobanana2がYesの場合、PPTX変換前にDECK_MDを必ず点検する。3枚目以降にplain_1colを使わない。card/flow系の`[nanobanana2 icon prompt]`は新しいメタ行や本文ブロックではなく、note値末尾に`\n\n---\n\n`で続けて入れる。この一括アイコン素材では6:5を使わず、3要素なら3:1、4要素なら4:1の横長キャンバスに等幅アイコンを横並びで作る。プロンプト貼り付け用途はplain_2colにし、左を本文、右をインデント式コードブロックのプロンプトにする。plain_2col用の単体説明図だけ6:5を使う。note改行に`<br>`を使わず、表セル内では`\n`を書く。2枚目は必ずplain_2colの目次にし、タイトル台帳から全件コピーする。
 
 DECK_MDを確定したら、code interpreterで次の型を使う。TITLE_SLUGは表紙タイトルを短い英語で表したsnake_caseまたはkebab-caseにする。
 
