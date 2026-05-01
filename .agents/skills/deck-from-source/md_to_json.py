@@ -639,7 +639,7 @@ def build_cover_slide(front_matter: dict[str, Any]) -> dict[str, Any]:
         "layout": "cover",
         "title": title,
         "affiliation": str(front_matter.get("affiliation", "")),
-        "presenter": "山田 花子",
+        "presenter": str(front_matter.get("presenter", "山田 花子")),
         "date": str(front_matter.get("date", "")),
         "bg": str(front_matter.get("bg", "background.png")),
     }

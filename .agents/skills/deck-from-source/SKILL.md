@@ -1,11 +1,11 @@
 ---
 name: deck-from-source
-description: 原文ソース（テキスト/URL/ファイル）から分析済みスライドデッキMDとPPTXを生成するスキル。初回はPPTX生成へ進まず、必ずnanobanana2生成画像を使うかYes/No質問だけを返す。Yes/No回答後に、GLOBIS的な構成分析、MD生成、PPTX変換、md/pptxリンク提示まで実行する。カスタムGPTs流用前提（SKILL.md≤5000字、詳細はcontext.md）。
+description: 原文ソース（テキスト/URL/ファイル）から、安定したdeck_source.jsonとPPTXを生成するスキル。初回はPPTX生成へ進まず、必ずnanobanana2生成画像を使うかYes/No質問だけを返す。Yes/No回答後に、構成分析、JSON生成、PPTX変換、json/pptxリンク提示まで実行する。Markdownデッキ形式は廃止し、カスタムGPTs流用前提（SKILL.md≤5000字、詳細はcontext.md）。
 ---
 
 # deck-from-source
 
-原文ソースから、発表用のスライドデッキMDとPPTXを生成する。
+原文ソースから、発表用のdeck_source.jsonとPPTXを生成する。Markdownデッキは作らない。
 SKILL.mdは最小限の実行指示だけを持ち、詳細ルールは毎ターンcontext.mdから読む。
 
 ## 毎ターン最初に行うこと
@@ -16,7 +16,7 @@ file searchで次だけを実行する。
 { "queries": ["context.mdのmd全文をfile search"] }
 ```
 
-context.mdに、構成分析、レイアウト選択、MD構文、密度、note、ファイル名、ダウンロード提示の詳細がある。
+context.mdに、構成分析、JSONスキーマ、レイアウト選択、密度、note、画像プロンプト、ファイル名、ダウンロード提示の詳細がある。
 
 ## アップロードファイル解決
 
@@ -34,56 +34,52 @@ if _m:
 このスキルは2ターンで動く。
 
 ターンA:
-ソースを受け取る。分析、判断、MD生成、PPTX生成はしない。次の質問だけを返す。
+ソースを受け取る。分析、判断、JSON生成、PPTX生成はしない。次の質問だけを返す。
 
-「nanobanana2による生成画像を挿入プランにしますか？ Yes / No で答えてください。（YesにするとPlainスライドに画像プレースホルダーとプロンプトを追加します。Noならテキスト中心で生成します）」
+「nanobanana2による生成画像を挿入プランにしますか？ Yes / No で答えてください。（Yesにすると説明図プロンプトやカード/フロー用アイコンプロンプトをdeck_source.jsonに追加します。Noなら画像プロンプトなしで生成します）」
 
 スライド枚数、発表者名、対象者は追加質問しない。必要ならターンBで自然に推定する。
 
 ターンB:
-直近のユーザー返答でYes/No方針を受け取ったら、ソース分析、構成決定、DECK_MD生成、自己点検、PPTX変換、リンク提示まで1ターンで完了する。思考過程、分析メモ、構成案はユーザーに出さない。
+直近のユーザー返答でYes/No方針を受け取ったら、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、リンク提示まで1ターンで完了する。思考過程、分析メモ、構成案はユーザーに出さない。
 
 ## ターンBの作業
 
-1. ソース全体から主張、対象、目的、流れを内部分析する。
-2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、TEMPLATE_WORKFLOW、MD_SYNTAX、CONTENT_LIMITS、CONTENT_VARIATION、SLIDE_STYLE、SPEAKER_NOTESに従ってDECK_MDを作る。薄い原文かどうかに関係なく、先に内部でだらだらと長文の詳細原稿へ書き直し、その厚みからスライドを設計する。
-3. DECK_MD本文を書く前に3枚目以降のタイトル台帳を内部で確定する。2枚目は必ずplain_2colの目次にし、小見出しはタイトル台帳から一字一句コピーする。発表順に左カラムから積み、右カラムは入りきらない分だけを送るoverflow欄にする。
-4. nanobanana2がYesなら、3枚目以降にplain_1colのテキストのみスライドを作らない。各スライドはplain_2colで右カラムにプロンプトを置くか、card/flow系でnote末尾にアイコンプロンプトを置く。plain_image_colとimage_label_1は使わない。
-5. layoutごとの必須ブロック名を守る。plain_1colはcard-a、plain_2colはcard-a/card-b、flow_3stepはstep-a/step-b/step-c、flow_4stepはstep-a/step-b/step-c/step-dで書く。text、step、card、plainなどの独自ブロック名を作らない。
-6. card-aなどの本文ブロック内にスライド区切りの3連ハイフンを書かない。
-7. 生成後、DENSITY_REVIEWとFINAL_SELF_CHECKに従って目視で自己点検する。noteの改行は必ず`\n`で、`<br>`、note値内の`|`、独立した`[nanobanana2 icon prompt]`メタ行、Yes時のplain_1colを残さない。
-8. 表紙タイトルを短い英語のslugへ変換し、出力ファイル名に使う。詳細はcontext.mdのOUTPUT_FILESに従う。
-9. mdとpptxだけをユーザーへ提示する。jsonは変換中に作ってよいが、ダウンロードリンクや最終報告には出さない。
+1. ソース全体から主張、対象、目的、流れをGLOBIS的に内部分析する。
+2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、JSON_SCHEMA、LAYOUT_RULES、CONTENT_LIMITS、DENSITY_REVIEW、SPEAKER_NOTESに従ってDECK_SOURCE_JSONを作る。薄い原文かどうかに関係なく、先に内部でだらだらと長文の詳細原稿へ書き直し、その厚みからスライドを設計する。
+3. slides配列には本文スライドだけを書く。表紙と目次はdeck_source_to_json.pyが自動生成する。各slides[].titleが目次小見出しになるため、重複や空タイトルを作らない。
+4. nanobanana2がYesなら、slidesにplain_1colを使わない。各スライドはplain_2colでblocks.card-bに説明図プロンプトを置くか、card/flow系でicon_promptを置く。
+5. layoutごとの必須blocks名を守る。plain_2colはcard-a/card-b、list_3cardはcard-a/card-b/card-c、flow_3stepはstep-a/step-b/step-c、flow_4stepはstep-a/step-b/step-c/step-dで書く。text、step、card、plainなどの独自keyを作らない。
+6. 生成後、FINAL_SELF_CHECKに従って目視で自己点検する。Markdownデッキ記法、メタテーブル、フェンス、HTML改行タグを出さない。
+7. 表紙タイトルを短い英語のslugへ変換し、出力ファイル名に使う。詳細はcontext.mdのOUTPUT_FILESに従う。
+8. deck_source.jsonとpptxだけをユーザーへ提示する。変換後slides.jsonは中間生成物として作ってよいが、ダウンロードリンクや最終報告には出さない。
 
 ## PPTX変換コードの型
 
-nanobanana2がYesの場合、PPTX変換前にDECK_MDを必ず点検する。3枚目以降にplain_1colを使わない。card/flow系の`[nanobanana2 icon prompt]`は新しいメタ行や本文ブロックではなく、note値末尾に`\n\n---\n\n`で続けて入れる。この一括アイコン素材では6:5を使わず、3要素なら3:1、4要素なら4:1の横長キャンバスに等幅アイコンを横並びで作る。プロンプト貼り付け用途はplain_2colにし、左を本文、右をインデント式コードブロックのプロンプトにする。plain_2col用の単体説明図だけ6:5を使う。note改行に`<br>`を使わず、表セル内では`\n`を書く。2枚目は必ずplain_2colの目次にし、タイトル台帳から全件コピーする。
-
-DECK_MDを確定したら、code interpreterで次の型を使う。TITLE_SLUGは表紙タイトルを短い英語で表したsnake_caseまたはkebab-caseにする。
+DECK_SOURCE_JSONを確定したら、code interpreterで次の型を使う。TITLE_SLUGは表紙タイトルを短い英語で表したsnake_caseまたはkebab-caseにする。
 
 ```python
-import glob, os, subprocess, sys
+import glob, json, os, subprocess, sys
 MNT = "/mnt/data"
 _m = glob.glob(f"{MNT}/*resolve_uploads.py")
 if _m:
     exec(open(_m[0]).read())
 
 TITLE_SLUG = "short_english_title"
-DECK_MD = """(最終確定したDECK_MD全文)"""
-deck_path = os.path.join(MNT, f"{TITLE_SLUG}.md")
-json_path = os.path.join(MNT, f"{TITLE_SLUG}.json")
+DECK_SOURCE_JSON = { }  # 最終確定したdictを入れる
+source_path = os.path.join(MNT, f"{TITLE_SLUG}.json")
+slides_json_path = os.path.join(MNT, f"{TITLE_SLUG}.slides.json")
 pptx_path = os.path.join(MNT, f"{TITLE_SLUG}.pptx")
-with open(deck_path, "w", encoding="utf-8") as f:
-    f.write(DECK_MD)
+with open(source_path, "w", encoding="utf-8") as f:
+    json.dump(DECK_SOURCE_JSON, f, ensure_ascii=False, indent=2)
 subprocess.run(
-    [sys.executable, os.path.join(MNT, "md_to_json.py"), deck_path, pptx_path, "--json", json_path, "--assets-dir", MNT, "--nanobanana2", "--require-agenda", "--strict-blocks"],
+    [sys.executable, os.path.join(MNT, "deck_source_to_json.py"), source_path, pptx_path, "--json", slides_json_path, "--assets-dir", MNT, "--nanobanana2", "--require-agenda", "--strict-blocks"],
     check=True, cwd=MNT,
 )
-for fn in [f"{TITLE_SLUG}.md", f"{TITLE_SLUG}.pptx"]:
+for fn in [f"{TITLE_SLUG}.json", f"{TITLE_SLUG}.pptx"]:
     print(f"- [Download {fn}](sandbox:/mnt/data/{fn})")
 ```
 
 ## 変換補足
 
-DECK_MD内の三重バッククオートはPythonの三重クオート文字列内でもそのまま貼れる。
 /mnt/dataにスクリプト群がない場合は、context.mdのSETUP_SCRIPTに従って先に実行ファイル群を配置する。
