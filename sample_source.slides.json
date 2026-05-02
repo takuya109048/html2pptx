@@ -1,0 +1,209 @@
+[
+  {
+    "layout": "cover",
+    "title": "CLAUDE.md設計ガイド\n役割分担、書き方、運用ループを短時間で共有する",
+    "affiliation": "Codex Working Deck",
+    "presenter": "Takuya",
+    "date": "2026-05-03",
+    "bg": "background.png",
+    "note": "sample_source.md を原文ソースとして再構成した説明用デッキ。CLAUDE.md と MEMORY.md の違い、良いルールの書き方、推奨章立て、継続運用の流れを短く把握できるように整理している。"
+  },
+  {
+    "header": {
+      "title": "目次",
+      "message": "構成を章ごとにたどる"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 基本理解\n- CLAUDE.mdは毎回読むルールブック\n- CLAUDE.mdとMEMORY.mdは役割が違う\n### 設計実装\n- 良いCLAUDE.mdは3原則で磨く\n- 推奨章立てをテンプレートとして使う\n### 運用改善\n- 運用では育て方まで決めておく"
+        },
+        {
+          "type": "plain",
+          "markdown": "### overflow"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_2col",
+    "note": "本資料の流れを確認する。目次の小見出しは各スライドタイトルから自動生成しているため、本文スライドとの不一致を避けられる。"
+  },
+  {
+    "header": {
+      "title": "CLAUDE.mdは毎回読むルールブック",
+      "message": "設定ファイルではなく、行動を固定する共通基準"
+    },
+    "rowHeightRatios": [
+      0.25,
+      0.75
+    ],
+    "grid": [
+      [
+        {
+          "type": "section",
+          "span": 3,
+          "markdown": "CLAUDE.md は **毎回読む前提** の文書であり、都度の会話に頼らず行動基準を固定する。"
+        }
+      ],
+      [
+        {
+          "type": "card",
+          "markdown": "### 役割の核心\n- CLAUDE.md は **重要ルールを固定** するための文書で、単発依頼ではなく継続的な基準を書く。\n- セッション開始時に読む前提なので、毎回同じ説明を繰り返す負担を減らせる。\n- AI に期待する振る舞いを、会話ではなく明文化で再現できる。"
+        },
+        {
+          "type": "card",
+          "markdown": "### 効く理由\n- ルールを先に置くことで、**判断のぶれを抑える** ことができる。\n- プロジェクト固有の禁止事項や手順を先回りで渡せるため、修正の往復が減る。\n- 重要事項だけを残せば、長い会話履歴に埋もれず参照されやすい。"
+        },
+        {
+          "type": "card",
+          "markdown": "### 設計ゴール\n- 原文では **重要ルールの厳選**、**適切な密度**、**スコープ分離** の3点が中核になっている。\n- つまり、何でも書くのではなく、守らせたいことを短く濃く残す設計が要点になる。\n- この前提が、後続の章立てや運用ループの判断軸になる。"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "bg_3card",
+    "note": "最初の本文スライドでは、CLAUDE.md の位置づけを一言で掴んでもらう。単なる設定ではなく、セッション開始時に読み込まれるルールブックであり、反復説明を減らしつつ AI の振る舞いをプロジェクト基準へ揃える役割があることを、3つの観点で端的に示す。\n\n---\n\n[nanobanana2 icon prompt]\nCreate a 3:1 horizontal icon strip with three equal square icons in a clean editorial style. Icon 1: an open rulebook with a bookmark. Icon 2: a target with alignment guides showing behavior being tuned. Icon 3: three stacked cards showing concise scope separation. Use warm neutral tones, sharp geometry, subtle shadows, and no text."
+  },
+  {
+    "header": {
+      "title": "CLAUDE.mdとMEMORY.mdは役割が違う",
+      "message": "強制するルールと、学習される傾向を混ぜない"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "card",
+          "markdown": "### CLAUDE.md\n- ルール置き場として **ユーザーが定義する** 文書で、コーディング規約や手順、禁止事項のような普遍項目を書く。\n- 目的は「こう振る舞え」という基準を先に与え、作業のたびに守らせることにある。\n- そのため、頻繁に変わる雑多なメモよりも、継続利用する前提を優先して管理する。"
+        },
+        {
+          "type": "card",
+          "markdown": "### MEMORY.md\n- パターン置き場として **AIが学習で蓄積する** 情報で、よく使う変数名や最近の対処法のような傾向が溜まる。\n- こちらは会話や修正結果から自然に育つため、弱い好みや最近の癖を覚えるのに向いている。\n- 強い強制力を期待する場所ではなく、作業を滑らかにする補助記憶として扱う。"
+        },
+        {
+          "type": "card",
+          "markdown": "### 使い分け\n- 破壊的操作の禁止や必須テストのような **守らせたい事項はCLAUDE.md** に置く。\n- 「最近はこの設計に寄せる」程度の **弱い好みはMEMORY.md** に任せる。\n- 両者を混ぜないことで、基準と学習結果の境界が明確になり、メンテナンスもしやすい。"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "list_3card",
+    "note": "2枚目の本文では、ユーザーが管理する CLAUDE.md と、AI が学習で蓄積する MEMORY.md の違いを対比する。作成者、内容、用途の3軸で切り分けることで、どちらへ何を書くべきかの判断をしやすくする。\n\n---\n\n[nanobanana2 icon prompt]\nCreate a 3:1 horizontal icon strip with three equal square icons in a modern flat editorial style. Icon 1: a signed checklist document. Icon 2: a glowing memory chip with dotted traces. Icon 3: two separated folders connected by a divider line. Use soft blue, amber, and charcoal accents with consistent line weight and no text."
+  },
+  {
+    "header": {
+      "title": "良いCLAUDE.mdは3原則で磨く",
+      "message": "短く、断定的に、行動へ落ちる文にする"
+    },
+    "rowHeightRatios": [
+      0.28,
+      0.72
+    ],
+    "grid": [
+      [
+        {
+          "type": "step_head",
+          "markdown": "絞る"
+        },
+        {
+          "type": "step_head",
+          "markdown": "断定する"
+        },
+        {
+          "type": "step_head",
+          "markdown": "行動化する"
+        }
+      ],
+      [
+        {
+          "type": "card",
+          "markdown": "- まず **重要なルールだけ残す**。単発依頼や説明用の文章まで入れると、守ってほしい核が埋もれる。\n- 推奨サイズが 60 から 300 行に収まるのは、精度を上げるための設計判断でもある。\n- 書けるだけ書くのではなく、常時参照してほしい事項に限定する。"
+        },
+        {
+          "type": "card",
+          "markdown": "- 1ルール1文を意識し、**宣言調で書く**。曖昧な依頼形よりも、実行条件が明確になる。\n- 例示されたように「しっかりやる」ではなく、実行コマンドや完了条件まで明文化する。\n- これにより、解釈のぶれを減らし、再現性のある作業指示へ変換できる。"
+        },
+        {
+          "type": "card",
+          "markdown": "- 最後に **実行可能な手順へ落とす**。テスト、lint、typecheck のようにそのまま実行できる形が望ましい。\n- 抽象スローガンではなく、何をいつ走らせるかを書けば、AI は計画へ組み込みやすい。\n- 文章をルールで終わらせず、行動トリガーまで設計することが実務では重要になる。"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "flow_3step",
+    "note": "3枚目では、原文のベストプラクティスをそのまま設計原則へ圧縮している。長さの最適化とルール粒度の考え方を、実際に書くときの順番として理解できるように3ステップ化した。\n\n---\n\n[nanobanana2 icon prompt]\nCreate a 3:1 horizontal icon strip with three equal square icons showing a left-to-right process. Step 1: a funnel filtering many notes into a few cards. Step 2: a pen turning a fuzzy cloud into a crisp statement. Step 3: a checklist being executed with a play button. Editorial infographic style, warm gray background, teal and orange accents, no text."
+  },
+  {
+    "header": {
+      "title": "推奨章立てをテンプレートとして使う",
+      "message": "概要から固有制約まで、7つの章で抜け漏れを防ぐ"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 章立ての使い方\n- 章は **概要、技術スタック、構成、コマンド、規約、ワークフロー、Gotchas** の順で置くと整理しやすい。\n- この順番だと、最初に目的を共有し、その後に実装制約と実行手順を積み上げられる。\n- 特に **コマンド集を文字列で置く**、**Gotchasで現場特有の罠を書く** という2点が、実運用では効きやすい。\n- つまり章立ては説明用の見出しではなく、抜け漏れを減らす設計テンプレートとして使う。"
+        },
+        {
+          "type": "plain",
+          "markdown": "### nanobanana2 prompt\n[nanobanana2 icon prompt]\nCreate a clean 16:9 presentation illustration showing a seven-part document template laid out as stacked sections from top to bottom. Visually distinguish overview, stack, architecture, commands, style, workflow, and gotchas using small colored tabs, thin dividers, and a neat editorial grid. Add a side annotation area with abstract markers only, no readable text, and keep the composition bright, structured, and presentation-friendly."
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_2col",
+    "note": "4枚目では、原文にある推奨章立てを、実際に作成へ使うテンプレートとして扱う。左カラムは人が読む要点、右カラムは nanobanana 用のビジュアル生成プロンプトにし、スキルの制約にも合わせている。"
+  },
+  {
+    "header": {
+      "title": "運用では育て方まで決めておく",
+      "message": "繰り返し指摘をルールへ昇格させ、古い項目を削る"
+    },
+    "rowHeightRatios": [
+      0.65,
+      0.08,
+      0.27
+    ],
+    "grid": [
+      [
+        {
+          "type": "card",
+          "markdown": "### 昇格ルール\n- 同じ注意を 2 回言ったら **即座にルール化する** という基準を持つ。\n- 会話内の繰り返しは、既に恒常ルールへ昇格すべきシグナルとして扱える。\n- この仕組みがあると、口頭依存の注意が減り、次回からの作業が安定する。"
+        },
+        {
+          "type": "card",
+          "markdown": "### 定期整理\n- 技術スタックや運用が変わったら **古いルールを削る**。足すだけでは形骸化しやすい。\n- 形だけ残った規約はノイズになり、本当に重要な制約の視認性を下げてしまう。\n- だから追加と同じ頻度で、不要化した項目の棚卸しを回す必要がある。"
+        },
+        {
+          "type": "card",
+          "markdown": "### 小さく検証\n- 変更後は **小さなタスクで振る舞い確認する**。書き換えた意図が反映されたかをすぐ確かめる。\n- ルールは文章だけでは完成せず、実際の出力や手順に効くかを見て初めて品質が分かる。\n- 更新、実行、確認の短いループを持つことで、CLAUDE.md を継続的に育てられる。"
+        }
+      ],
+      [
+        {
+          "type": "arrow",
+          "span": 3
+        }
+      ],
+      [
+        {
+          "type": "conclusion",
+          "span": 3,
+          "markdown": "運用の要点は **足す・削る・試す** を循環させ、CLAUDE.md を静的な文書ではなく改善対象として扱うことにある。"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "converge_3card",
+    "note": "最後は運用の締めとして、原文の「育て方」を更新ループへまとめる。何を足し、何を削り、どうテストするかの3点を示し、単に文書を書くのではなく継続改善する対象だと印象づける。\n\n---\n\n[nanobanana2 icon prompt]\nCreate a 3:1 horizontal icon strip with three equal square icons plus a subtle convergence motif. Icon 1: a speech bubble becoming a rule card. Icon 2: an archive box removing outdated papers. Icon 3: a small test beaker beside a checklist. Add a gentle arrow flow toward a final centered diamond that suggests continuous improvement. Minimal editorial style, sand and slate palette, no text."
+  }
+]

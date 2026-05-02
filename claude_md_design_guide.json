@@ -1,0 +1,115 @@
+{
+  "title": "CLAUDE.md Design Guide",
+  "subtitle": "長く効くルールファイルにするための設計原則と運用法",
+  "affiliation": "Codex Working Deck",
+  "presenter": "Takuya",
+  "date": "2026-05-03",
+  "note": "この資料は、CLAUDE.mdを単なる設定ファイルではなく、セッション開始時に毎回効く運用ルールとして設計するための要点を整理したものです。特に、MEMORY.mdとの役割分担、情報量の絞り込み、章立て、そして継続運用の方法を一続きの判断プロセスとして理解できるように並べています。",
+  "slides": [
+    {
+      "section": "設計原則",
+      "layout": "bg_3card",
+      "title": "CLAUDE.mdは挙動を固定するルールブックである",
+      "message": "単発指示の置き場ではなく、毎回読む前提条件を定義する",
+      "note": "最初の本文では、CLAUDE.mdとAuto memoryを並列に説明するのではなく、まずCLAUDE.mdが何者かを定義します。重要なのは、セッションの開始時に読むため、会話で毎回言い直すよりも高い再現性を持てる点です。そのうえで、単発のお願いを全部書く場所ではなく、毎回守らせたい基準だけを書くと強調します。",
+      "blocks": {
+        "section": "CLAUDE.mdは**毎回の開始条件**を固定する。",
+        "card-a": "### 役割の定義\n- **開始時に必ず読む前提**として、ルール・手順・禁止事項を先に渡す。\n- 会話のたびに説明し直さなくても、**同じ判断基準で着手**できる状態を作る。\n- 一時的な依頼ではなく、**繰り返し効かせたい行動**だけを残す。",
+        "card-b": "### なぜ効くのか\n- 人手で毎回補足すると、抜けや言い換えで**挙動がぶれやすい**。\n- 先に基準を置くと、AIは調査・編集・検証までを**同じ文脈で通せる**。\n- 結果として、説明コストよりも**再現性の向上**が大きくなる。",
+        "card-c": "### 何を書かないか\n- 単発タスクの詳細や、今日だけの判断は**会話側で渡す**。\n- 重要性が低い好みまで詰め込むと、**本当に守らせたい規則が埋もれる**。\n- 書く対象は、毎回読む価値がある**恒常ルールに限定**する。"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons in a clean editorial style: a rulebook with tab markers for recurring rules, a circular refresh arrow around a checklist to show repeatable startup behavior, and a speech bubble with a temporary tag crossed out to show one-off requests stay in chat. Use a muted corporate palette, thin outlines, subtle depth, and no text."
+    },
+    {
+      "section": "設計原則",
+      "layout": "compare_2col_3row",
+      "title": "CLAUDE.mdとMEMORY.mdは役割で分けて使う",
+      "message": "強制したい規則と、学習される傾向を混同しない",
+      "note": "この比較では、作成者の違いよりも、何をどちらに置くと管理しやすいかを話します。CLAUDE.mdはユーザーが意図して固定するルールで、MEMORY.mdはClaudeが学んだ傾向です。したがって、破壊的操作の禁止やアーキテクチャ方針のような強制事項はCLAUDE.mdへ、最近多い修正パターンのような弱い癖はMEMORY.mdへ任せると整理します。",
+      "blocks": {
+        "compare": {
+          "head": ["観点", "CLAUDE.md", "MEMORY.md / Auto memory"],
+          "rows": [
+            ["決める主体", "ユーザーが**明示的に固定**したい規則を書く", "Claudeが対話や編集から**学習した傾向**を残す"],
+            ["向いている内容", "命名規約、禁止操作、主要コマンドなど**守らせたい基準**", "よく使う変数名、最近の修正パターンなど**覚えておくと便利な癖**"],
+            ["運用の考え方", "ぶれたくない判断を**先回りで宣言**する", "会話を通じて育つ**補助記憶として活用**する"]
+          ]
+        }
+      }
+    },
+    {
+      "section": "設計原則",
+      "layout": "flow_3step",
+      "title": "長いほど良いのではなく、守らせたい情報だけに絞る",
+      "message": "情報量を増やすより、重要度の高いルールを残す",
+      "note": "ここでは、行数の目安を単なる数値として言うのではなく、なぜ密度を抑える必要があるのかをつなげて説明します。ルールが増えすぎると重要事項が埋もれ、単発の注意が恒常ルールを圧迫します。そこで、重要なものだけを短く断定形で残し、単発の指示は会話に戻すという編集方針が必要だと伝えます。",
+      "blocks": {
+        "step-a": "### 1. 厳選する\n- **常時守ってほしい規則**だけを候補に残す。\n- 単発の依頼や背景説明は会話に戻し、**ルール本文を軽く保つ**。\n- 目的は情報量ではなく、**重要事項の視認性**を上げることにある。",
+        "step-b": "### 2. 短く断定する\n- 1ルール1文で、**行動が分かる表現**へ圧縮する。\n- 「しっかりやる」のような標語を避け、**実行条件まで明記**する。\n- 宣言調にすると、AIが**迷わず操作へ落とし込める**。",
+        "step-c": "### 3. 会話と分業する\n- 毎回変わる指示は、**チャットで上書きする前提**にする。\n- CLAUDE.mdには、対話が変わっても残すべき**恒久ルールだけを置く**。\n- この分離で、長期記憶と単発依頼の**競合を避けられる**。"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons in an editorial workflow style: a funnel narrowing many notes into a few rules, a compact checklist with bold short lines, and a split view showing a persistent handbook on one side and a chat bubble on the other. Use calm blue-gray colors, thin outlines, soft shading, and no text."
+    },
+    {
+      "section": "構成ガイド",
+      "layout": "table_conclusion",
+      "title": "役割ごとに章立てするとAIが迷わない",
+      "message": "概要から運用までを探索順に並べる",
+      "note": "この表は、章の数を覚えるためではなく、AIがどの情報をどの順で参照するかを意識してもらうためのものです。概要、技術スタック、構成、コマンド、コーディング規約、ワークフロー、落とし穴の順に置くと、調査から実装、検証までの流れに沿って必要情報へ到達できます。章の役割が重複しないように分けることも大切です。",
+      "blocks": {
+        "table": {
+          "head": ["章", "主な役割", "AIが得る判断材料"],
+          "rows": [
+            ["概要", "何を作るかを定義する", "**目的・対象・非機能要件**を先に把握できる"],
+            ["技術スタック", "採用技術と禁止事項を示す", "**使ってよい手段と避ける手段**が決まる"],
+            ["構成とアーキテクチャ", "ファイルの地図を渡す", "**どこに何を書くか**を迷わず選べる"],
+            ["コマンドと規約", "実行と記述の型を固定する", "**検証手順と書き方**を一貫させられる"],
+            ["運用と落とし穴", "行動ルールと事故防止を示す", "**変更後の振る舞いと注意点**まで通して守れる"]
+          ]
+        },
+        "conclusion": "章立ては**情報の収納**ではなく、AIが調査から実装へ進むための**参照順序の設計**である。"
+      }
+    },
+    {
+      "section": "構成ガイド",
+      "layout": "list_3card",
+      "title": "章に入れる内容は具体的な判断材料まで落とす",
+      "message": "概要、規約、運用を抽象語で終わらせない",
+      "note": "ここでは、各章に何を書くかを抽象的なカテゴリ名で止めないことを伝えます。たとえば技術スタックなら採用技術だけでなく禁止ライブラリまで、コーディング規約なら見た目の好みではなく自動チェックしにくい人間ルールまで書くと、AIが実際の編集時に迷いにくくなります。",
+      "blocks": {
+        "card-a": "### 概要に入れる材料\n- **誰の何を解決するか**を、利用場面まで含めて書く。\n- 対象読者や利用者が分かると、**提案の粒度と語彙**が揃う。\n- 非機能要件まで触れると、**性能優先か安全優先か**の判断が早くなる。\n- スコープの境界まで示すと、**余計な提案を避けながら実装に入れる**。",
+        "card-b": "### 規約に入れる材料\n- **採用技術と禁止技術**を対で書き、迷いを減らす。\n- 命名、クォート、関数の形など、**自動整形だけでは揃わない規則**を残す。\n- テスト、lint、typecheckのような**検証コマンドをそのまま実行可能**な形で置く。\n- 許可と禁止を並べると、**代替案まで含めた提案精度**が上がる。",
+        "card-c": "### 運用に入れる材料\n- **変更前に何を調べるか**、変更後に何を確かめるかを明示する。\n- 危険操作の禁止や本番情報の扱いは、**事故防止の手順として断定**する。\n- 記憶保持や報告形式まで書くと、**コンパクション後の継続性**も安定する。\n- 役割分担を添えると、**調査から報告までの振る舞いが途切れにくい**。"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons in a clean presentation style: a target user card with a context marker, a code style sheet paired with a prohibition sign over a banned library block, and a workflow board with a pre-check and post-check lane. Use subdued teal and slate colors, crisp outlines, gentle gradients, and no text."
+    },
+    {
+      "section": "運用",
+      "layout": "flow_4step",
+      "title": "CLAUDE.mdは会話から育て、古い規則は削る",
+      "message": "追加と削除を繰り返して効く状態を保つ",
+      "note": "運用面では、最初から完成形を書くより、会話の中で繰り返し出る注意をルールへ昇格させる考え方が有効です。同時に、古い技術スタックや形骸化した規則を残すとノイズになるため、定期的な削除も必要です。最後に、小さなタスクで挙動確認を行い、意図した効果が出るかまで確認する流れで締めます。",
+      "blocks": {
+        "step-a": "### 1. 繰り返しを拾う\n- 会話で**同じ注意を2回言った項目**は、ルール候補として扱う。\n- その場の口頭注意を残すより、**次回も効く形へ昇格**させる。\n- 頻出の摩擦を先に潰すと、日常作業の往復が減る。",
+        "step-b": "### 2. ルールへ編集する\n- 候補は短く断定形に直し、**実行可能な文**へ整える。\n- 抽象的な標語ではなく、**何をするかまで指定**する。\n- 会話の文脈を削ぎ落として、**恒久ルールだけを残す**。",
+        "step-c": "### 3. 古い規則を間引く\n- 技術スタック変更後に残った記述は、**ノイズになる前に削除**する。\n- 形骸化した注意書きを放置すると、**重要ルールの発見性が落ちる**。\n- 追加だけでなく削除も行い、**密度を保つ編集**を続ける。",
+        "step-d": "### 4. 小さく試す\n- 更新後は短いタスクを投げて、**期待した挙動が出るか検証**する。\n- 守られない項目は、文言が曖昧か、**スコープ設計が弱い**可能性がある。\n- 実運用で確かめることで、**効くルールだけが残る**。"
+      },
+      "icon_prompt": "Create a 4:1 horizontal icon strip with four equal square icons in a workflow storyboard style: repeated chat notes being collected, a rule sentence being edited into a concise checklist item, old papers being trimmed from a stack, and a small test task with a checkmark. Use restrained business colors, thin outlines, light shadows, and no text."
+    },
+    {
+      "section": "運用",
+      "layout": "bg_3card",
+      "title": "Takuya向けには3レイヤー構成が運用しやすい",
+      "message": "グローバル、プロジェクト、ディレクトリで責務を分ける",
+      "note": "最後は、この資料の一般論をTakuyaさんの環境へ落とし込みます。全プロジェクト共通の好みはグローバル、技術や危険操作の禁止はプロジェクト単位、さらにフロントエンドやPowerShellなど専門領域の癖はディレクトリ単位に分けると、必要な場面で必要なルールだけが効きます。ルールを増やしてもノイズが広がりにくい構造です。",
+      "blocks": {
+        "section": "レイヤー分離は**必要な時だけ効く設計**を作る。",
+        "card-a": "### グローバル層\n- **全案件で変わらない好み**を置く。例として、テスト必須や日本語回答の方針が当てはまる。\n- どのリポジトリでも効いてよい規則だけに絞ると、**横断的な一貫性**が出る。\n- 技術固有の話を混ぜないことで、**過剰適用を防げる**。",
+        "card-b": "### プロジェクト層\n- 対象技術、ディレクトリ構成、**危険操作の禁止事項**をまとめる。\n- その案件の実装と検証に必要な前提を集めると、**日常作業の迷いが減る**。\n- 共有ルールとして保つことで、**チームの基準も揃えやすい**。",
+        "card-c": "### ディレクトリ層\n- `.claude/rules` などで、**UI専用ルールやPowerShell運用ルール**を分離する。\n- 触っている領域に関係のある指示だけが読まれるため、**認知負荷を下げられる**。\n- 大規模リポジトリでも、**局所最適な規則を安全に追加**できる。"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons in a layered architecture style: a globe with a small checklist for universal preferences, a project folder with a gear and warning shield, and a nested directory tree highlighting one active branch. Use neutral blue and gray tones, precise outlines, subtle lighting, and no text."
+    }
+  ]
+}

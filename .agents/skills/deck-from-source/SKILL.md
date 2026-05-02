@@ -46,7 +46,7 @@ if _m:
 ## ターンBの作業
 
 1. ソース全体から主張、対象、目的、流れをGLOBIS的に内部分析する。
-2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、JSON_SCHEMA、LAYOUT_RULES、CONTENT_LIMITS、DENSITY_REVIEW、SPEAKER_NOTESに従ってDECK_SOURCE_JSONを作る。薄い原文かどうかに関係なく、先に内部でだらだらと長文の詳細原稿へ書き直し、その厚みからスライドを設計する。
+2. context.mdのSTORY_ANALYSIS、SOURCE_ENRICHMENT、JSON_SCHEMA、LAYOUT_RULES、CONTENT_LIMITS、HIGHLIGHT_SKIMLINE、DENSITY_REVIEW、SPEAKER_NOTESに従ってDECK_SOURCE_JSONを作る。薄い原文かどうかに関係なく、先に内部でだらだらと長文の詳細原稿へ書き直し、その厚みからスライドを設計する。
 3. slides配列には本文スライドだけを書く。表紙と目次はdeck_source_to_json.pyが自動生成する。各slides[].titleが目次小見出しになるため、重複や空タイトルを作らない。
 4. nanobanana2がYesなら、slidesにplain_1colを使わない。各スライドはplain_2colでblocks.card-bに説明図プロンプトを置くか、card/flow系でicon_promptを置く。
 5. layoutごとの必須blocks名を守る。plain_2colはcard-a/card-b、list_3cardはcard-a/card-b/card-c、flow_3stepはstep-a/step-b/step-c、flow_4stepはstep-a/step-b/step-c/step-dで書く。text、step、card、plainなどの独自keyを作らない。
@@ -66,16 +66,17 @@ if _m:
     exec(open(_m[0]).read())
 
 TITLE_SLUG = "short_english_title"
+USE_NANOBANANA2 = True  # ユーザー回答がYesならTrue、NoならFalse
 DECK_SOURCE_JSON = { }  # 最終確定したdictを入れる
 source_path = os.path.join(MNT, f"{TITLE_SLUG}.json")
 slides_json_path = os.path.join(MNT, f"{TITLE_SLUG}.slides.json")
 pptx_path = os.path.join(MNT, f"{TITLE_SLUG}.pptx")
 with open(source_path, "w", encoding="utf-8") as f:
     json.dump(DECK_SOURCE_JSON, f, ensure_ascii=False, indent=2)
-subprocess.run(
-    [sys.executable, os.path.join(MNT, "deck_source_to_json.py"), source_path, pptx_path, "--json", slides_json_path, "--assets-dir", MNT, "--nanobanana2", "--require-agenda", "--strict-blocks"],
-    check=True, cwd=MNT,
-)
+cmd = [sys.executable, os.path.join(MNT, "deck_source_to_json.py"), source_path, pptx_path, "--json", slides_json_path, "--assets-dir", MNT, "--require-agenda", "--strict-blocks", "--strict-density", "--strict-agenda-grouping", "--strict-markup", "--strict-emphasis", "--strict-compact-blocks", "--strict-text-integrity"]
+if USE_NANOBANANA2:
+    cmd.append("--nanobanana2")
+subprocess.run(cmd, check=True, cwd=MNT)
 for fn in [f"{TITLE_SLUG}.json", f"{TITLE_SLUG}.pptx"]:
     print(f"- [Download {fn}](sandbox:/mnt/data/{fn})")
 ```

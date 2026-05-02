@@ -165,6 +165,68 @@ def text(slide, txt, x, y, w, h, size, bold=False, color="333333",
     return box
 
 
+def _visual_units(txt):
+    units = 0.0
+    for ch in txt:
+        code = ord(ch)
+        if (
+            0x3040 <= code <= 0x30FF
+            or 0x3400 <= code <= 0x9FFF
+            or 0xF900 <= code <= 0xFAFF
+            or 0xFF01 <= code <= 0xFF60
+        ):
+            units += 1.0
+        elif ch.isspace():
+            units += 0.35
+        else:
+            units += 0.55
+    return units
+
+
+def _wrap_visual_line(line, max_units):
+    line = str(line).strip()
+    if not line:
+        return [""]
+    parts = []
+    current = ""
+    current_units = 0.0
+    for ch in line:
+        ch_units = _visual_units(ch)
+        if current and current_units + ch_units > max_units:
+            parts.append(current.rstrip())
+            current = ch.lstrip()
+            current_units = _visual_units(current)
+        else:
+            current += ch
+            current_units += ch_units
+    if current:
+        parts.append(current.rstrip())
+    return parts or [line]
+
+
+def _cover_title_lines(raw_title):
+    source_lines = re.split(r"\n|<br\s*/?>", str(raw_title), flags=re.IGNORECASE)
+    lines = []
+    for raw_line in source_lines:
+        line = raw_line.strip()
+        if not line:
+            continue
+        lines.extend(_wrap_visual_line(line, 18.0))
+    return lines or [""]
+
+
+def _cover_title_size(lines):
+    longest = max((_visual_units(line) for line in lines), default=0.0)
+    size = F["coverTitle"]["size"]
+    if longest > 18:
+        size -= (longest - 18) * 0.7
+    if len(lines) >= 3:
+        size -= 3
+    if len(lines) >= 4:
+        size -= 2
+    return max(18, min(F["coverTitle"]["size"], size))
+
+
 def md_content(slide, items, x, y, w, h, size, color="333333", head_size=None):
     if head_size is None:
         head_size = size
@@ -998,17 +1060,18 @@ def render_cover(slide, sd):
             width=Inches(L["slideW"]), height=Inches(L["slideH"])
         )
     cx, cw = 0.5, 5.5
-    title_lines = re.split(r"\n|<br\s*/?>", sd.get("title", ""), flags=re.IGNORECASE)
-    box = slide.shapes.add_textbox(Inches(cx), Inches(1.36), Inches(cw), Inches(1.35))
+    title_lines = _cover_title_lines(sd.get("title", ""))
+    title_size = _cover_title_size(title_lines)
+    box = slide.shapes.add_textbox(Inches(cx), Inches(1.06), Inches(cw), Inches(1.65))
     tf  = box.text_frame
-    tf.word_wrap = False
+    tf.word_wrap = True
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
     tf.vertical_anchor = MSO_ANCHOR.BOTTOM
     _fix_bodyPr(tf)
     for i, line in enumerate(title_lines):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        _add_inline_runs(p, line, F["coverTitle"]["size"], C["coverTitle"], base_bold=F["coverTitle"]["bold"])
-        _set_line_spacing(p, F["coverTitle"]["size"], mult=1.4)
+        _add_inline_runs(p, line, title_size, C["coverTitle"], base_bold=F["coverTitle"]["bold"])
+        _set_line_spacing(p, title_size, mult=1.22)
     _no_shadow(box)
     hline(slide, 0.5, 2.81, 4.0, C["coverDivider"], 0.75)
     for i, key in enumerate(["affiliation", "presenter", "date"]):
