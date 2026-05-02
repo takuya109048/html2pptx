@@ -65,6 +65,11 @@ C = DESIGN["COLORS"]
 F = DESIGN["FONTS"]
 L = DESIGN["LAYOUT"]
 
+COVER_TITLE_X = 0.5
+COVER_TITLE_W = 7.8
+COVER_TITLE_WRAP_UNITS = 22.0
+COVER_DIVIDER_W = 5.8
+
 
 # ── 描画ヘルパー ───────────────────────────────────────
 
@@ -211,7 +216,7 @@ def _cover_title_lines(raw_title):
         line = raw_line.strip()
         if not line:
             continue
-        lines.extend(_wrap_visual_line(line, 18.0))
+        lines.extend(_wrap_visual_line(line, COVER_TITLE_WRAP_UNITS))
     return lines or [""]
 
 
@@ -1059,7 +1064,7 @@ def render_cover(slide, sd):
             bg_path, Inches(0), Inches(0),
             width=Inches(L["slideW"]), height=Inches(L["slideH"])
         )
-    cx, cw = 0.5, 5.5
+    cx, cw = COVER_TITLE_X, COVER_TITLE_W
     title_lines = _cover_title_lines(sd.get("title", ""))
     title_size = _cover_title_size(title_lines)
     box = slide.shapes.add_textbox(Inches(cx), Inches(1.06), Inches(cw), Inches(1.65))
@@ -1073,7 +1078,7 @@ def render_cover(slide, sd):
         _add_inline_runs(p, line, title_size, C["coverTitle"], base_bold=F["coverTitle"]["bold"])
         _set_line_spacing(p, title_size, mult=1.22)
     _no_shadow(box)
-    hline(slide, 0.5, 2.81, 4.0, C["coverDivider"], 0.75)
+    hline(slide, COVER_TITLE_X, 2.81, COVER_DIVIDER_W, C["coverDivider"], 0.75)
     for i, key in enumerate(["affiliation", "presenter", "date"]):
         text(slide, sd.get(key, ""), cx, 3.01 + i * 0.35, cw, 0.35,
              F["coverMeta"]["size"], False, C["coverMeta"])

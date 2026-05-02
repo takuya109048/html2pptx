@@ -1,0 +1,125 @@
+{
+  "title": "CLAUDE.md運用設計プレイブック",
+  "subtitle": "長期文脈を実務ルールとして機能させる",
+  "affiliation": "Codex Working Deck",
+  "presenter": "Takuya",
+  "date": "2026-05-03",
+  "note": "本資料は、CLAUDE.mdを単なる設定ファイルではなく、Claude Codeの行動基準を安定させる実務上のルールブックとして設計するための考え方を整理するものである。Auto memoryとの役割分担、適切な情報量、章立て、スコープ設計、継続運用までを通じて、毎回の説明を減らしつつ、プロジェクトに合った支援を引き出す方法を確認する。",
+  "slides": [
+    {
+      "section": "背景と前提",
+      "layout": "bg_3card",
+      "title": "CLAUDE.mdは毎セッションの行動基準である",
+      "message": "繰り返し説明する注意事項を、読み込まれるルールへ変える",
+      "note": "最初に押さえるべき前提は、CLAUDE.mdが単なるメモではなく、セッション開始時にClaude Codeへ渡される常設の行動基準である点である。毎回同じ注意を会話で伝える運用では、抜け漏れや表現ゆれが起きる。そこで重要ルールをCLAUDE.mdへ集約し、判断の出発点をそろえる。結果として、AIはそのプロジェクトの目的、禁止事項、作業手順に合わせて動きやすくなる。",
+      "blocks": {
+        "section": "**ルールブックとして扱う。** CLAUDE.mdは作業開始時に読まれる常設の前提であり、毎回の説明を標準動作へ変えるための土台である。",
+        "card-a": "### 反復説明を減らす\n会話で毎回言う注意を、**常設ルール**へ移す。\n- 禁止操作や確認手順を開始時点で共有する\n- 同じ指摘を繰り返す時間を実装や判断へ戻す",
+        "card-b": "### 判断基準をそろえる\n一般論ではなく、**案件基準**で提案させる。\n- 技術スタックと設計方針を明示する\n- **優先順位**を短く書き、迷った時の分岐を減らす\n- 案件ごとの禁則を先に共有して提案の幅を揃える",
+        "card-c": "### ノイズを抑える\n何でも書くほど精度は上がらず、**重要ルール**が埋もれる。\n- 単発の依頼や古い前提は混ぜない\n- **更新基準**を決め、今も効く内容だけを残す\n- 読み手が最初に見る判断だけを先頭に置く"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip for a professional Japanese presentation, white or transparent-white background, small outer margins, no large top or bottom whitespace, equal square icon zones, consistent flat vector style, same perspective, soft neutral colors with one accent. left icon: a rule document opened at session start with a small clock; center icon: a checklist reducing repeated explanations; right icon: a project dashboard with aligned standards. No English text. Avoid letterboxing."
+    },
+    {
+      "section": "背景と前提",
+      "layout": "compare_2col_3row",
+      "title": "CLAUDE.mdとMEMORY.mdは強制指示と学習メモで分ける",
+      "message": "誰が書くか、何を担うかを分けると文脈が濁らない",
+      "note": "ここで混同しやすいのは、CLAUDE.mdとMEMORY.mdをどちらも同じ文脈置き場として扱ってしまうことである。CLAUDE.mdはユーザーが明示的に定義する強いルールであり、MEMORY.mdはClaudeが作業を通じて学んだ傾向の記録である。前者には必ず守る前提、後者にはいつもの癖や発見を任せる。この線引きがあると、強制したいルールと参考情報が混ざらず、指示の効き方が安定する。",
+      "blocks": {
+        "compare": {
+          "head": ["観点", "CLAUDE.md", "MEMORY.md"],
+          "rows": [
+            ["作成者", "ユーザーが**明示**して定義する", "Claudeが作業から**学習**して残す"],
+            ["用途", "必ず守るルール、前提、手順を固定する", "よく使う癖、最近の発見、対処パターンを残す"],
+            ["効かせ方", "プロジェクト基準を先に与えて挙動をそろえる", "会話の文脈を補助しつつ再現性を上げる"]
+          ]
+        }
+      }
+    },
+    {
+      "section": "設計原則",
+      "layout": "list_3card",
+      "title": "良いCLAUDE.mdは重要ルール、密度、スコープを絞る",
+      "message": "書く量ではなく、守るべき判断を残すことが精度を上げる",
+      "note": "次に見るべき論点は、CLAUDE.mdへ何を書くかではなく、何を書かないかである。重要ルールの厳選、適切な密度、スコープ分離の三つを守ると、AIが参照すべき情報が見えやすくなる。逆に、思いついた注意をすべて入れると、重要なルールが埋もれて実行時の判断がぶれる。運用では、常に守る内容か、一時的な会話で足りる内容かを分けることが重要である。",
+      "blocks": {
+        "card-a": "### 重要ルールを厳選する\n常に守る必要がある**判断軸**だけを残す。\n1. 危険操作の禁止や必須確認を優先する\n2. 単発の依頼は会話で処理し、恒常ルールにしない\n3. **昇格条件**を決め、2回以上繰り返した注意だけを追加する\n4. 守れない理想論より、現場で効く基準を残す",
+        "card-b": "### 適切な密度に抑える\n60から300行程度を目安に、**読める量**へ圧縮する。\n1. 1ルール1文で判断しやすくする\n2. 抽象スローガンより実行コマンドを書く\n3. **削除判断**を入れ、古い前提は定期的に外す\n4. 読み手が最初に見る行へ重要語を集める\n5. 重要語が埋もれたら行数より先に表現を削る",
+        "card-c": "### スコープを分ける\n全体ルールと局所ルールを混ぜず、**効く範囲**を分ける。\n1. ルートには全員が守る基準を置く\n2. UIやインフラは別ルールへ逃がす\n3. **関係領域**の情報を優先し、無関係な前提を減らす\n4. 触る場所ごとに読む量を自然に絞り込む\n5. 役割が違う指示は別ファイルへ分離して保つ"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip for a professional Japanese presentation, white or transparent-white background, small outer margins, no large top or bottom whitespace, equal square icon zones, consistent flat vector style, same perspective, soft neutral colors with one accent. left icon: a selected rules checklist with three highlighted items; center icon: a compact document with density gauge; right icon: layered folders showing separated scopes. No English text. Avoid letterboxing."
+    },
+    {
+      "section": "設計原則",
+      "layout": "plain_2col",
+      "title": "ルールは短く、断定的で、実行可能に書く",
+      "message": "曖昧な精神論を、作業に変換できる文へ落とす",
+      "note": "CLAUDE.mdの品質は、文章の見栄えではなく実行可能性で決まる。たとえばテストをしっかり行うという表現では、どのコマンドをいつ実行するかが分からない。一方で、変更後はpnpm testを実行し、失敗したテストをすべて修正すると書けば行動へ変換できる。短く断定し、具体的な対象やコマンドを入れることで、AIの判断に残るルールになる。",
+      "blocks": {
+        "card-a": "### 実行可能な文に変える\n曖昧なお願いではなく、**行動が見える文**へ変える。\n1. 1ルール1文で対象とタイミングを明示する\n2. **断定表現**を使い、してください調の曖昧さを避ける\n3. コマンド名や確認条件まで書いて迷いを減らす\n4. 何を直すか、どこで止まるかまで読める文にする\n5. 実装後の確認行動まで一続きの文として置く",
+        "card-b": "### nanobananaプロンプト\n    Create a 6:5 flat explanatory diagram for a Japanese business presentation, white background, no margins, use the full canvas, no top or bottom letterboxing. Show a before-and-after transformation: on the left, a vague memo labeled 「曖昧」 with blurred bullet lines; in the center, an arrow labeled 「具体化」 with a pencil and checklist; on the right, a clear rule sheet labeled 「実行」 with command chips 「test」 and 「lint」, plus a green completion mark. Include a person editing the document, a terminal window, and two sticky notes. Clean vector style, short Japanese labels only."
+      }
+    },
+    {
+      "section": "章立て",
+      "layout": "flow_4step",
+      "title": "章立てはプロジェクト理解から作業手順へ流す",
+      "message": "What、技術、構造、コマンドの順で地図を渡す",
+      "note": "実際に構成する時は、AIが作業前に知るべき順序で章を並べると読みやすい。最初にプロジェクトの目的とユーザーを置き、次に技術スタックと禁止事項で提案の範囲を決める。その後、ディレクトリ構成で探す場所を示し、最後にコマンド集で検証行動へつなげる。この流れにすると、理解、制約、探索、実行が一本の導線になる。",
+      "blocks": {
+        "step-a": "### プロジェクト概要\n何を作るか、誰が使うかを先に置く。\n- **目的を共有**し、主要ユースケースを明示する\n- セキュリティや速度など重要条件を添える",
+        "step-b": "### 技術スタック\n提案してよい範囲を固定する。\n- **採用技術を固定**し、言語やUI方針を書く\n- 禁止ライブラリや代替手段を並べる",
+        "step-c": "### ディレクトリ構成\nファイル探索の地図を渡す。\n- **責務の境界**として主要ディレクトリを定義する\n- ビジネスロジックの隔離先を示す",
+        "step-d": "### コマンド集\n検証までを計画に組み込ませる。\n- **検証行動を固定**し、dev、test、lint、typecheckを明記する\n- そのまま実行できる文字列にして迷いを減らす"
+      },
+      "icon_prompt": "Create a 4:1 horizontal icon strip for a professional Japanese presentation, white or transparent-white background, small outer margins, no large top or bottom whitespace, equal square icon zones, consistent flat vector style, same perspective, soft neutral colors with one accent. first icon: project overview board with users; second icon: technology stack blocks with warning sign; third icon: folder map and architecture nodes; fourth icon: terminal commands with check marks. No English text. Avoid letterboxing."
+    },
+    {
+      "section": "章立て",
+      "layout": "bg_3card",
+      "title": "品質、行動、落とし穴を章として固定する",
+      "message": "自動チェックだけでは拾えない現場ルールを明文化する",
+      "note": "前半で地図と制約を渡したら、後半では作業品質に関わる人間側のルールを固定する。コーディング規約は自動整形で拾えない好みを補い、ワークフローは調査、計画、検証の順番をそろえる。さらに固有の落とし穴を置くことで、AIが推測しにくい危険を先回りできる。ここは量を増やす場所ではなく、失敗時の損失が大きい判断を優先する場所である。",
+      "blocks": {
+        "section": "**自動化しにくい判断を明示する。** ツールで検査できない作法や現場固有の危険をCLAUDE.mdへ置くと、作業前の判断が安定する。",
+        "card-a": "### コーディング規約\n人間のレビュー観点を先に共有する。\n- **インデント**、命名、関数サイズを決める\n- TypeScriptのany禁止など型方針を書く",
+        "card-b": "### 作業ワークフロー\nAIの動き方そのものを制御する。\n- **調査順序**を決め、マルチファイル変更は調査後に計画する\n- 変更後のテスト、lint、型チェックを固定する\n- 実装だけで終わらず、検証結果まで残す",
+        "card-c": "### 固有の落とし穴\n推測では分からない危険を明文化する。\n- **本番保護**として本番環境変数を上書きしない\n- ログに個人情報を含めず、マスキングを徹底する\n- 環境依存の前提は先に書き、誤実行を防ぐ"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip for a professional Japanese presentation, white or transparent-white background, small outer margins, no large top or bottom whitespace, equal square icon zones, consistent flat vector style, same perspective, soft neutral colors with one accent. left icon: code style ruler and braces; center icon: workflow kanban with test check; right icon: warning sign over secure environment file. No English text. Avoid letterboxing."
+    },
+    {
+      "section": "スコープ設計",
+      "layout": "table_conclusion",
+      "title": "大規模リポジトリではルールを階層化する",
+      "message": "全体共通、領域別、環境別に分けて認知負荷を下げる",
+      "note": "ルールが増えてきた時に重要なのは、すべてをルートのCLAUDE.mdへ詰め込まないことである。ルートには全体共通の方針を置き、frontendやinfraのような領域別ルールは別ファイルへ分ける。さらにTakuyaさんの環境では、グローバル、プロジェクト、ディレクトリの三層で考えると運用しやすい。今触る場所に関係あるルールだけが強く効くため、ノイズを減らせる。",
+      "blocks": {
+        "table": {
+          "head": ["レイヤー", "置く内容", "効かせる範囲", "狙い"],
+          "rows": [
+            ["グローバル", "日本語回答やテスト重視などの恒常方針", "全プロジェクト", "個人の作業スタイルを安定させる"],
+            ["プロジェクト", "技術スタック、禁止事項、構成方針", "対象リポジトリ", "案件基準で提案と実装をそろえる"],
+            ["ディレクトリ", "UIやインフラなど領域別の詳細ルール", "該当フォルダのみ", "関係ない前提を減らして認知負荷を下げる"]
+          ]
+        },
+        "conclusion": "**階層化の目的**は、ルールを増やすことではなく、今触る領域に必要な前提だけを強く効かせることである。"
+      }
+    },
+    {
+      "section": "スコープ設計",
+      "layout": "converge_3card",
+      "title": "CLAUDE.mdは作って終わりではなく育てる",
+      "message": "繰り返し、古さ、効果確認を運用サイクルに入れる",
+      "note": "ここまでの話を運用に変えると、CLAUDE.mdは一度書いて終わる文書ではなく、作業を通じて育てるルールブックである。会話で二回同じ注意をしたら追記候補にし、古い技術や形骸化したルールは削る。さらに、書き換え後に小さなタスクで振る舞いを確認すれば、ルールが本当に効いているか分かる。最後に残すべき判断は、増やすより整えることである。",
+      "blocks": {
+        "card-a": "### 2回言ったら昇格\n繰り返し指摘した注意は、会話ではなくルールへ移す。\n- **摩擦の再発**を運用改善の材料にする\n- 例外的な依頼は昇格させず、恒常ルールだけを残す",
+        "card-b": "### 定期的に削る\n古い前提や使わない制約は精度を下げる。\n- **古いルール**を技術スタック変更後に見直す\n- 重複や似た表現を統合して読みやすさを保つ",
+        "card-c": "### 小さく検証する\n更新後は簡単な作業で挙動を見る。\n- **確認行動が出るか**を見て、コマンドや順序を確かめる\n- 効かないルールは表現を具体化して再テストする",
+        "conclusion": "**運用の核心**は、強いルールを少なく保ち、作業から学んだ改善だけを継続的に反映することである。"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip for a professional Japanese presentation, white or transparent-white background, small outer margins, no large top or bottom whitespace, equal square icon zones, consistent flat vector style, same perspective, soft neutral colors with one accent. left icon: chat repetition marks becoming a rule; center icon: document cleanup with trash and pencil; right icon: small task test screen with pass mark. No English text. Avoid letterboxing."
+    }
+  ]
+}
