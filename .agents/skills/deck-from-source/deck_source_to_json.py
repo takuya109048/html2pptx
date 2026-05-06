@@ -113,15 +113,6 @@ WEAK_EMPHASIS_TERMS = {
     "注意",
 }
 
-JAPANESE_TEXT_RE = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
-QUOTED_JAPANESE_TEXT_RE = re.compile(
-    r"[「『\"']([^」』\"']*[\u3040-\u30ff\u3400-\u9fff][^」』\"']*)[」』\"']"
-)
-NO_VISIBLE_TEXT_RE = re.compile(
-    r"\bno\s+(?:visible\s+)?(?:text|letters|words|labels|typography)\b",
-    re.IGNORECASE,
-)
-
 
 def warn(message: str) -> None:
     print(f"[警告] {message}", file=sys.stderr)
@@ -259,51 +250,6 @@ def is_nanobanana_prompt_block(markdown: str) -> bool:
 
 def has_6_5_ratio(text: str) -> bool:
     return re.search(r"(?<!\d)6\s*[:：]\s*5(?!\d)", text) is not None
-
-
-def nanobanana_text_contract_problem(prompt: str) -> str | None:
-    compact = re.sub(r"\s+", " ", prompt).strip()
-    if not compact:
-        return "is empty"
-    if NO_VISIBLE_TEXT_RE.search(compact):
-        return None
-    lower = compact.lower()
-    if not JAPANESE_TEXT_RE.search(compact):
-        return (
-            "must either forbid visible text or specify exact Japanese visible text strings"
-        )
-    if not QUOTED_JAPANESE_TEXT_RE.search(compact):
-        return (
-            "must quote the exact Japanese labels to render, such as "
-            "Use exactly these text strings: 「入力」「判断」"
-        )
-    if "japanese" not in lower and "日本語" not in compact:
-        return "must explicitly say all visible text is Japanese only"
-    if "exactly" not in lower and "そのまま" not in compact:
-        return "must tell the image model to use the listed strings exactly"
-    if "translate" not in lower and "翻訳" not in compact:
-        return "must tell the image model not to translate or add other words"
-    return None
-
-
-def validate_nanobanana_text_contract(
-    index: int,
-    title: str,
-    field: str,
-    prompt: str,
-) -> int:
-    problem = nanobanana_text_contract_problem(prompt)
-    if not problem:
-        return 0
-    warn(
-        f"Slide #{index} {field} text contract failed: {problem}. "
-        "Use either 'No visible text, letters, numbers, or UI words.' or "
-        "quote exact Japanese strings from the slide, e.g. "
-        "'All visible text must be Japanese only. Use exactly these text strings: "
-        "「入力」「判断」. Do not add or translate any other words.'"
-        + (f" Title: {title}" if title else "")
-    )
-    return 1
 
 
 def has_markdown_structure(markdown: str) -> bool:
@@ -772,16 +718,9 @@ def validate_summary(
         elif not is_nanobanana_prompt_block(card_b):
             warn("summary image prompt must be written as a nanobanana prompt block.")
             errors += 1
-        else:
-            if not has_6_5_ratio(card_b):
-                warn("summary image prompt must include the literal 6:5 aspect ratio.")
-                errors += 1
-            errors += validate_nanobanana_text_contract(
-                2,
-                title,
-                "summary image prompt",
-                card_b,
-            )
+        elif not has_6_5_ratio(card_b):
+            warn("summary image prompt must include the literal 6:5 aspect ratio.")
+            errors += 1
     if not card_a:
         return errors
     if strict_density:
@@ -907,16 +846,9 @@ def validate_source(
                 if not is_nanobanana_prompt_block(card_b):
                     warn(f"Slide #{index} layout 'plain_2col' card-b must contain a nanobanana prompt." + (f" Title: {title}" if title else ""))
                     errors += 1
-                else:
-                    if not has_6_5_ratio(card_b):
-                        warn(f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt must include the literal 6:5 aspect ratio." + (f" Title: {title}" if title else ""))
-                        errors += 1
-                    errors += validate_nanobanana_text_contract(
-                        index,
-                        title,
-                        "plain_2col card-b prompt",
-                        card_b,
-                    )
+                elif not has_6_5_ratio(card_b):
+                    warn(f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt must include the literal 6:5 aspect ratio." + (f" Title: {title}" if title else ""))
+                    errors += 1
             if layout in NANOBANANA_ICON_LAYOUTS:
                 prompt = as_text(slide.get("icon_prompt")).strip()
                 if not prompt:
@@ -925,13 +857,6 @@ def validate_source(
                 elif "6:5" in prompt:
                     warn(f"Slide #{index} layout '{layout}' icon_prompt uses 6:5. Use 3:1 or 4:1." + (f" Title: {title}" if title else ""))
                     errors += 1
-                else:
-                    errors += validate_nanobanana_text_contract(
-                        index,
-                        title,
-                        "icon_prompt",
-                        prompt,
-                    )
     return errors
 
 
