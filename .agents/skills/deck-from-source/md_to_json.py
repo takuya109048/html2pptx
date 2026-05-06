@@ -61,6 +61,9 @@ AGENDA_FORBIDDEN_LABELS = [
     "Part 2",
     "PART 1",
     "PART 2",
+    "overflow",
+    "Overflow",
+    "OVERFLOW",
 ]
 
 
@@ -541,20 +544,29 @@ def validate_nanobanana_no_plain_1col(slides: list[dict[str, Any]]) -> int:
     return error_count
 
 
-def validate_agenda_slide(slides: list[dict[str, Any]]) -> int:
-    """Require slide 2 to be the agenda in plain_2col layout."""
-    if len(slides) < 2:
-        warn("Agenda validation failed: deck has fewer than 2 slides.")
+def validate_agenda_slide(
+    slides: list[dict[str, Any]],
+    agenda_slide_number: int = 2,
+    body_slide_number: int | None = None,
+) -> int:
+    """Require a specific slide to be the agenda in plain_2col layout."""
+    if agenda_slide_number < 1:
+        warn("Agenda validation failed: agenda_slide_number must be 1 or greater.")
         return 1
-    layout = str(slides[1].get("layout", "")).strip()
+    agenda_index = agenda_slide_number - 1
+    body_index = agenda_index + 1 if body_slide_number is None else body_slide_number - 1
+    if len(slides) <= agenda_index:
+        warn(f"Agenda validation failed: deck has fewer than {agenda_slide_number} slides.")
+        return 1
+    layout = str(slides[agenda_index].get("layout", "")).strip()
     if layout != "plain_2col":
         warn(
-            "Agenda validation failed: slide #2 must use layout 'plain_2col' "
+            f"Agenda validation failed: slide #{agenda_slide_number} must use layout 'plain_2col' "
             f"for the agenda, but found '{layout or '(missing)'}'."
         )
         return 1
     agenda_text_parts: list[str] = []
-    for row in slides[1].get("grid", []):
+    for row in slides[agenda_index].get("grid", []):
         if not isinstance(row, list):
             continue
         for cell in row:
@@ -576,7 +588,7 @@ def validate_agenda_slide(slides: list[dict[str, Any]]) -> int:
         if entry:
             agenda_entries.add(entry)
     missing_titles: list[tuple[int, str]] = []
-    for index, slide in enumerate(slides[2:], start=3):
+    for index, slide in enumerate(slides[body_index:], start=body_index + 1):
         header = slide.get("header")
         if not isinstance(header, dict):
             continue

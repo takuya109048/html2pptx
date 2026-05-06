@@ -35,6 +35,59 @@ DENSITY_LIMITS: dict[str, tuple[list[str], int]] = {
     "flow_4step": (["step-a", "step-b", "step-c", "step-d"], 40),
     "plain_2col": (["card-a", "card-b"], 115),
 }
+COMPACT_DENSITY_LIMITS = {
+    "section": 34,
+    "conclusion": 34,
+}
+
+SUMMARY_DEFAULT_TITLE = "サマリー（結論）"
+SUMMARY_DEFAULT_MESSAGE = "先に結論を押さえる"
+SUMMARY_PLAIN_MINIMUM = 180
+TITLE_MAX_COMPACT_LENGTH = 28
+TITLE_STATEMENT_ENDING_RE = re.compile(
+    r"(である|となる|になる|する|している|していく|できる|される|必要がある|"
+    r"求められる|変える|避ける|置く|使う|示す|見る|読む|作る|守る|分ける|補う)$"
+)
+WEAK_TITLE_TERMS = {
+    "全体像",
+    "概要",
+    "要点",
+    "背景",
+    "前提",
+    "課題",
+    "方針",
+    "対応",
+    "対策",
+    "改善",
+    "まとめ",
+    "結論",
+    "ポイント",
+    "実装内容",
+    "実行手順",
+    "判断軸",
+    "設計方針",
+    "設計原則",
+    "記述作法",
+    "役割分担",
+    "役割の定義",
+    "推奨章立て",
+    "推奨構成",
+    "運用改善",
+}
+WEAK_TITLE_GENERIC_PARTS = {
+    "役割",
+    "定義",
+    "分担",
+    "原則",
+    "作法",
+    "章立て",
+    "構成",
+    "改善",
+    "運用",
+    "設計",
+    "手順",
+}
+WEAK_TITLE_JOINERS = "の・／/"
 
 WEAK_EMPHASIS_TERMS = {
     "重要",
@@ -81,7 +134,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--strict-density",
         action="store_true",
-        help="Reject thin visible text in card, step, and plain column blocks.",
+        help="Reject thin visible text in card, step, plain column, and compact blocks.",
     )
     parser.add_argument(
         "--strict-agenda-grouping",
@@ -102,6 +155,11 @@ def parse_args() -> argparse.Namespace:
         "--strict-compact-blocks",
         action="store_true",
         help="Reject headings in compact section and conclusion blocks.",
+    )
+    parser.add_argument(
+        "--strict-title-style",
+        action="store_true",
+        help="Reject body slide titles that read like claims instead of agenda headings.",
     )
     parser.add_argument(
         "--strict-text-integrity",
@@ -190,6 +248,10 @@ def is_nanobanana_prompt_block(markdown: str) -> bool:
     return "nanobanana" in text and ("prompt" in text or "プロンプト" in text)
 
 
+def has_6_5_ratio(text: str) -> bool:
+    return re.search(r"(?<!\d)6\s*[:：]\s*5(?!\d)", text) is not None
+
+
 def has_markdown_structure(markdown: str) -> bool:
     if re.search(r"(?m)^\s*(?:[-*+]\s+|\d+[.)]\s+)", markdown):
         return True
@@ -198,6 +260,23 @@ def has_markdown_structure(markdown: str) -> bool:
     if re.search(r"(?<!\*)\*[^*\n]+\*(?!\*)|(?<!_)_[^_\n]+_(?!_)", markdown):
         return True
     return False
+
+
+def list_item_count(markdown: str) -> int:
+    return len(re.findall(r"(?m)^\s*(?:[-*+]\s+|\d+[.)]\s+)", markdown))
+
+
+def inline_markup_kind_count(markdown: str) -> int:
+    kinds = 0
+    if re.search(r"\*\*[^*\n]+\*\*|__[^_\n]+__", markdown):
+        kinds += 1
+    if re.search(r"`[^`]+`", markdown):
+        kinds += 1
+    if re.search(r"~~[^~]+~~", markdown):
+        kinds += 1
+    if re.search(r"(?<!\*)\*[^*\n]+\*(?!\*)|(?<!_)_[^_\n]+_(?!_)", markdown):
+        kinds += 1
+    return kinds
 
 
 def bold_segments(markdown: str) -> list[str]:
@@ -273,6 +352,45 @@ def text_integrity_problem(text: str) -> str | None:
     return None
 
 
+def title_style_problem(title: str) -> str | None:
+    compact = visible_density_text(title)
+    if not compact:
+        return "is empty"
+    if len(compact) > TITLE_MAX_COMPACT_LENGTH:
+        return f"is too long ({len(compact)}/{TITLE_MAX_COMPACT_LENGTH} compact chars)"
+    if re.search(r"[。！？!?]$", title.strip()):
+        return "ends with sentence punctuation"
+    if TITLE_STATEMENT_ENDING_RE.search(compact):
+        return "reads like a claim sentence; move the claim to message"
+    if is_weak_agenda_title(compact):
+        return (
+            "is too generic; include a source-specific keyword, number, contrast, "
+            "decision axis, or concrete action"
+        )
+    return None
+
+
+def is_weak_agenda_title(compact: str) -> bool:
+    if compact in WEAK_TITLE_TERMS:
+        return True
+    parts = [p for p in re.split(f"[{re.escape(WEAK_TITLE_JOINERS)}]", compact) if p]
+    if len(parts) >= 2 and all(part in WEAK_TITLE_GENERIC_PARTS for part in parts):
+        return True
+    return False
+
+
+def validate_title_style(index: int, title: str) -> int:
+    problem = title_style_problem(title)
+    if not problem:
+        return 0
+    warn(
+        f"Slide #{index} title style failed: {problem}. "
+        "Use a short, source-specific agenda heading and move the slide claim to message."
+        + (f" Title: {title}" if title else "")
+    )
+    return 1
+
+
 def iter_text_values(value: Any, path: str = "$"):
     if isinstance(value, str):
         yield path, value
@@ -305,6 +423,45 @@ def note_with_icon(slide_def: dict[str, Any], nanobanana2: bool) -> str:
     return note
 
 
+def format_nanobanana_prompt(prompt: str) -> str:
+    prompt = prompt.strip()
+    if not prompt:
+        return ""
+    if is_nanobanana_prompt_block(prompt):
+        return prompt
+    return f"### nanobananaプロンプト\n{prompt}"
+
+
+def summary_slide_def(source: dict[str, Any], nanobanana2: bool) -> dict[str, Any] | None:
+    summary = source.get("summary")
+    if not isinstance(summary, dict):
+        return None
+    raw_blocks = summary.get("blocks", {})
+    blocks = raw_blocks if isinstance(raw_blocks, dict) else {}
+    card_a = as_text(summary.get("body") or blocks.get("card-a")).strip()
+    slide_blocks: dict[str, str] = {}
+    if card_a:
+        slide_blocks["card-a"] = card_a
+    layout = "plain_2col" if nanobanana2 else "plain_1col"
+    if nanobanana2:
+        raw_prompt = (
+            summary.get("image_prompt")
+            or summary.get("nanobanana_prompt")
+            or blocks.get("card-b")
+        )
+        prompt = format_nanobanana_prompt(as_text(raw_prompt))
+        if prompt:
+            slide_blocks["card-b"] = prompt
+    return {
+        "section": "Summary",
+        "layout": layout,
+        "title": as_text(summary.get("title")).strip() or SUMMARY_DEFAULT_TITLE,
+        "message": as_text(summary.get("message")).strip() or SUMMARY_DEFAULT_MESSAGE,
+        "note": as_text(summary.get("note")).strip(),
+        "blocks": slide_blocks,
+    }
+
+
 def validate_density(
     index: int,
     title: str,
@@ -326,6 +483,29 @@ def validate_density(
             warn(
                 f"Slide #{index} layout '{layout}' block '{tag}' is too thin "
                 f"({count}/{minimum} chars in visible body text)."
+                + (f" Title: {title}" if title else "")
+            )
+            errors += 1
+    return errors
+
+
+def validate_compact_density(
+    index: int,
+    title: str,
+    layout: str,
+    blocks: dict[str, Any],
+) -> int:
+    errors = 0
+    for tag, minimum in COMPACT_DENSITY_LIMITS.items():
+        if tag not in blocks:
+            continue
+        markdown = as_text(blocks.get(tag)).strip()
+        count = len(visible_density_text(markdown))
+        if count < minimum:
+            warn(
+                f"Slide #{index} layout '{layout}' compact block '{tag}' is too thin "
+                f"({count}/{minimum} chars in visible body text). Add context plus implication "
+                "in one or two compact sentences."
                 + (f" Title: {title}" if title else "")
             )
             errors += 1
@@ -462,7 +642,7 @@ def validate_emphasis(
     if len(slide_segments) < minimum_segments:
         warn(
             f"Slide #{index} layout '{layout}' has only {len(slide_segments)} semantic bold phrase(s). "
-            f"Use at least {minimum_segments} so the bold text forms a skim-line summary."
+            f"Use at least {minimum_segments} across different visible blocks so the bold text forms a skim-line summary."
             + (f" Title: {title}" if title else "")
         )
         errors += 1
@@ -505,6 +685,66 @@ def validate_compact_blocks(
                 + (f" Title: {title}" if title else "")
             )
             errors += 1
+    return errors
+
+
+def validate_summary(
+    source: dict[str, Any],
+    nanobanana2: bool,
+    strict_density: bool,
+    strict_markup: bool,
+    strict_emphasis: bool,
+) -> int:
+    slide = summary_slide_def(source, nanobanana2)
+    if slide is None:
+        warn("deck_source.json root must contain a summary object for slide #2.")
+        return 1
+    layout = str(slide.get("layout", "")).strip()
+    title = str(slide.get("title", "")).strip()
+    blocks = slide.get("blocks", {})
+    if not isinstance(blocks, dict):
+        warn("summary.blocks must be an object.")
+        return 1
+    errors = 0
+    card_a = as_text(blocks.get("card-a")).strip()
+    if not card_a:
+        warn("summary.blocks.card-a is required.")
+        errors += 1
+    if nanobanana2:
+        card_b = as_text(blocks.get("card-b")).strip()
+        if not card_b:
+            warn("summary.image_prompt or summary.blocks.card-b is required when nanobanana2 is enabled.")
+            errors += 1
+        elif not is_nanobanana_prompt_block(card_b):
+            warn("summary image prompt must be written as a nanobanana prompt block.")
+            errors += 1
+        elif not has_6_5_ratio(card_b):
+            warn("summary image prompt must include the literal 6:5 aspect ratio.")
+            errors += 1
+    if not card_a:
+        return errors
+    if strict_density:
+        errors += validate_density(2, title, layout, blocks, nanobanana2)
+        if not nanobanana2:
+            count = len(visible_density_text(card_a))
+            if count < SUMMARY_PLAIN_MINIMUM:
+                warn(
+                    f"Summary plain_1col body is too short ({count}/{SUMMARY_PLAIN_MINIMUM} chars). "
+                    "Write a longer conclusion summary before the agenda."
+                )
+                errors += 1
+    if strict_markup:
+        errors += validate_markup(2, title, layout, blocks, nanobanana2)
+        if not nanobanana2:
+            _, body = split_heading(card_a)
+            if list_item_count(body) < 4:
+                warn("Summary plain_1col must contain at least 4 bullet or numbered items.")
+                errors += 1
+            if inline_markup_kind_count(body) < 2:
+                warn("Summary plain_1col must use at least 2 inline markdown markup kinds.")
+                errors += 1
+    if strict_emphasis:
+        errors += validate_emphasis(2, title, layout, blocks, nanobanana2)
     return errors
 
 
@@ -551,24 +791,28 @@ def validate_source(
     strict_markup: bool,
     strict_emphasis: bool,
     strict_compact_blocks: bool,
+    strict_title_style: bool,
     strict_text_integrity: bool,
 ) -> int:
     errors = 0
     if strict_text_integrity:
         errors += validate_text_integrity(source)
+    errors += validate_summary(source, nanobanana2, strict_density, strict_markup, strict_emphasis)
     body_slides = source.get("slides", [])
     if not isinstance(body_slides, list) or not body_slides:
         warn("deck_source.json must contain a non-empty slides array.")
         return 1
     if strict_agenda_grouping:
         errors += validate_agenda_grouping(body_slides)
-    for index, slide in enumerate(body_slides, start=3):
+    for index, slide in enumerate(body_slides, start=4):
         if not isinstance(slide, dict):
             warn(f"Slide #{index} must be an object.")
             errors += 1
             continue
         layout = str(slide.get("layout", "")).strip()
         title = str(slide.get("title", "")).strip()
+        if strict_title_style:
+            errors += validate_title_style(index, title)
         blocks = slide.get("blocks", {})
         if not isinstance(blocks, dict):
             warn(f"Slide #{index} blocks must be an object." + (f" Title: {title}" if title else ""))
@@ -586,6 +830,7 @@ def validate_source(
                     errors += 1
         if strict_density:
             errors += validate_density(index, title, layout, blocks, nanobanana2)
+            errors += validate_compact_density(index, title, layout, blocks)
         if strict_markup:
             errors += validate_markup(index, title, layout, blocks, nanobanana2)
         if strict_emphasis:
@@ -596,9 +841,14 @@ def validate_source(
             if index >= 3 and layout == "plain_1col":
                 warn(f"Slide #{index} uses plain_1col while nanobanana2 is enabled." + (f" Title: {title}" if title else ""))
                 errors += 1
-            if layout == "plain_2col" and not is_nanobanana_prompt_block(as_text(blocks.get("card-b"))):
-                warn(f"Slide #{index} layout 'plain_2col' card-b must contain a nanobanana prompt." + (f" Title: {title}" if title else ""))
-                errors += 1
+            if layout == "plain_2col":
+                card_b = as_text(blocks.get("card-b"))
+                if not is_nanobanana_prompt_block(card_b):
+                    warn(f"Slide #{index} layout 'plain_2col' card-b must contain a nanobanana prompt." + (f" Title: {title}" if title else ""))
+                    errors += 1
+                elif not has_6_5_ratio(card_b):
+                    warn(f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt must include the literal 6:5 aspect ratio." + (f" Title: {title}" if title else ""))
+                    errors += 1
             if layout in NANOBANANA_ICON_LAYOUTS:
                 prompt = as_text(slide.get("icon_prompt")).strip()
                 if not prompt:
@@ -645,8 +895,15 @@ def build_agenda_slide(source: dict[str, Any], templates: dict[str, Any]) -> dic
         return "\n".join(parts)
 
     agenda["grid"][0][0]["markdown"] = render_groups(left_groups, "### 本編")
-    agenda["grid"][0][1]["markdown"] = render_groups(right_groups, "### overflow")
+    agenda["grid"][0][1]["markdown"] = render_groups(right_groups, "")
     return agenda
+
+
+def build_summary_slide(source: dict[str, Any], templates: dict[str, Any], nanobanana2: bool) -> dict[str, Any]:
+    slide_def = summary_slide_def(source, nanobanana2)
+    if slide_def is None:
+        raise ValueError("deck_source.json root must contain summary.")
+    return build_content_slide(slide_def, templates, nanobanana2)
 
 
 def build_content_slide(slide_def: dict[str, Any], templates: dict[str, Any], nanobanana2: bool) -> dict[str, Any]:
@@ -711,7 +968,11 @@ def convert_source_to_slides(source: dict[str, Any], templates: dict[str, Any], 
         "date": source.get("date", ""),
         "note": source.get("note", ""),
     }
-    slides = [build_cover_slide(cover_meta), build_agenda_slide(source, templates)]
+    slides = [
+        build_cover_slide(cover_meta),
+        build_summary_slide(source, templates, nanobanana2),
+        build_agenda_slide(source, templates),
+    ]
     for slide_def in source.get("slides", []):
         slides.append(build_content_slide(slide_def, templates, nanobanana2))
     return slides
@@ -739,13 +1000,14 @@ def main() -> int:
         args.strict_markup,
         args.strict_emphasis,
         args.strict_compact_blocks,
+        args.strict_title_style,
         args.strict_text_integrity,
     )
     if errors:
         warn(f"deck_source validation failed: {errors} error(s).")
         return 1
     slides = convert_source_to_slides(source, templates, args.nanobanana2)
-    if args.require_agenda and validate_agenda_slide(slides):
+    if args.require_agenda and validate_agenda_slide(slides, agenda_slide_number=3, body_slide_number=4):
         return 1
     if args.nanobanana2:
         if validate_nanobanana_no_plain_1col(slides):
