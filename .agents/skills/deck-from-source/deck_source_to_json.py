@@ -352,6 +352,38 @@ def text_integrity_problem(text: str) -> str | None:
     return None
 
 
+def japanese_char_count(text: str) -> int:
+    return len(re.findall(r"[\u3040-\u30ff\u3400-\u9fff]", text))
+
+
+def latin_letter_count(text: str) -> int:
+    return len(re.findall(r"[A-Za-z]", text))
+
+
+def japanese_language_problem(
+    text: str,
+    *,
+    min_japanese_chars: int,
+    latin_ratio_limit: float,
+    latin_floor: int,
+) -> str | None:
+    japanese_count = japanese_char_count(text)
+    if japanese_count < min_japanese_chars:
+        return f"must be written in Japanese ({japanese_count}/{min_japanese_chars} Japanese chars)"
+    latin_count = latin_letter_count(text)
+    if latin_count >= latin_floor and latin_count > japanese_count * latin_ratio_limit:
+        return (
+            f"looks English-dominant ({latin_count} Latin letters vs "
+            f"{japanese_count} Japanese chars)"
+        )
+    return None
+
+
+def nanobanana_prompt_body(markdown: str) -> str:
+    heading, body = split_heading(markdown)
+    return body if heading else markdown
+
+
 def title_style_problem(title: str) -> str | None:
     compact = visible_density_text(title)
     if not compact:
@@ -411,6 +443,40 @@ def validate_text_integrity(source: dict[str, Any]) -> int:
             warn(f"Text integrity failed at {path}: {problem}. Preview: {preview!r}")
             errors += 1
     return errors
+
+
+def validate_cover_title_language(source: dict[str, Any]) -> int:
+    title = as_text(source.get("title")).strip()
+    if not title:
+        warn("root.title is required and must be a Japanese cover title.")
+        return 1
+    problem = japanese_language_problem(
+        title,
+        min_japanese_chars=2,
+        latin_ratio_limit=4.0,
+        latin_floor=28,
+    )
+    if problem:
+        warn(
+            "root.title language failed: "
+            f"{problem}. Keep root.title as the Japanese cover title; use TITLE_SLUG only for filenames."
+        )
+        return 1
+    return 0
+
+
+def validate_japanese_nanobanana_prompt(label: str, prompt: str) -> int:
+    body = nanobanana_prompt_body(prompt).strip()
+    problem = japanese_language_problem(
+        body,
+        min_japanese_chars=10,
+        latin_ratio_limit=2.5,
+        latin_floor=60,
+    )
+    if problem:
+        warn(f"{label} language failed: {problem}. Write nanobanana prompts in Japanese.")
+        return 1
+    return 0
 
 
 def note_with_icon(slide_def: dict[str, Any], nanobanana2: bool) -> str:
@@ -721,6 +787,8 @@ def validate_summary(
         elif not has_6_5_ratio(card_b):
             warn("summary image prompt must include the literal 6:5 aspect ratio.")
             errors += 1
+        else:
+            errors += validate_japanese_nanobanana_prompt("summary image prompt", card_b)
     if not card_a:
         return errors
     if strict_density:
@@ -795,6 +863,7 @@ def validate_source(
     strict_text_integrity: bool,
 ) -> int:
     errors = 0
+    errors += validate_cover_title_language(source)
     if strict_text_integrity:
         errors += validate_text_integrity(source)
     errors += validate_summary(source, nanobanana2, strict_density, strict_markup, strict_emphasis)
@@ -849,6 +918,11 @@ def validate_source(
                 elif not has_6_5_ratio(card_b):
                     warn(f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt must include the literal 6:5 aspect ratio." + (f" Title: {title}" if title else ""))
                     errors += 1
+                else:
+                    errors += validate_japanese_nanobanana_prompt(
+                        f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt",
+                        card_b,
+                    )
             if layout in NANOBANANA_ICON_LAYOUTS:
                 prompt = as_text(slide.get("icon_prompt")).strip()
                 if not prompt:
@@ -857,6 +931,11 @@ def validate_source(
                 elif "6:5" in prompt:
                     warn(f"Slide #{index} layout '{layout}' icon_prompt uses 6:5. Use 3:1 or 4:1." + (f" Title: {title}" if title else ""))
                     errors += 1
+                else:
+                    errors += validate_japanese_nanobanana_prompt(
+                        f"Slide #{index} layout '{layout}' icon_prompt",
+                        prompt,
+                    )
     return errors
 
 

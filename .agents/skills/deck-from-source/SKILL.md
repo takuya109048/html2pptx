@@ -55,11 +55,11 @@ if _m:
 7. nanobanana2がYesなら本文slidesにplain_1colを使わない。plain_2colではblocks.card-bに6:5の説明図プロンプトを置き、card/flow系ではicon_promptを置く。
 8. layoutごとの必須blocks名を守る。plain_2colはcard-a/card-b、list_3cardはcard-a/card-b/card-c、flow_3stepはstep-a/step-b/step-c、flow_4stepはstep-a/step-b/step-c/step-dで書く。text、step、card、plainなどの独自keyを作らない。
 9. 変換前にFINAL_SELF_CHECKを行う。Markdownデッキ記法、メタテーブル、フェンス、HTML改行タグ、文字化けを入れない。
-10. 表紙タイトルを短い英語slugへ変換し、出力ファイル名に使う。ユーザーにはdeck_source.jsonとpptxだけを提示し、slides.jsonは中間生成物として扱う。
+10. root.titleは日本語の表紙タイトルにする。別に短い英語slugを作り、出力ファイル名にだけ使う。ユーザーにはdeck_source.jsonとpptxだけを提示し、slides.jsonは中間生成物として扱う。
 
 ## PPTX変換コードの型
 
-DECK_SOURCE_JSONを確定したら、code interpreterで次の型を使う。TITLE_SLUGは表紙タイトルを短い英語で表したsnake_caseまたはkebab-caseにする。
+DECK_SOURCE_JSONを確定したら、code interpreterで次の型を使う。TITLE_SLUGはファイル名専用であり、表紙に出るroot.titleは日本語のままにする。
 
 ```python
 import glob, json, os, subprocess, sys

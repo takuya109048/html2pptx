@@ -583,6 +583,11 @@ def parse_md(md):
     return sections
 
 
+def is_nanobanana_prompt_markdown(md):
+    text_value = md.lower()
+    return "nanobanana" in text_value and ("prompt" in text_value or "プロンプト" in text_value)
+
+
 def _set_table_cell(cell, cell_text, size, bold, text_color, bg_color, border_color):
     from pptx.oxml import parse_xml as _px
     NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
@@ -688,24 +693,25 @@ def render_cell(slide, ci):
     elif t == "card":
         rect(slide, cx, cy, cw, ch, C["surface"], C["border"], 0.75)
         md = cell.get("markdown", "")
+        text_color = C.get("textMuted", "888888") if is_nanobanana_prompt_markdown(md) else C["text"]
         sections = parse_md(md)
         card_title, items = sections[0] if sections else ("", [])
         divY_abs = cy + L["cardDivY"]
         if card_title:
             text(slide, card_title,
                  cx + padX, cy + padY, cw - padX * 2, 0.35,
-                 F["cardTitle"]["size"], F["cardTitle"]["bold"], C["text"],
+                 F["cardTitle"]["size"], F["cardTitle"]["bold"], text_color,
                  anchor=MSO_ANCHOR.TOP)
             hline(slide, cx + padX, divY_abs, cw - padX * 2, C["border"], 1.0)
             if items:
                 md_content(slide, items,
                            cx + padX, divY_abs + 0.08, cw - padX * 2,
                            cy + ch - divY_abs - 0.08 - padY,
-                           F["cardBody"]["size"], C["text"])
+                           F["cardBody"]["size"], text_color)
         elif items:
             md_content(slide, items,
                        cx + padX, cy + padY, cw - padX * 2, ch - padY * 2,
-                       F["cardBody"]["size"], C["text"])
+                       F["cardBody"]["size"], text_color)
 
     elif t == "table":
         head     = cell.get("head", [])
@@ -971,6 +977,7 @@ def render_cell(slide, ci):
 
     elif t == "plain":
         md        = cell.get("markdown", "")
+        text_color = C.get("textMuted", "888888") if is_nanobanana_prompt_markdown(md) else C["text"]
         sections  = parse_md(md)
         all_items = []
         for title, items in sections:
@@ -981,7 +988,7 @@ def render_cell(slide, ci):
         if all_items:
             md_content(slide, all_items,
                        cx + hPadX, cy + hPadY, cw - hPadX * 2, ch - hPadY * 2,
-                       F["bodyText"]["size"], C["text"],
+                       F["bodyText"]["size"], text_color,
                        head_size=F["bodyHead"]["size"])
 
 
@@ -1100,7 +1107,9 @@ def render_plain2col(slide, sd):
             break
         bx, by, bw, bh = positions[i]
         padX = L["headerPadX"]; padY = L["mainPadY"]
-        sections  = parse_md(col.get("markdown", ""))
+        md = col.get("markdown", "")
+        text_color = C.get("textMuted", "888888") if is_nanobanana_prompt_markdown(md) else C["text"]
+        sections  = parse_md(md)
         all_items = []
         for title, items in sections:
             if title:
@@ -1109,7 +1118,7 @@ def render_plain2col(slide, sd):
         if all_items:
             md_content(slide, all_items,
                        bx + padX, by + padY, bw - padX * 2, bh - padY * 2,
-                       F["bodyText"]["size"], C["text"],
+                       F["bodyText"]["size"], text_color,
                        head_size=F["bodyHead"]["size"])
 
 
