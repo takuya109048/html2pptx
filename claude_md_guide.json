@@ -1,0 +1,118 @@
+{
+  "title": "CLAUDE.md Guide",
+  "subtitle": "Claude Code project rules, memory boundaries, and working norms",
+  "affiliation": "Codex Working Deck",
+  "presenter": "Takuya",
+  "date": "2026-05-07",
+  "note": "sample_source.md をもとに、CLAUDE.md の役割、MEMORY.md との違い、実務上の運用ポイントを短時間で共有するための説明資料。",
+  "summary": {
+    "title": "Summary",
+    "message": "意思決定に使う論点を先に把握する",
+    "note": "この資料の要点は三つです。第一に、CLAUDE.md はプロジェクト内で AI の判断基準をそろえるための作業ルール集であり、単なる説明文書ではありません。第二に、MEMORY.md や自動メモリとは保持対象も更新粒度も異なるため、役割を混ぜると運用が不安定になります。第三に、実務では短く具体的なルール、必須コマンド、落とし穴を先回りして明文化することが、レビュー効率と事故防止に直結します。",
+    "blocks": {
+      "card-a": "### 全体像\n- **CLAUDE.md は判断の共通基盤** であり、AI が毎回参照する前提条件、作業姿勢、禁止事項をまとめる\n- **MEMORY.md は継続記憶の補助線** であり、長期の文脈や学習内容を保持するが、各案件の即時ルールを代替しない\n- 運用設計では、短いルールで迷いを減らし、重要コマンドやレビュー観点を先に見せることで、やり直しを抑える\n- 実務上の価値は、生成品質の均一化、オンボーディング短縮、レビュー観点の固定化を同時に実現できる点にある",
+      "card-b": "### nanobanana prompt\nCreate a 6:5 editorial presentation illustration showing a project rulebook, a memory notebook, a branching decision path, and a developer workflow board. White background, flat business style, clean geometric shapes, no text, no letterbox."
+    },
+    "image_prompt": "Create a 6:5 editorial presentation illustration showing a project rulebook, a memory notebook, a branching decision path, and a developer workflow board. White background, flat business style, clean geometric shapes, no text, no letterbox."
+  },
+  "slides": [
+    {
+      "section": "位置づけと比較",
+      "layout": "bg_3card",
+      "title": "CLAUDE.mdの基本役割",
+      "message": "案件ごとの判断基準を先回りして定義する",
+      "note": "このスライドでは、CLAUDE.md を単なる説明ファイルではなく、AI の振る舞いを案件単位でそろえる実務ルールとして位置づけます。ユーザーが都度説明しなくても、優先順位、禁止事項、出力姿勢、確認ポイントを最初から共有できるため、着手の速さと応答の安定性が上がります。特に複数人で運用する案件では、誰が使っても近い品質に寄せられることが重要です。",
+      "blocks": {
+        "section": "**案件ルールを先に置く** ことで、AI の迷いを減らし、最初の応答からプロジェクト前提に沿わせる。",
+        "card-a": "### 役割の中心\n- 優先順位、禁止事項、出力トーンを明示して、**判断基準を固定する**\n- ユーザーが毎回説明しなくても、最初の一手から案件前提に沿った応答へ寄せられる\n- 複数人利用でも、AI の振る舞いを一定水準にそろえやすい",
+        "card-b": "### 書く内容\n- 抽象論より判断材料を優先し、**実務で効く情報に絞る**\n- 典型タスク、レビュー観点、確認手順、禁止操作を先に書くと運用が安定する\n- 長すぎる背景説明より、即使える指針の方が再現性に効く",
+        "card-c": "### 導入効果\n- レビュー前の初稿精度を高めることで、**着手速度を上げる** だけでなく後工程の手戻りも減らせる\n- 期待値のずれが小さくなり、レビューで直す量より最初から合う量が増える\n- オンボーディング資料としても機能し、新規参加者の理解を助ける"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons: a rulebook with checkmarks, a target board with aligned arrows, and a fast-start workflow lane. Minimal flat presentation style, white background, no text."
+    },
+    {
+      "section": "位置づけと比較",
+      "layout": "table_conclusion",
+      "title": "CLAUDE.mdとMEMORY.mdの違い",
+      "message": "保持対象と更新粒度を分けて運用する",
+      "note": "ここでは二つのファイルを対立ではなく補完関係として整理します。CLAUDE.md は案件で即効性が必要なルールや前提をまとめる場であり、MEMORY.md や自動メモリは継続的に覚えておきたい背景やパターンを保持する場です。更新頻度、参照タイミング、粒度を分けて考えることで、どちらに何を書くべきかが明確になります。",
+      "blocks": {
+        "table": {
+          "head": ["観点", "CLAUDE.md", "MEMORY.md / Auto memory"],
+          "rows": [
+            ["主目的", "案件ごとの判断基準と作業ルールを固定する", "継続的に使う背景知識や学習内容を保持する"],
+            ["更新粒度", "要件や運用変更に応じて明示的に見直す", "やり取りの蓄積から少しずつ育てる"],
+            ["強み", "着手時点から品質と方向性をそろえやすい", "長期文脈を引き継ぎやすく再説明を減らせる"],
+            ["注意点", "抽象論が多いと即効性を失う", "案件固有ルールまで背負わせると曖昧になる"]
+          ]
+        },
+        "conclusion": "**役割を混ぜない** ことが重要で、即時ルールは CLAUDE.md、継続記憶は MEMORY.md に置くと運用が安定する。"
+      }
+    },
+    {
+      "section": "実務ルール",
+      "layout": "flow_3step",
+      "title": "ルール設計の3原則",
+      "message": "短く、具体的に、実行可能な形へ寄せる",
+      "note": "この三原則は、資料の中でも実務価値が高い部分です。ルールは多ければ強いわけではなく、読んだ瞬間に何をするかが分かることが大切です。短さで読みやすさを担保し、具体性で解釈ぶれを防ぎ、実行可能性で現場の行動につなげます。ここが弱いと、書類はあるのに AI の挙動が安定しない状態になります。",
+      "blocks": {
+        "step-a": "### 短く保つ\n- 長い背景説明より要点を優先して、**読む負荷を下げる**\n- 60から100行程度の密度感だと、全体像を一度で把握しやすい\n- まず守るべき核だけを残すと、利用時の迷いが減る",
+        "step-b": "### 具体化する\n- 解釈の幅を狭めて品質をそろえるには、**抽象語を避ける** 必要がある\n- 典型タスク、禁止操作、確認コマンド、レビュー観点を明文化する\n- 曖昧な美辞麗句より、行動に変換できる記述が効く",
+        "step-c": "### 実行可能にする\n- コマンド例や判断条件まで書いて、**現場で使える形に落とす**\n- どの順で確認するか、何を避けるか、何を優先するかを示す\n- その場で動けるルールにすると、資料が運用へ直結する"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons: a concise document, a magnifying glass over checklist items, and a play button on a workflow card. Minimal flat presentation style, white background, no text."
+    },
+    {
+      "section": "実務ルール",
+      "layout": "list_3card",
+      "title": "実装で入れるべき項目",
+      "message": "初動で迷う箇所をルール側で埋める",
+      "note": "ここでは、具体的に何を書けば運用で効くかを整理します。コーディング規約、アーキテクチャ方針、テストや lint の必須コマンドなどは、AI が判断を始める前に知っていると強い情報です。逆に、これらが欠けていると、出力は見た目が整っていてもプロジェクト標準から外れやすくなります。",
+      "blocks": {
+        "card-a": "### コーディング規約\n- 生成物のばらつきを減らすには、**命名や構文の基準** をそろえる必要がある\n- 例として、TypeScript の型方針、`any` 回避、コメントの書き方を定義する\n- 小さな判断でも一貫性が積み上がり、レビュー負荷を下げる\n- ルールの文面が短くても、判断軸が具体的なら実装者の迷いは大きく減る",
+        "card-b": "### 構成と設計\n- **アーキテクチャの境界** を明示すると、配置ミスや責務混在を防げる\n- どのディレクトリに何を置くか、どの層に依存を寄せるかを書く\n- Atomic Design や Clean Architecture の採用有無もここで固定できる",
+        "card-c": "### 必須コマンド\n- `pnpm test` や `pnpm lint` を明示して、**確認手順を標準化する**\n- 実装後に最低限どこまで回すかが分かると、品質確認が抜けにくい\n- 失敗時に何を優先して直すかまで触れると、運用がさらに強くなる\n- 実行順までそろえておくと、チーム内で結果の比較や切り分けもしやすくなる"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons: code brackets with a ruler, layered architecture blocks, and a terminal window with checkmarks. Minimal flat presentation style, white background, no text."
+    },
+    {
+      "section": "実務ルール",
+      "layout": "plain_2col",
+      "title": "コーディング規約の要点",
+      "message": "書き方の統一がレビュー効率を左右する",
+      "note": "sample_source.md では、インデント、クオート、関数長、TypeScript の型方針など、日々の実装に直結する規約が挙げられていました。こうした規約は一見細かく見えますが、レビューで毎回指摘するより、先に AI へ共有しておく方が効率的です。重要なのは網羅よりも優先順位で、何を必ず守るかが一目で分かる構成にすることです。",
+      "blocks": {
+        "card-a": "### 規約の焦点\n- インデント幅やクオート方針などの基本形を固定して、**差分を読みやすくする**\n- 関数の最大長、責務分割、コメント方針を明示して、**保守性を守る**\n- TypeScript では失敗しやすい論点として、**`any` を避ける** 方針を先に明文化する\n- ルールは全部盛りにせず、レビューで繰り返し出る指摘から優先して採用する\n- こうした基準が共有されると、AI の初稿がそのまま使える割合が上がり、手戻りの主因である表記ゆれや設計ゆれを抑えられる",
+        "card-b": "### nanobanana prompt\nCreate a 6:5 presentation illustration of a coding standards board with indentation guides, quote marks, function blocks, and a typed interface card. White background, flat editorial business style, no text, no letterbox."
+      }
+    },
+    {
+      "section": "運用拡張",
+      "layout": "converge_3card",
+      "title": "周辺ルールと拡張先",
+      "message": "フロント、インフラ、分析へ文脈別ルールを広げる",
+      "note": "プロジェクトが大きくなると、一枚の CLAUDE.md だけでは扱いきれない論点が増えます。そのときはルールを捨てるのではなく、領域別ファイルへ広げる設計が有効です。フロントエンド、インフラ、データ分析のように、判断軸が違う領域を分けて持つことで、必要な文脈だけを濃くできます。共通の核と周辺ルールの分担が大切です。",
+      "blocks": {
+        "card-a": "### フロントエンド\n- 状態管理、CSS方針、API呼び出し規約を整理するため、**UI判断を別管理する**\n- デザインシステムや使用ライブラリの前提を共有しやすい\n- 見た目と実装の両方でぶれを抑えられる",
+        "card-b": "### インフラと自動化\n- **環境差分を明示する** と、OSやシェル依存の事故を防ぎやすい\n- dry-run の有無、ログ出力先、危険操作の回避を先に伝えられる\n- 自動化スクリプトでも安全性の基準を共有できる",
+        "card-c": "### データ分析\n- **分析手順を標準化する** と、入出力場所や利用ライブラリの前提がそろう\n- raw と processed のような配置規約も明文化しやすい\n- 再現性のある分析フローへつなげられる",
+        "conclusion": "**共通核を残したまま拡張する** と、案件全体の一貫性を守りつつ、領域固有の判断も深く共有できる。"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons: a UI layout board, a cloud automation pipeline, and a data analysis chart with folders. Minimal flat presentation style, white background, no text."
+    },
+    {
+      "section": "運用拡張",
+      "layout": "bg_3card",
+      "title": "運用上の落とし穴",
+      "message": "事故は内容不足より運用の混線で起きやすい",
+      "note": "最後に、資料の中で特に実務的な注意点をまとめます。ローカル固有の値を共有してしまうこと、環境差分を無視すること、ルールを増やしすぎて読まれなくすることは、どれも現場で起こりやすい失敗です。CLAUDE.md は量で強くするのではなく、誤解と事故を防ぐ粒度で設計することが重要です。",
+      "blocks": {
+        "section": "**運用の混線を防ぐ** 観点で、書くべきことと書かないことの境界を保つ必要がある。",
+        "card-a": "### 固有情報の混入\n- 秘密値や端末依存設定は避け、**個人環境を持ち込まない** ことを徹底する\n- 共有すると再現性より事故リスクが高くなる情報は書かない\n- 代わりに必要条件や確認手順だけを抽象化して残す",
+        "card-b": "### 環境差分の見落とし\n- **OS差分を先に意識する** と、PowerShell と Bash の食い違いを減らせる\n- 危険操作には dry-run や確認ステップを用意する\n- 実行前提を明記すると、失敗時の切り分けも速くなる",
+        "card-c": "### ルール過多\n- **読み切れない資料は効かない** ため、増やす前に削る発想を持つ\n- 繰り返し効く指針だけを残し、周辺説明は別資料へ逃がす\n- 実務で参照される密度を守ることが、長期運用では最も重要になる"
+      },
+      "icon_prompt": "Create a 3:1 horizontal icon strip with three equal square icons: a redacted lock card, a split terminal with Windows and Linux symbols, and a pruned rule tree. Minimal flat presentation style, white background, no text."
+    }
+  ]
+}
