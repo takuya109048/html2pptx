@@ -19,6 +19,8 @@ SKILL を作成する際の共通ルールを定義する。
 * カスタムGPTsではシステムプロンプトに使える文字数が **5000文字** までである。
 * そのため、`SKILL.md` は **必ず5000文字以内** に収める。
 * `SKILL.md` には最小限の行動指針のみを書き、詳細ルール・参照情報・補足仕様は `context.md` に分離する。
+* `context.md` に詳細コンテキストが収まり切らない場合は、追加コンテキストを外部JSONに分離してよい。
+* 外部JSONを使う場合でも、`context.md` はフェーズごとに必要なJSONコンテキストを漏れなく取得するための司令塔として設計する。
 
 ### file search の利用方針
 
@@ -49,6 +51,7 @@ SKILL を作成する際の共通ルールを定義する。
 
 * SKILL は、必要な前提・ルール・参照情報が `context.md` に入っていることを前提に設計する。
 * 毎ターン最初に `context.md` を読むことを、省略してはならない。
+* 外部JSONを使う場合も、`file search` の読み取り対象は `context.md` のみとする。JSON本体は `code interpreter` で取得する。
 
 ### code interpreter の利用方針
 
@@ -60,6 +63,40 @@ SKILL を作成する際の共通ルールを定義する。
   * `/mnt/data` 直下に生成する
   * `/mnt/data` 直下にコピー配置する
 * Python 実行時は、必ず `/mnt/data` 直下のファイルを利用する。
+
+#### code interpreter のコンソールログ制限
+
+カスタムGPTs環境では、code interpreter のコンソールログとしてAIに渡される文字数にも制限がある。
+1回の code interpreter 実行でAIが安定して読めるコンソールログは、
+**先頭200文字と末尾200文字の合計400文字** である。
+400文字を超える場合、中間部分は `...` で省略される前提で設計する。
+
+* code interpreter で長いコンテキストを一括出力してはならない。
+* 外部JSONから取得する個別コンテキストは、**1件あたり400文字以内** にする。
+* 実運用では、ヘッダーや進捗表示も含めて400文字以内に収まるよう、本文は320〜360文字程度を目安にする。
+* 1回の code interpreter 実行では、原則として個別コンテキストを1件だけ出力する。
+* 複数のコンテキストが必要な場合は、フェーズに応じて1件ずつ順番に取得し、`DONE` が出るまで読み切る。
+
+#### 外部JSONコンテキストの利用方針
+
+`context.md` だけで詳細ルールを保持できない場合は、SKILLフォルダ直下に外部JSONとローダーを置く。
+
+```text
+skill-name/
+  SKILL.md
+  context.md
+  context_data.json
+  context_loader.py
+  resolve_uploads.py
+  ...
+```
+
+* `context_data.json` は、400文字以内の小さなコンテキスト片の集合として設計する。
+* `context_loader.py` は、フェーズ名またはコンテキストIDを指定して、必要なコンテキスト片を1件ずつ出力する。
+* `context.md` には、フェーズごとに取得すべきJSONコンテキストID、取得順、完了条件を必ず書く。
+* `context.md` には、必要コンテキストをすべて読み切る前に生成・変換・検証へ進まないよう明記する。
+* ローダーの出力には、現在のID、何件中何件目か、次に取得すべき状態を短く含める。
+* 必須コンテキストが欠落した場合、ローダーはエラーを出し、AIは作業を進めてはならない。
 
 #### アップロードファイルのパス解決
 
@@ -119,6 +156,8 @@ for filename in ["deck.md", "deck.json", "deck.pptx"]:
 skill-name/
   SKILL.md
   context.md
+  context_data.json
+  context_loader.py
   resolve_uploads.py
   example.md
   script.py
@@ -153,18 +192,30 @@ python count_chars.py .Codex/skills/<skill-name>/SKILL.md .Codex/skills/<skill-n
 
 `SKILL.md`（上限 5,000文字）と `context.md`（上限 20,000文字）については上限に対する OK / OVER を自動判定して表示する。
 
+外部JSONコンテキストを使うSKILLでは、設計・編集のたびにPythonで以下も確認する。
+
+* `context_data.json` の各個別コンテキストが400文字以内であること。
+* `context_loader.py` の実出力が、ヘッダーや進捗表示を含めて400文字以内であること。
+* フェーズ定義から参照されるコンテキストIDがすべて存在すること。
+* 必須コンテキストの欠落、未参照コンテキスト、重複IDがないこと。
+
+検証専用スクリプトや計測結果は、SKILLフォルダ内に置かず、プロジェクトルート、`.Codex/tests/`、または `.Codex/plans/` などSKILLフォルダ外に置く。
+
 ### SKILL 作成時の必須ルール
 
 1. カスタムGPTsへの流用を前提にする。
 2. `SKILL.md` をシステムプロンプトとして使う前提で設計する。
 3. `SKILL.md` は 5000 文字以内に収める（計測は `python count_chars.py` を使う）。
 4. `SKILL.md` には最小限の指示のみを書く。
-5. 詳細コンテキストは `context.md` に集約する。
+5. 詳細コンテキストは原則 `context.md` に集約し、収まり切らない場合だけ外部JSONへ分離する。
 6. 各ターン開始時に必ず `file search` で `context.md` を再読込する。
 7. `file search` では `queries` のみを使う。
 8. `context.md` は1ファイルに絞り、20000文字以内にする（計測は `python count_chars.py` を使う）。
 9. `context.md` は文字数削減のため、原則として `*` や `` ` `` によるマークアップを使わない。
-10. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
-11. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
-12. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
-13. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
+10. 外部JSONを使う場合、`context.md` にはフェーズごとの取得対象、取得順、完了条件を必ず書く。
+11. 外部JSONの個別コンテキストは各400文字以内にする。
+12. 外部JSONの個別コンテキスト文字数とローダー実出力文字数は、設計・編集のたびにPythonで確認する。
+13. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
+14. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
+15. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
+16. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。

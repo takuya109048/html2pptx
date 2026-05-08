@@ -65,11 +65,12 @@ def resolve_uploads(data_dir: Path = DATA_DIR) -> list[tuple[str, str]]:
 def main() -> None:
     results = resolve_uploads()
     if not results:
-        print("[resolve_uploads] プレフィックス付きファイルは見つかりませんでした")
+        print("[resolve_uploads] copied=0")
         return
-    print("[resolve_uploads] 以下のファイルをコピー配置しました:")
-    for src_name, dst_name in results:
-        print(f"  - {src_name} -> {dst_name}")
+    shown = ", ".join(dst_name for _, dst_name in results[:5])
+    more = "" if len(results) <= 5 else f", ... +{len(results) - 5}"
+    message = f"[resolve_uploads] copied={len(results)} files: {shown}{more}"
+    print(message[:380])
 
 
 if __name__ == "__main__":
