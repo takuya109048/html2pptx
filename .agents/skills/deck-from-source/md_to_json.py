@@ -23,76 +23,32 @@ TABLE_SEPARATOR_RE = re.compile(
 
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
 STEP_TAGS = ["step-a", "step-b", "step-c", "step-d"]
-CONTENT_SECTION_TAGS = set(CARD_TAGS + STEP_TAGS + [
-    "section",
-    "conclusion",
-    "table",
-    "matrix",
-    "flow_matrix",
-    "h_flow_matrix",
-    "compare",
-    "callout",
-    "kpi",
-])
+CONTENT_SECTION_TAGS = set(CARD_TAGS + STEP_TAGS + ["section", "conclusion", "table", "matrix", "flow_matrix", "h_flow_matrix", "compare"])
 LAYOUT_REQUIRED_TAGS = {
     "plain_1col": ["card-a"],
     "plain_2col": ["card-a", "card-b"],
-    "plain_3col": ["card-a", "card-b", "card-c"],
-    "plain_image_col": ["card-a", "image"],
-    "plain_image_row": ["card-a", "card-b", "image"],
-    "list_2card": ["card-a", "card-b"],
     "list_3card": ["card-a", "card-b", "card-c"],
-    "list_4card": ["card-a", "card-b", "card-c", "card-d"],
-    "cards_2x2": ["card-a", "card-b", "card-c", "card-d"],
-    "flow_2step": ["step-a", "step-b"],
     "flow_3step": ["step-a", "step-b", "step-c"],
-    "flow_3step_conclusion": ["step-a", "step-b", "step-c", "conclusion"],
     "flow_4step": ["step-a", "step-b", "step-c", "step-d"],
     "diffuse_3card": ["section", "card-a", "card-b", "card-c"],
-    "converge_2card": ["card-a", "card-b", "conclusion"],
     "converge_3card": ["card-a", "card-b", "card-c", "conclusion"],
-    "converge_4card": ["card-a", "card-b", "card-c", "card-d", "conclusion"],
-    "bg_2card": ["section", "card-a", "card-b"],
     "bg_3card": ["section", "card-a", "card-b", "card-c"],
-    "bg_4card": ["section", "card-a", "card-b", "card-c", "card-d"],
     "table": ["table"],
     "table_conclusion": ["table", "conclusion"],
-    "table_2card": ["table", "card-a", "card-b"],
-    "table_callout": ["table", "callout"],
     "compare_2col_3row": ["compare"],
-    "matrix_2x2": ["matrix"],
-    "matrix_2x3": ["matrix"],
     "matrix_3x3": ["matrix"],
-    "matrix_4x4": ["matrix"],
     "flow_matrix_3x3": ["flow_matrix"],
-    "flow_matrix_4x3": ["flow_matrix"],
     "h_flow_matrix_3x2": ["h_flow_matrix"],
     "h_flow_matrix_3x3": ["h_flow_matrix"],
     "h_flow_matrix_4x2": ["h_flow_matrix"],
-    "h_flow_matrix_4x3": ["h_flow_matrix"],
-    "callout_2card": ["callout", "card-a", "card-b"],
-    "kpi_2": ["kpi"],
-    "kpi_3": ["kpi"],
-    "kpi_4": ["kpi"],
-    "kpi_conclusion": ["kpi", "conclusion"],
-    "kpi_4_conclusion": ["kpi", "conclusion"],
 }
 NANOBANANA_ICON_LAYOUTS = {
-    "list_2card",
     "list_3card",
-    "list_4card",
-    "cards_2x2",
-    "flow_2step",
     "flow_3step",
-    "flow_3step_conclusion",
     "flow_4step",
     "diffuse_3card",
-    "converge_2card",
     "converge_3card",
-    "converge_4card",
-    "bg_2card",
     "bg_3card",
-    "bg_4card",
 }
 NANOBANANA_ICON_MARKER = "[nanobanana2 icon prompt]"
 DEPRECATED_NANOBANANA_FIELDS = ["plain_image_col", "image_label_1"]
@@ -425,7 +381,7 @@ def apply_layout_mapping(
                 continue
 
             if cell_type == "card":
-                if layout.startswith("flow_") and not layout.startswith("flow_matrix"):
+                if layout in {"flow_3step", "flow_4step"}:
                     if flow_step_cursor < len(STEP_TAGS):
                         section = tags.get(STEP_TAGS[flow_step_cursor])
                         if section is not None:
@@ -449,12 +405,6 @@ def apply_layout_mapping(
 
             if cell_type == "section":
                 section = tags.get("section")
-                if section is not None:
-                    cell["markdown"] = section["body"]
-                continue
-
-            if cell_type == "callout":
-                section = tags.get("callout")
                 if section is not None:
                     cell["markdown"] = section["body"]
                 continue
@@ -491,24 +441,6 @@ def apply_layout_mapping(
                 # 1行目を列ヘッダー(head)、残りをデータ行(rows)として分割
                 cell["head"] = rows[0]
                 cell["rows"] = rows[1:]
-                continue
-
-            if cell_type == "kpi":
-                section = tags.get("kpi")
-                if section is None:
-                    warn(f"Layout '{layout}': missing '```kpi' section.")
-                    continue
-                rows = parse_markdown_matrix(section["body"])
-                if not rows:
-                    continue
-                cell["items"] = [
-                    {
-                        "label": row[0] if len(row) > 0 else "",
-                        "value": row[1] if len(row) > 1 else "",
-                        "caption": row[2] if len(row) > 2 else "",
-                    }
-                    for row in rows
-                ]
                 continue
 
             if cell_type == "image":

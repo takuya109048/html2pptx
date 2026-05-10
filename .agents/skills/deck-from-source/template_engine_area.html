@@ -216,42 +216,6 @@ const D = (() => {
       font-weight: 700;
       color: #${D.COLORS.stepBorder};
     }
-    .slide-kpi-wrap {
-      display: grid;
-      gap: ${pxToCqw(8)};
-      width: 100%;
-      height: 100%;
-    }
-    .slide-kpi-item {
-      border: ${pxToCqw(1)} solid #${D.COLORS.border};
-      border-radius: ${pxToCqw(6)};
-      background: #${D.COLORS.surface};
-      padding: 0.55em;
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: 1fr 1.6fr 1.2fr;
-      align-items: center;
-      text-align: center;
-    }
-    .slide-kpi-label {
-      font-size: ${ptToCqw(D.FONTS.bodyHead.size)};
-      font-weight: 700;
-      color: #${D.COLORS.text};
-      overflow: hidden;
-    }
-    .slide-kpi-value {
-      font-size: ${ptToCqw(Math.max(D.FONTS.title.size, 24))};
-      font-weight: 700;
-      color: #${D.COLORS.conclusionText};
-      line-height: 1.1;
-      overflow: hidden;
-    }
-    .slide-kpi-caption {
-      font-size: ${ptToCqw(D.FONTS.bodyText.size)};
-      color: #${D.COLORS.text};
-      line-height: 1.45;
-      overflow: hidden;
-    }
   `;
   document.head.appendChild(mdStyle);
 
@@ -443,17 +407,6 @@ const D = (() => {
           addBorderedBox(cx, cy, cw, ch, D.COLORS.bgBox, D.COLORS.border, { radius: "3px" });
           addMdBox("md-bg", cx + padX, cy + padY, cw - padX * 2, ch - padY * 2, cell.markdown || "");
 
-        } else if (cell.type === "callout") {
-          addBorderedBox(cx, cy, cw, ch, D.COLORS.conclusionBg, D.COLORS.conclusionBorder, { borderW: pxToCqw(1.5), radius: "4px" });
-          const accentW = D.conclusionAccentW;
-          slide.appendChild(el("div", {
-            left: D.px(cx), top: D.py(cy),
-            width: D.px(accentW), height: D.py(ch),
-            background: "#" + D.COLORS.conclusionBorder,
-            borderRadius: "4px 0 0 4px",
-          }));
-          addMdBox("md-concl", cx + accentW + padX, cy + padY, cw - accentW - padX * 2, ch - padY * 2, cell.markdown || "");
-
         } else if (cell.type === "step_head") {
           drawStepArrow(cx, cy, cw, ch, cell.markdown || "");
 
@@ -513,30 +466,6 @@ const D = (() => {
           });
           table.appendChild(tbody);
           wrap.appendChild(table);
-          slide.appendChild(wrap);
-
-        } else if (cell.type === "kpi") {
-          const items = (cell.items || []).filter(item => item && typeof item === "object");
-          const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
-          wrap.className = "slide-kpi-wrap";
-          wrap.style.gridTemplateColumns = `repeat(${Math.max(items.length, 1)}, minmax(0, 1fr))`;
-          items.forEach(item => {
-            const itemEl = document.createElement("div");
-            itemEl.className = "slide-kpi-item";
-            const labelEl = document.createElement("div");
-            labelEl.className = "slide-kpi-label";
-            labelEl.innerHTML = marked.parseInline(item.label || "");
-            const valueEl = document.createElement("div");
-            valueEl.className = "slide-kpi-value";
-            valueEl.innerHTML = marked.parseInline(item.value || "");
-            const captionEl = document.createElement("div");
-            captionEl.className = "slide-kpi-caption";
-            captionEl.innerHTML = marked.parseInline(item.caption || "");
-            itemEl.appendChild(labelEl);
-            itemEl.appendChild(valueEl);
-            itemEl.appendChild(captionEl);
-            wrap.appendChild(itemEl);
-          });
           slide.appendChild(wrap);
 
         } else if (cell.type === "matrix") {

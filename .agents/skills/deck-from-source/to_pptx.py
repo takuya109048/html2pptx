@@ -690,28 +690,6 @@ def render_cell(slide, ci):
                      cw - padX * 2, ch - padY * 2,
                      F["bgBody"]["size"], False, C["text"], anchor=MSO_ANCHOR.TOP)
 
-    elif t == "callout":
-        rect(slide, cx, cy, cw, ch, C["conclusionBg"], C["conclusionBorder"], 1.25)
-        accentW = L.get("conclusionAccentW", 0.07)
-        rect(slide, cx, cy, accentW, ch, C["conclusionBorder"])
-        md = cell.get("markdown", "")
-        content_x = cx + accentW + padX
-        sections = parse_md(md) if md else []
-        all_items = []
-        for title, items in sections:
-            if title:
-                all_items.append(("heading", title))
-            all_items.extend(items)
-        if all_items:
-            md_content(slide, all_items,
-                       content_x, cy + padY, cw - accentW - padX * 2, ch - padY * 2,
-                       F["conclBody"]["size"], C["conclusionText"],
-                       head_size=F["conclTitle"]["size"])
-        elif md:
-            text(slide, md, content_x, cy + padY, cw - accentW - padX * 2, ch - padY * 2,
-                 F["conclBody"]["size"], True, C["conclusionText"],
-                 anchor=MSO_ANCHOR.MIDDLE)
-
     elif t == "card":
         rect(slide, cx, cy, cw, ch, C["surface"], C["border"], 0.75)
         md = cell.get("markdown", "")
@@ -771,31 +749,6 @@ def render_cell(slide, ci):
                         _set_table_cell(tbl.cell(i + row_offset, j), ct,
                                         F["tableBody"]["size"], False,
                                         C["tableText"], bg, C["tableBorder"])
-
-    elif t == "kpi":
-        items = [item for item in cell.get("items", []) if isinstance(item, dict)]
-        if items:
-            gap = 0.08
-            count = len(items)
-            item_w = (cw - gap * (count - 1)) / count
-            for i, item in enumerate(items):
-                bx = cx + i * (item_w + gap)
-                rect(slide, bx, cy, item_w, ch, C["surface"], C["border"], 0.75)
-                text(slide, item.get("label", ""),
-                     bx + padX, cy + padY,
-                     item_w - padX * 2, ch * 0.16,
-                     F["bodyHead"]["size"], True, C["text"],
-                     anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-                text(slide, item.get("value", ""),
-                     bx + padX, cy + ch * 0.28,
-                     item_w - padX * 2, ch * 0.28,
-                     max(F["title"]["size"], 24), True, C["conclusionText"],
-                     anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-                text(slide, item.get("caption", ""),
-                     bx + padX, cy + ch * 0.62,
-                     item_w - padX * 2, ch * 0.24,
-                     F["bodyText"]["size"], False, C["text"],
-                     anchor=MSO_ANCHOR.TOP, align=PP_ALIGN.CENTER)
 
     elif t == "matrix":
         head_row = cell.get("head") if isinstance(cell.get("head"), list) else []

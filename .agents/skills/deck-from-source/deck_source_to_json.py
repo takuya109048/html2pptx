@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import hashlib
 import json
 import re
 import sys
@@ -25,39 +24,20 @@ from md_to_json import (
 
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
 STEP_TAGS = ["step-a", "step-b", "step-c", "step-d"]
-STRUCTURED_TABLE_BLOCKS = {"table", "matrix", "flow_matrix", "h_flow_matrix", "compare"}
-GENERIC_SLIDE_KINDS = {"three_points", "narrative"}
-GENERIC_SLOT_NAMES = {"lead", "a", "b", "c", "d", "conclusion", "effect", "image"}
-GENERIC_LAYOUT_PREFIXES = ("plain_", "list_")
 
 DENSITY_LIMITS: dict[str, tuple[list[str], int]] = {
     "plain_1col": (["card-a"], 140),
-    "plain_image_col": (["card-a"], 120),
-    "plain_image_row": (["card-a", "card-b"], 85),
-    "plain_3col": (["card-a", "card-b", "card-c"], 85),
-    "list_2card": (["card-a", "card-b"], 115),
     "list_3card": (["card-a", "card-b", "card-c"], 100),
-    "list_4card": (["card-a", "card-b", "card-c", "card-d"], 58),
-    "cards_2x2": (["card-a", "card-b", "card-c", "card-d"], 72),
     "diffuse_3card": (["card-a", "card-b", "card-c"], 58),
-    "bg_2card": (["card-a", "card-b"], 90),
     "bg_3card": (["card-a", "card-b", "card-c"], 58),
-    "bg_4card": (["card-a", "card-b", "card-c", "card-d"], 45),
-    "flow_2step": (["step-a", "step-b"], 85),
     "flow_3step": (["step-a", "step-b", "step-c"], 58),
-    "flow_3step_conclusion": (["step-a", "step-b", "step-c"], 50),
-    "converge_2card": (["card-a", "card-b"], 85),
     "converge_3card": (["card-a", "card-b", "card-c"], 58),
-    "converge_4card": (["card-a", "card-b", "card-c", "card-d"], 40),
     "flow_4step": (["step-a", "step-b", "step-c", "step-d"], 40),
     "plain_2col": (["card-a", "card-b"], 115),
-    "callout_2card": (["card-a", "card-b"], 90),
-    "table_2card": (["card-a", "card-b"], 65),
 }
 COMPACT_DENSITY_LIMITS = {
     "section": 34,
     "conclusion": 34,
-    "callout": 34,
 }
 
 SUMMARY_DEFAULT_TITLE = "サマリー（結論）"
@@ -146,11 +126,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("output_pptx", nargs="?", type=Path, help="Output PPTX path.")
     parser.add_argument("--json", dest="output_json", type=Path, default=None)
     parser.add_argument("--templates", type=Path, default=Path(__file__).resolve().parent / "templates.json")
-    parser.add_argument(
-        "--template-catalog",
-        type=Path,
-        default=Path(__file__).resolve().parent / "template_catalog.json",
-    )
     parser.add_argument("--assets-dir", type=Path, default=None)
     parser.add_argument("--no-pptx", action="store_true")
     parser.add_argument("--nanobanana2", action="store_true")
@@ -217,17 +192,6 @@ def load_source(path: Path, assets_dir: Path | None) -> dict[str, Any]:
     raise FileNotFoundError(path)
 
 
-def load_optional_json(path: Path, assets_dir: Path | None) -> dict[str, Any]:
-    candidates = [path]
-    if assets_dir is not None:
-        candidates.append(assets_dir / path.name)
-        candidates.append(_find_prefixed(assets_dir, path.name))
-    for candidate in candidates:
-        if candidate.exists():
-            return load_json(candidate)
-    return {}
-
-
 def as_text(value: Any) -> str:
     if value is None:
         return ""
@@ -257,302 +221,6 @@ def table_payload(value: Any) -> tuple[list[str], list[list[str]]]:
     else:
         head, rows = [], []
     return [str(c) for c in head], [[str(c) for c in row] for row in rows]
-
-
-def kpi_payload(value: Any) -> list[dict[str, str]]:
-    if isinstance(value, dict):
-        raw_items = value.get("items", [])
-    elif isinstance(value, list):
-        raw_items = value
-    else:
-        raw_items = []
-    items: list[dict[str, str]] = []
-    for item in raw_items:
-        if isinstance(item, dict):
-            items.append({
-                "label": as_text(item.get("label")).strip(),
-                "value": as_text(item.get("value")).strip(),
-                "caption": as_text(item.get("caption")).strip(),
-            })
-        elif isinstance(item, list):
-            label = as_text(item[0] if len(item) > 0 else "").strip()
-            value = as_text(item[1] if len(item) > 1 else "").strip()
-            caption = as_text(item[2] if len(item) > 2 else "").strip()
-            items.append({"label": label, "value": value, "caption": caption})
-    return items
-
-
-def _slot_text(slots: dict[str, Any], name: str) -> str:
-    value = slots.get(name, "")
-    if isinstance(value, dict):
-        return as_text(value.get("markdown") or value.get("text") or value.get("body"))
-    return as_text(value)
-
-
-def render_slot_template(template: str, slots: dict[str, Any]) -> str:
-    def replace(match: re.Match[str]) -> str:
-        return _slot_text(slots, match.group(1)).strip()
-
-    return re.sub(r"\{([A-Za-z0-9_.-]+)\}", replace, template).strip()
-
-
-def materialize_block_spec(spec: Any, slots: dict[str, Any]) -> Any:
-    if isinstance(spec, str):
-        return render_slot_template(spec, slots)
-    if isinstance(spec, dict) and "slot" in spec:
-        return slots.get(str(spec["slot"]), {})
-    return spec
-
-
-def stable_variant_index(slide: dict[str, Any], count: int) -> int:
-    seed = "|".join(
-        as_text(slide.get(key)).strip()
-        for key in ("section", "title", "message", "slide_kind")
-    )
-    digest = hashlib.sha256(seed.encode("utf-8")).hexdigest()
-    return int(digest[:8], 16) % count
-
-
-def slot_filled(slots: dict[str, Any], name: str) -> bool:
-    value = slots.get(name)
-    if isinstance(value, dict):
-        return bool(value)
-    if isinstance(value, list):
-        return bool(value)
-    return bool(as_text(value).strip())
-
-
-def slot_text_len(slots: dict[str, Any], name: str) -> int:
-    return len(visible_density_text(_slot_text(slots, name)))
-
-
-def structured_shape(value: Any) -> tuple[int, int]:
-    if isinstance(value, dict) and "items" in value:
-        return len(value.get("items") or []), 3
-    if isinstance(value, list) and value and isinstance(value[0], dict):
-        return len(value), 3
-    head, rows = table_payload(value)
-    return len(rows), len(head)
-
-
-def variant_allowed(variant: dict[str, Any], slots: dict[str, Any], nanobanana2: bool) -> bool:
-    mode = str(variant.get("nanobanana2", "any")).strip()
-    if mode == "yes_only" and not nanobanana2:
-        return False
-    if mode == "no_only" and nanobanana2:
-        return False
-    for slot in variant.get("required_slots", []):
-        value = slots.get(slot)
-        if isinstance(value, dict):
-            if not value:
-                return False
-        elif isinstance(value, list):
-            if not value:
-                return False
-        elif not as_text(value).strip():
-            return False
-    return True
-
-
-def variant_score(
-    slide: dict[str, Any],
-    variant: dict[str, Any],
-    slots: dict[str, Any],
-    nanobanana2: bool,
-) -> int:
-    layout = as_text(variant.get("layout"))
-    slide_kind = as_text(slide.get("slide_kind")).strip()
-    catalog_kind = as_text(variant.get("_catalog_kind")).strip()
-    required = [str(slot) for slot in variant.get("required_slots", [])]
-    score = int(variant.get("priority", 0) or 0)
-    if catalog_kind and catalog_kind == slide_kind:
-        score += 10
-    score += len(required) * 10
-
-    filled = [slot for slot in required if slot_filled(slots, slot)]
-    score += len(filled) * 20
-    specific_filled = [
-        name
-        for name, value in slots.items()
-        if name not in GENERIC_SLOT_NAMES and slot_filled(slots, name)
-    ]
-    specific_required = [slot for slot in required if slot not in GENERIC_SLOT_NAMES]
-    score += len(specific_required) * 18
-    if catalog_kind and catalog_kind != slide_kind and not specific_filled:
-        score -= 24
-    if specific_filled and not specific_required and (
-        catalog_kind in GENERIC_SLIDE_KINDS or layout.startswith(GENERIC_LAYOUT_PREFIXES)
-    ):
-        score -= min(len(specific_filled), 4) * 16
-    optional_filled = [
-        name
-        for name, value in slots.items()
-        if name not in required and slot_filled(slots, name) and not str(name).endswith("_prompt")
-    ]
-    score += min(len(optional_filled), 4) * 2
-
-    has_conclusion_slot = slot_filled(slots, "conclusion") or slot_filled(slots, "effect")
-    has_lead_slot = slot_filled(slots, "lead")
-    if "conclusion" in layout:
-        score += 35 if has_conclusion_slot else -30
-    elif layout.startswith("converge_"):
-        score += 30 if has_conclusion_slot else -35
-    elif has_conclusion_slot:
-        score -= 6
-
-    if layout.startswith("bg_") or layout.startswith("diffuse_"):
-        score += 28 if has_lead_slot else -18
-    if layout.startswith("list_") or layout == "cards_2x2":
-        score += 6
-
-    item_slots = [name for name in ("a", "b", "c", "d") if slot_filled(slots, name)]
-    step_slots = [name for name in ("step1", "step2", "step3", "step4") if slot_filled(slots, name)]
-    if layout.endswith("2card") or layout in {"list_2card", "bg_2card", "converge_2card"}:
-        score += 18 if len(item_slots) == 2 else -abs(len(item_slots) - 2) * 8
-    if layout.endswith("3card") or layout in {"list_3card", "bg_3card", "converge_3card", "diffuse_3card", "plain_3col"}:
-        score += 18 if len(item_slots) == 3 else -abs(len(item_slots) - 3) * 8
-    if layout in {"list_4card", "cards_2x2", "bg_4card", "converge_4card"}:
-        score += 18 if len(item_slots) == 4 else -abs(len(item_slots) - 4) * 8
-    if layout.startswith("flow_") and not layout.startswith("flow_matrix"):
-        expected = 4 if "4step" in layout else 2 if "2step" in layout else 3
-        score += 22 if len(step_slots) == expected else -abs(len(step_slots) - expected) * 10
-        step_lengths = [slot_text_len(slots, name) for name in step_slots]
-        if step_lengths and max(step_lengths) < 70:
-            score -= 12
-
-    for tag in ("table", "matrix", "flow_matrix", "h_flow_matrix", "compare", "kpi"):
-        if tag in required:
-            rows, cols = structured_shape(slots.get(tag))
-            score += min(rows, 6) * 4 + min(cols, 5) * 3
-            if layout.endswith("2x2"):
-                score += 25 if (rows, cols) == (2, 3) else -abs(rows - 2) * 7
-            elif layout.endswith("2x3"):
-                score += 25 if (rows, cols) == (2, 4) else -abs(rows - 2) * 7
-            elif layout.endswith("3x2"):
-                score += 25 if (rows, cols) == (2, 4) else -abs(rows - 2) * 7
-            elif layout.endswith("3x3"):
-                score += 25 if (rows, cols) == (3, 4) else -abs(rows - 3) * 7
-            elif layout.endswith("4x2"):
-                score += 25 if (rows, cols) == (2, 5) else -abs(rows - 2) * 7
-            elif layout.endswith("4x3"):
-                score += 25 if (rows, cols) == (3, 5) else -abs(rows - 3) * 7
-            elif layout.endswith("4x4"):
-                score += 25 if (rows, cols) == (4, 5) else -abs(rows - 4) * 7
-            if tag == "kpi":
-                count = rows
-                expected = 4 if "_4" in layout else 3 if "_3" in layout or layout == "kpi_conclusion" else 2
-                score += 22 if count == expected else -abs(count - expected) * 10
-
-    if nanobanana2 and layout == "plain_1col":
-        score -= 100
-    if "image" in layout:
-        score += 35 if slot_filled(slots, "image") else -40
-    if slide.get("variant") == "auto":
-        score += 1
-    return score
-
-
-def choose_auto_variant(
-    slide: dict[str, Any],
-    variants: list[dict[str, Any]],
-    slots: dict[str, Any],
-    nanobanana2: bool,
-) -> dict[str, Any]:
-    offset = stable_variant_index(slide, len(variants))
-    ranked = []
-    for index, variant in enumerate(variants):
-        tie_break = -((index - offset) % len(variants))
-        ranked.append((variant_score(slide, variant, slots, nanobanana2), tie_break, variant))
-    return max(ranked, key=lambda item: (item[0], item[1]))[2]
-
-
-def collect_allowed_variants(
-    catalog: dict[str, Any],
-    slide_kind: str,
-    slots: dict[str, Any],
-    nanobanana2: bool,
-) -> list[dict[str, Any]]:
-    kinds = catalog.get("slide_kinds", {})
-    if not isinstance(kinds, dict):
-        return []
-    ordered_kinds = [slide_kind] if slide_kind in kinds else []
-    ordered_kinds.extend(kind for kind in sorted(kinds) if kind not in ordered_kinds)
-    variants: list[dict[str, Any]] = []
-    seen: set[tuple[str, str, str]] = set()
-    for kind_name in ordered_kinds:
-        kind = kinds.get(kind_name)
-        if not isinstance(kind, dict):
-            continue
-        for variant in kind.get("variants", []):
-            if not isinstance(variant, dict) or not variant_allowed(variant, slots, nanobanana2):
-                continue
-            key = (
-                str(kind_name),
-                as_text(variant.get("id")).strip(),
-                as_text(variant.get("layout")).strip(),
-            )
-            if key in seen:
-                continue
-            candidate = copy.deepcopy(variant)
-            candidate["_catalog_kind"] = str(kind_name)
-            variants.append(candidate)
-            seen.add(key)
-    return variants
-
-
-def expand_slide_kind(
-    slide: dict[str, Any],
-    catalog: dict[str, Any],
-    nanobanana2: bool,
-) -> dict[str, Any]:
-    if slide.get("layout"):
-        return slide
-    slide_kind = as_text(slide.get("slide_kind")).strip()
-    if not slide_kind:
-        return slide
-    kind = catalog.get("slide_kinds", {}).get(slide_kind)
-    if not isinstance(kind, dict):
-        return slide
-    raw_slots = slide.get("slots", {})
-    slots = raw_slots if isinstance(raw_slots, dict) else {}
-    variants = collect_allowed_variants(catalog, slide_kind, slots, nanobanana2)
-    if not variants:
-        return slide
-    requested_variant = as_text(slide.get("variant")).strip()
-    if requested_variant and requested_variant != "auto":
-        chosen = next((variant for variant in variants if variant.get("id") == requested_variant), variants[0])
-    else:
-        chosen = choose_auto_variant(slide, variants, slots, nanobanana2)
-    expanded = copy.deepcopy(slide)
-    expanded["layout"] = as_text(chosen.get("layout")).strip()
-    blocks: dict[str, Any] = {}
-    for tag, spec in chosen.get("blocks", {}).items():
-        blocks[str(tag)] = materialize_block_spec(spec, slots)
-    if isinstance(slide.get("blocks"), dict):
-        blocks.update(slide["blocks"])
-    expanded["blocks"] = blocks
-    if not as_text(expanded.get("icon_prompt")).strip() and chosen.get("icon_prompt"):
-        expanded["icon_prompt"] = render_slot_template(as_text(chosen["icon_prompt"]), slots)
-    expanded["variant"] = as_text(chosen.get("id")).strip()
-    return expanded
-
-
-def expand_source_slide_kinds(
-    source: dict[str, Any],
-    catalog: dict[str, Any],
-    nanobanana2: bool,
-) -> dict[str, Any]:
-    if not catalog:
-        return source
-    expanded = copy.deepcopy(source)
-    slides = expanded.get("slides", [])
-    if not isinstance(slides, list):
-        return expanded
-    expanded["slides"] = [
-        expand_slide_kind(slide, catalog, nanobanana2) if isinstance(slide, dict) else slide
-        for slide in slides
-    ]
-    return expanded
 
 
 def visible_density_text(markdown: str) -> str:
@@ -1071,7 +739,7 @@ def validate_compact_blocks(
     blocks: dict[str, Any],
 ) -> int:
     errors = 0
-    for tag in ("section", "conclusion", "callout"):
+    for tag in ("section", "conclusion"):
         if tag not in blocks:
             continue
         markdown = as_text(blocks.get(tag)).strip()
@@ -1182,62 +850,6 @@ def validate_agenda_grouping(body_slides: list[Any]) -> int:
     return 0
 
 
-def validate_structured_headers(
-    index: int,
-    title: str,
-    layout: str,
-    blocks: dict[str, Any],
-) -> int:
-    errors = 0
-    for tag in sorted(STRUCTURED_TABLE_BLOCKS):
-        if tag not in blocks:
-            continue
-        raw_block = blocks.get(tag)
-        label = f"Slide #{index} layout '{layout}' block '{tag}'"
-        suffix = f" Title: {title}" if title else ""
-        if isinstance(raw_block, dict):
-            if "head" in raw_block and not isinstance(raw_block.get("head"), list):
-                warn(f"{label} head must be an array.{suffix}")
-                errors += 1
-                continue
-            if "rows" in raw_block and not isinstance(raw_block.get("rows"), list):
-                warn(f"{label} rows must be an array.{suffix}")
-                errors += 1
-                continue
-        head, rows = table_payload(raw_block)
-
-        if not rows:
-            warn(f"{label} must contain at least one row.{suffix}")
-            errors += 1
-        if not head:
-            warn(f"{label} must contain a non-empty head array.{suffix}")
-            errors += 1
-            continue
-
-        is_matrix = tag in {"matrix", "flow_matrix", "h_flow_matrix"}
-        header_cells = head[1:] if is_matrix else head
-        if not header_cells or any(not cell.strip() for cell in header_cells):
-            if is_matrix:
-                warn(f"{label} must contain non-empty column headers after the top-left corner.{suffix}")
-            else:
-                warn(f"{label} must not contain empty header cells.{suffix}")
-            errors += 1
-
-        for row_index, row in enumerate(rows, start=1):
-            if len(row) != len(head):
-                warn(f"{label} row #{row_index} length must match head length.{suffix}")
-                errors += 1
-                continue
-            if is_matrix and not row[0].strip():
-                warn(f"{label} row #{row_index} must contain a non-empty row header.{suffix}")
-                errors += 1
-            cells_to_check = row[1:] if is_matrix else row
-            if any(not cell.strip() for cell in cells_to_check):
-                warn(f"{label} row #{row_index} must not contain empty body cells.{suffix}")
-                errors += 1
-    return errors
-
-
 def validate_source(
     source: dict[str, Any],
     nanobanana2: bool,
@@ -1285,7 +897,6 @@ def validate_source(
                 if tag not in blocks:
                     warn(f"Slide #{index} layout '{layout}' is missing block '{tag}'." + (f" Title: {title}" if title else ""))
                     errors += 1
-            errors += validate_structured_headers(index, title, layout, blocks)
         if strict_density:
             errors += validate_density(index, title, layout, blocks, nanobanana2)
             errors += validate_compact_density(index, title, layout, blocks)
@@ -1407,7 +1018,7 @@ def build_content_slide(slide_def: dict[str, Any], templates: dict[str, Any], na
                 cell["markdown"] = step_labels.get(tag) or as_text(blocks.get(tag))
                 step_cursor += 1
             elif cell_type == "card":
-                if layout.startswith("flow_") and not layout.startswith("flow_matrix"):
+                if layout in {"flow_3step", "flow_4step"}:
                     tag = STEP_TAGS[card_cursor] if card_cursor < len(STEP_TAGS) else ""
                     cell["markdown"] = step_bodies.get(tag, "")
                 else:
@@ -1420,17 +1031,6 @@ def build_content_slide(slide_def: dict[str, Any], templates: dict[str, Any], na
                 plain_cursor += 1
             elif cell_type in {"section", "conclusion"}:
                 cell["markdown"] = as_text(blocks.get(cell_type))
-            elif cell_type == "callout":
-                cell["markdown"] = as_text(blocks.get("callout"))
-            elif cell_type == "kpi":
-                cell["items"] = kpi_payload(blocks.get("kpi"))
-            elif cell_type == "image":
-                image_value = blocks.get("image")
-                if isinstance(image_value, dict):
-                    cell["src"] = as_text(image_value.get("src")).strip()
-                    cell["markdown"] = as_text(image_value.get("markdown") or image_value.get("text")).strip()
-                else:
-                    cell["markdown"] = as_text(image_value)
             elif cell_type in {"table", "matrix", "flow_matrix", "h_flow_matrix", "compare"}:
                 head, rows = table_payload(blocks.get(cell_type))
                 cell["head"] = head
@@ -1462,10 +1062,7 @@ def main() -> int:
     assets_dir = args.assets_dir
     if assets_dir is not None and args.templates == Path(__file__).resolve().parent / "templates.json":
         args.templates = _find_prefixed(assets_dir, "templates.json")
-    if assets_dir is not None and args.template_catalog == Path(__file__).resolve().parent / "template_catalog.json":
-        args.template_catalog = _find_prefixed(assets_dir, "template_catalog.json")
     templates = load_json(args.templates)
-    catalog = load_optional_json(args.template_catalog, assets_dir)
     if not templates:
         return 1
     try:
@@ -1473,7 +1070,6 @@ def main() -> int:
     except Exception as exc:
         warn(f"Failed to read deck_source.json: {exc}")
         return 1
-    source = expand_source_slide_kinds(source, catalog, args.nanobanana2)
     errors = validate_source(
         source,
         args.nanobanana2,
