@@ -12,8 +12,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-TEXT_LIMIT = 400
-OUTPUT_LIMIT = 400
+TEXT_LIMIT = 800
+OUTPUT_LIMIT = 800
 SKILL_LIMIT = 5_000
 CONTEXT_LIMIT = 20_000
 

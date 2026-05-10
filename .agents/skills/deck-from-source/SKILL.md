@@ -30,7 +30,7 @@ if _m:
     exec(open(_m[0], encoding="utf-8").read())
 ```
 
-code interpreterのログは400文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出す。複数チャンクをループ出力しない。
+code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出す。複数チャンクをループ出力しない。
 
 ## 詳細コンテキスト取得
 
@@ -74,8 +74,6 @@ strict-emphasis失敗時はrepair_emphasis、strict-densityや本文不足はrep
 root.summaryを必ず書く。slides配列には本文スライドだけを書く。表紙、サマリー、目次はdeck_source_to_json.pyが自動生成する。
 
 slides[].titleは目次小見出しなので名詞句か体言止めにし、主張や示唆はmessageへ移す。layoutごとの必須blocks名を守り、独自keyを作らない。nanobanana2がYesなら本文slidesにplain_1colを使わない。
-
-本文slidesではlayout/blocksを直接固定せず、原則slide_kind/variant:auto/slotsを使う。deck_source_to_json.pyがtemplate_catalog.jsonから全候補を見て、内容に合う具体layoutへスコア展開する。
 
 変換前にFINAL_SELF_CHECKを行う。Markdownデッキ記法、メタテーブル、フェンス、HTML改行タグ、文字化けを入れない。
 

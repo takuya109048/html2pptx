@@ -1,8 +1,8 @@
 """Load deck-from-source context chunks safely for Custom GPTs.
 
-The Custom GPT code interpreter console may expose only the first 200 and
-last 200 characters to the model. This loader prints exactly one chunk per
-run and refuses output longer than 400 characters.
+The Custom GPT code interpreter console may expose only the first 400 and
+last 400 characters to the model. This loader prints exactly one chunk per
+run and refuses output longer than 800 characters.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-MAX_OUTPUT_CHARS = 400
+MAX_OUTPUT_CHARS = 800
 STATE_NAME = "deck_context_state.json"
 
 
@@ -96,7 +96,7 @@ def emit_phase_index(data: dict[str, Any], phase: str, index: int) -> None:
 
 
 def validate(data: dict[str, Any]) -> str:
-    max_chunk = int(data.get("max_chunk_chars", 300))
+    max_chunk = int(data.get("max_chunk_chars", 800))
     errors: list[str] = []
     chunks = data.get("chunks", {})
     phases = data.get("phases", {})
@@ -113,7 +113,7 @@ def validate(data: dict[str, Any]) -> str:
                 idx = phase_data["chunks"].index(chunk_id)
                 rendered = format_chunk(data, phase, idx)
                 if len(rendered) > MAX_OUTPUT_CHARS:
-                    errors.append(f"output>400:{phase}:{chunk_id}:{len(rendered)}")
+                    errors.append(f"output>800:{phase}:{chunk_id}:{len(rendered)}")
 
     if errors:
         shown = "; ".join(errors[:3])
