@@ -1,0 +1,35 @@
+{
+  "title": "構造表検証",
+  "subtitle": "",
+  "affiliation": "Codex Working Deck",
+  "presenter": "Takuya",
+  "date": "2026-05-09",
+  "note": "構造表のヘッダー検証を行う。",
+  "summary": {
+    "title": "サマリー（結論）",
+    "message": "構造表にはヘッダーが必要である。",
+    "note": "この入力は検証用であり、本文スライドの表に正しいヘッダーがある状態を作っている。",
+    "blocks": {
+      "card-a": "### 結論\n構造表は **ヘッダー必須** とし、PPTX変換前に欠落を止める。"
+    }
+  },
+  "slides": [
+    {
+      "section": "検証",
+      "layout": "table_conclusion",
+      "title": "ヘッダー付き表",
+      "message": "headとrowsの列数が一致すれば通過する。",
+      "note": "表のヘッダーがあり、各行の列数が一致している場合に、構造表検証が通過することを確認する。",
+      "blocks": {
+        "table": {
+          "head": ["観点", "説明"],
+          "rows": [
+            ["項目A", "説明A"],
+            ["項目B", "説明B"]
+          ]
+        },
+        "conclusion": "**headあり** なら表の読み筋が保たれる。"
+      }
+    }
+  ]
+}

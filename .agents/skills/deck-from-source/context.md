@@ -16,6 +16,9 @@ resolve_uploads.pyをglobで探して実行し、assistant-任意ID-元ファイ
 外部JSON:
 context_data.jsonは400文字以内の個別コンテキスト片を持つ。通常は本文300文字以内に分割され、loaderのヘッダーとNEXTまたはDONEを含めても400文字以内で出力される。
 
+テンプレートカタログ:
+本文slideはlayoutとblocksを直接書かず、slide_kind、variant:auto、slotsを優先してよい。deck_source_to_json.pyがtemplate_catalog.jsonを使い、全テンプレート候補からスロット充実度、表やKPIの形、結論有無、nanobanana2可否で具体layoutをスコア選択する。必要な時だけtemplate_catalog_loader.py listまたはget 種別名で短い説明を読む。
+
 フェーズ:
 turn_b_yes: nanobanana2 Yesで生成する時に読む。
 turn_b_no: nanobanana2 Noで生成する時に読む。
@@ -49,7 +52,7 @@ root.titleは日本語の表紙タイトルにする。保存名は短い英語s
 root.summaryは必須である。
 slides配列には本文スライドだけを書く。表紙、サマリー、目次は入れない。
 slides.titleは目次小見出しであり、名詞句か体言止めにする。主張や示唆はmessageへ移す。
-layoutごとの必須blocks名を守る。独自keyは作らない。
+layout形式ではlayoutごとの必須blocks名を守る。slide_kind形式ではslotsに必要な本文を置く。独自keyは作らない。
 nanobanana2 Yesでは本文slidesにplain_1colを使わない。
 Markdownデッキ記法、メタテーブル、フェンス、HTML改行タグ、文字化けを入れない。
 

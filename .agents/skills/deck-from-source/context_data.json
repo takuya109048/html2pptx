@@ -24,6 +24,9 @@
         "json_schema.002",
         "json_schema.003",
         "json_schema.004",
+        "slide_kind.001",
+        "slide_kind.002",
+        "slide_kind.003",
         "json_schema.005",
         "json_schema.006",
         "json_schema.007",
@@ -100,6 +103,9 @@
         "json_schema.002",
         "json_schema.003",
         "json_schema.004",
+        "slide_kind.001",
+        "slide_kind.002",
+        "slide_kind.003",
         "json_schema.005",
         "json_schema.006",
         "json_schema.007",
@@ -208,6 +214,9 @@
         "json_schema.002",
         "json_schema.003",
         "json_schema.004",
+        "slide_kind.001",
+        "slide_kind.002",
+        "slide_kind.003",
         "json_schema.005",
         "json_schema.006",
         "json_schema.007",
@@ -239,7 +248,8 @@
         "setup_script.002",
         "setup_script.003",
         "setup_script.004",
-        "setup_script.005"
+        "setup_script.005",
+        "setup_script.006"
       ]
     }
   },
@@ -304,6 +314,18 @@
       "section": "JSON_SCHEMA",
       "text": "- layout: レイアウト名。\n- title: 目次小見出し。空にしない。名詞句か体言止めにし、である、する、となる等の文にしない。汎用語だけの薄い見出しにしない。\n- message: サブメッセージ。スライドの示唆や結論を書く。不要なら空文字。\n- note: 発表者読み上げ原稿。通常180から320字。JSON文字列なので実改行を使ってよい。\n- blocks: layout別の本文ブロック。\n- icon_prompt: card系とflow系の一括アイコン素材プロンプト。該当しないlayoutでは省略または空文字。\n\n表紙タイトル:"
     },
+    "slide_kind.001": {
+      "section": "SLIDE_KIND",
+      "text": "## SLIDE_KIND\n\n出力節約のため、本文slideはlayoutとblocksの代わりにslide_kind、variant、slotsを書ける。layoutがある場合は従来形式を優先する。slide_kindはdeck_source_to_json.pyがtemplate_catalog.jsonから具体layoutへ展開する。variantは原則autoでよい。"
+    },
+    "slide_kind.002": {
+      "section": "SLIDE_KIND",
+      "text": "主なslide_kindは全18種。three_points, process, comparison, problem_solution, decision, kpi, narrative, table_insight, matrix_flow, timeline, risk_mitigation, recommendation, stakeholder_map, architecture, case_study, funnel, before_after, image_explanation。迷う時はlistで全kindを見てからgetする。"
+    },
+    "slide_kind.003": {
+      "section": "SLIDE_KIND",
+      "text": "slotsの文字列は表示本文。cardやstepは###見出しから始める。compare, matrix, table, flow_matrix, h_flow_matrix, kpi, imageは構造オブジェクト。variantはautoを基本にする。汎用kindに逃げず、時系列、判断、KPI、関係者、構成、事例、導線など意味が合う専用kindを優先する。"
+    },
     "json_schema.005": {
       "section": "JSON_SCHEMA",
       "text": "- titleは表紙の大きな日本語の一文であり、20から22字程度までを目安にする。長い説明、対象者、用途、補足条件はsubtitleへ逃がす。\n- titleは1行で読める短い名詞句または短文にする。句読点で2文以上にしない。\n- subtitleはtitleを補う短い説明にし、titleと同じ語を繰り返さない。\n- 変換時は表紙タイトルをPPTXの実タイトル枠に合わせて事前折り返しする。意図しない位置での折り返しを避けるため、生成段階でも3行以上になりそうなtitleは短縮し、説明語はsubtitleへ移す。\n\n例:\n{\n  \"title\": \"CLAUDE.md運用設計プレイブック\","
@@ -330,35 +352,35 @@
     },
     "layout_rules.001": {
       "section": "LAYOUT_RULES",
-      "text": "## LAYOUT_RULES\n\n使用可能layoutと必須blocks:\n| layout | 用途 | 必須blocks |\n|-------|------|------------|\n| plain_1col | 単一説明。nanobanana2 Yesでは使用禁止 | card-a |\n| plain_2col | 2概念、または本文とnanobananaプロンプト | card-a, card-b |\n| list_3card | 並列3要素 | card-a, card-b, card-c |"
+      "text": "## LAYOUT_RULES\n\n使用可能layoutは増えているため、迷う場合はslide_kind/slotsを優先する。直接layoutを書く場合の主系列:\n- plain_1col/2col/3col: card-aから順に使う。plain_1colはnanobanana2 Yesで禁止。\n- list_2card/3card/4card、cards_2x2: card-aから順に使う。"
     },
     "layout_rules.002": {
       "section": "LAYOUT_RULES",
-      "text": "| flow_3step | 3工程 | step-a, step-b, step-c |\n| flow_4step | 4工程 | step-a, step-b, step-c, step-d |\n| diffuse_3card | 1から3展開 | section, card-a, card-b, card-c |\n| converge_3card | 3から1収束 | card-a, card-b, card-c, conclusion |\n| bg_3card | 背景と3点 | section, card-a, card-b, card-c |"
+      "text": "- flow_2step/3step/4stepとflow_3step_conclusion: step-aから順に使う。conclusion付きは最後に結論枠を書く。\n- bg_2card/3card/4card: sectionとcard-aから順に使う。\n- converge_2card/3card/4card: card-aから順に置き、conclusionで着地させる。\n- diffuse_3card: sectionから3カードへ展開する。"
     },
     "layout_rules.003": {
       "section": "LAYOUT_RULES",
-      "text": "| table | 表 | table |\n| table_conclusion | 表と示唆 | table, conclusion |\n| compare_2col_3row | 2対象3観点 | compare |\n| matrix_3x3 | 3×3 | matrix |\n| flow_matrix_3x3 | 縦3×3 | flow_matrix |\n| h_flow_matrix_3x2 | 横3×2 | h_flow_matrix |\n| h_flow_matrix_3x3 | 横3×3 | h_flow_matrix |"
+      "text": "- table、table_conclusion、table_2card、table_callout: tableを主情報にし、必要に応じてcard、callout、conclusionを足す。\n- compare_2col_3row: compareだけを使う。\n- matrix_2x2/2x3/3x3/4x4: matrixだけを使う。\n- flow_matrix系とh_flow_matrix系は各専用blockを使う。"
     },
     "layout_rules.004": {
       "section": "LAYOUT_RULES",
-      "text": "| h_flow_matrix_4x2 | 横4×2 | h_flow_matrix |\n\nblocksの書き方:\n- card、step、plain用ブロックはMarkdown文字列で書く。先頭に###見出しを置き、箇条書きや強調を使ってよい。\n- section、conclusion用ブロックは小さな背景枠や結論枠である。###見出しを使わず、35字以上を目安に1から2文で書く。sectionは背景と含意、conclusionは結論と理由または次の行動を含め、太字をインラインで置く。"
+      "text": "- kpi_2/3/4、kpi_conclusion、kpi_4_conclusion: kpiにitems配列を置く。itemsはlabel、value、captionを持つ。\n- callout_2card: callout、card-a、card-bを使う。\nblocksの書き方: card、step、plainは###見出しから始める。section、callout、conclusionは###見出しを使わず太字をインラインで置く。"
     },
     "layout_rules.005": {
       "section": "LAYOUT_RULES",
-      "text": "- table、matrix、flow_matrix、h_flow_matrix、compareは {\"head\": [...], \"rows\": [[...], ...]} の形で書く。\n- 独自block keyを作らない。text、step、card、plain、bodyは禁止。\n- flow系のstep-aなどは先頭に### 見出しを置く。見出しがstepラベル、残りが本文になる。\n- card、step、plainカラムは文章だけで埋めない。先頭に###見出しを置き、本文には箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかを入れる。"
+      "text": "- table、matrix、flow_matrix、h_flow_matrix、compareは {\"head\": [...], \"rows\": [[...], ...]} の形で書く。\n- head欠落や空ヘッダーは禁止。table、compareは全headセルを非空にする。matrix系はhead[0]だけ空可、head[1:]は列見出しとして非空にする。\n- matrix系の各row先頭は行見出しとして非空にし、全rowの列数はheadと一致させる。\n- 独自block keyを作らない。text、step、card、plain、bodyは禁止。"
     },
     "layout_rules.006": {
       "section": "LAYOUT_RULES",
-      "text": "- card、step、plainカラムの本文には、読み手が最初に見るべき短い語句を1つ以上太字にする。太字は見出しや箇条書き先頭のラベルではなく、本文中の判断軸、制約、行動、結論へ自然に置く。\n\nレイアウト選択:\n1. 3段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_3step。\n2. 4段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_4step。\n3. フラットな3要素ならlist_3card。\n4. 1つの共通テーマから3方向へ広がるならdiffuse_3card。"
+      "text": "- card、step、plainカラムの本文には、読み手が最初に見るべき短い語句を1つ以上太字にする。太字は見出しや箇条書き先頭のラベルではなく、本文中の判断軸、制約、行動、結論へ自然に置く。\n\nレイアウト選択:\n1. 時系列や工程ならflow系。\n2. 並列要素ならlist系かcards_2x2。\n3. 背景説明つきならbg系。"
     },
     "layout_rules.007": {
       "section": "LAYOUT_RULES",
-      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:"
+      "text": "4. 根拠から結論へ着地させるならconverge系。\n5. 表データと示唆ならtable_conclusion、表と補足ならtable_2card/table_callout。\n6. 判断軸や評価ならmatrix系またはcompare_2col_3row。\n7. 指標が主役ならkpi系。\n8. 2概念の対立や比較ならplain_2col。単一説明はplain_2colを優先する。\n\n重要:"
     },
     "layout_rules.008": {
       "section": "LAYOUT_RULES",
-      "text": "- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
+      "text": "- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せるならlist系、bg系、table系、plain_2colへ変える。\n- plain_1colにtextは使わずcard-aだけを使う。"
     },
     "nanobanana_rules.001": {
       "section": "NANOBANANA_RULES",
@@ -374,7 +396,7 @@
     },
     "nanobanana_rules.004": {
       "section": "NANOBANANA_RULES",
-      "text": "- 対象はlist_3card、flow_3step、flow_4step、diffuse_3card、converge_3card、bg_3card。\n- icon_promptは日本語で独立フィールドに書く。noteに埋め込まない。deck_source_to_json.pyがnote末尾へ機械的に結合する。\n- 3要素は3:1の横長キャンバスに、等幅の正方形アイコン3個を左から順に並べる。\n- flow_4stepは4:1の横長キャンバスに、等幅の正方形アイコン4個を左から順に並べる。\n- icon_promptに6:5を入れない。"
+      "text": "- 対象はlist系、cards_2x2、flow系、diffuse_3card、converge系、bg系。\n- icon_promptは日本語で独立フィールドに書く。noteに埋め込まない。deck_source_to_json.pyがnote末尾へ機械的に結合する。\n- 2または3要素は3:1、4要素は4:1の横長キャンバスに、等幅の正方形アイコンを左から順に並べる。\n- icon_promptに6:5を入れない。"
     },
     "nanobanana_rules.005": {
       "section": "NANOBANANA_RULES",
@@ -514,7 +536,7 @@
     },
     "final_self_check.001": {
       "section": "FINAL_SELF_CHECK",
-      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。"
+      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるかを見る。\n- 表、比較、マトリクスはhead必須。空ヘッダーや列数不一致がないかを見る。"
     },
     "final_self_check.002": {
       "section": "FINAL_SELF_CHECK",
@@ -554,13 +576,17 @@
     },
     "setup_script.003": {
       "section": "SETUP_SCRIPT",
-      "text": "    \"to_pptx.py\",\n    \"template_engine_area.html\",\n    \"templates.json\",\n    \"design.json\",\n    \"logo.png\",\n    \"background.png\",\n]\n\ndef main() -> None:\n    missing = [f for f in FILES if not (SKILL_DIR / f).exists()]\n    if missing:"
+      "text": "    \"to_pptx.py\",\n    \"template_engine_area.html\",\n    \"templates.json\",\n    \"template_catalog.json\",\n    \"template_catalog_loader.py\",\n    \"design.json\",\n    \"logo.png\",\n    \"background.png\",\n]\n\ndef main() -> None:"
     },
     "setup_script.004": {
       "section": "SETUP_SCRIPT",
-      "text": "        print(f\"[error] missing={len(missing)} first={missing[0]}\", file=sys.stderr)\n        sys.exit(1)\n    DEST_DIR.mkdir(parents=True, exist_ok=True)\n    for name in FILES:\n        shutil.copy2(SKILL_DIR / name, DEST_DIR / name)\n    print(f\"[setup_deck] copied={len(FILES)} dest={DEST_DIR}\")"
+      "text": "    missing = [f for f in FILES if not (SKILL_DIR / f).exists()]\n    if missing:\n        print(f\"[error] missing={len(missing)} first={missing[0]}\", file=sys.stderr)\n        sys.exit(1)"
     },
     "setup_script.005": {
+      "section": "SETUP_SCRIPT",
+      "text": "    DEST_DIR.mkdir(parents=True, exist_ok=True)\n    for name in FILES:\n        shutil.copy2(SKILL_DIR / name, DEST_DIR / name)\n    print(f\"[setup_deck] copied={len(FILES)} dest={DEST_DIR}\")"
+    },
+    "setup_script.006": {
       "section": "SETUP_SCRIPT",
       "text": "if __name__ == \"__main__\":\n    main()"
     }

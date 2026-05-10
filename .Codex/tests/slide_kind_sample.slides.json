@@ -1,0 +1,130 @@
+[
+  {
+    "layout": "cover",
+    "title": "テンプレート自動展開テスト\nslide_kindとslotsからPPTXへ変換する",
+    "affiliation": "Codex Working Deck",
+    "presenter": "Takuya",
+    "date": "2026-05-09",
+    "bg": "background.png",
+    "note": "slide_kind形式の動作確認用サンプルです。"
+  },
+  {
+    "header": {
+      "title": "サマリー（結論）",
+      "message": "短い指定から具体レイアウトへ展開する"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 結論\nslide_kind形式は **少ない出力トークン** でスライド意図を渡し、変換器がテンプレートを選ぶ仕組みである。\n- layout選択の迷いを減らすため、本文slideでは **分類だけを書く** 運用に寄せる\n- *slots* に本文や表データを置き、見た目の展開はコードへ任せる\n- `variant: auto` により、同じ意図でも **複数の表現** へ安定して振り分ける\n- ~~毎回大量のテンプレート説明を出す~~ 代わりに、事前に作ったカタログを再利用する\n- 生成後の検証は従来どおりstrict系で行い、薄い本文や欠けたblocksを検出する"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_1col",
+    "note": "最初に結論を確認します。テンプレートの選択をAIに長く考えさせず、分類だけを渡してコード側で展開します。"
+  },
+  {
+    "header": {
+      "title": "目次",
+      "message": "構成を章ごとにたどる"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 設計方針\n- 出力制約を前提にした設計\n- 節約効果の確認観点"
+        },
+        {
+          "type": "plain",
+          "markdown": ""
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_2col",
+    "note": "本資料の流れを確認する。目次の小見出しは各スライドタイトルから自動生成しているため、本文スライドとの不一致を避けられる。"
+  },
+  {
+    "header": {
+      "title": "出力制約を前提にした設計",
+      "message": "判断を軽くし、展開をコードへ寄せる"
+    },
+    "rowHeightRatios": [
+      0.3,
+      0.7
+    ],
+    "grid": [
+      [
+        {
+          "type": "callout",
+          "span": 2,
+          "markdown": "**設計の焦点** は、AIにテンプレート選定を長く説明させず、少ない分類情報から安定したPPTXへ変換することにある。"
+        }
+      ],
+      [
+        {
+          "type": "card",
+          "markdown": "### 課題\nAIが毎回テンプレート候補を比較すると、**出力トークン** と判断負荷が増える。\n- 種類が多いほど迷いが増え、本文を書く余力が削られる\n- blocksの書き分けも長くなり、修正時の破綻点が増える\n- カスタムGPTsでは短い出力の中で、構成判断と本文生成を同時に背負いがちである"
+        },
+        {
+          "type": "card",
+          "markdown": "### 対応\n`slide_kind` と `slots` だけを書かせ、**具体layoutは変換器** が選ぶ。\n- variantはautoまたは短いIDにし、候補比較をコードへ逃がす\n- カタログは事前準備した資産として再利用し、毎ターンの説明量を抑える\n- 変換後は従来のstrict検証で、本文不足や必須block欠落を同じ基準で見つける"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "callout_2card",
+    "note": "カスタムGPTsでは出力トークンに余裕がない場合があるため、AIの仕事を分類と本文作成に絞ります。"
+  },
+  {
+    "header": {
+      "title": "節約効果の確認観点",
+      "message": "生成量、迷い、再現性を見る"
+    },
+    "rowHeightRatios": [
+      0.72,
+      0.28
+    ],
+    "grid": [
+      [
+        {
+          "type": "kpi",
+          "items": [
+            {
+              "label": "JSON量",
+              "value": "短縮",
+              "caption": "layout詳細をslotsへ圧縮"
+            },
+            {
+              "label": "判断",
+              "value": "軽量",
+              "caption": "kindだけを選べばよい"
+            },
+            {
+              "label": "再現性",
+              "value": "安定",
+              "caption": "variant選択をコード化"
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "type": "conclusion",
+          "markdown": "**運用上の利点** は、AIの出力を短くしながら、同じ入力から同じ候補を再現できる点である。"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "kpi_conclusion",
+    "note": "実装後は、出力JSONの短さ、変換成功率、テンプレートのばらつきが期待通りかを確認します。"
+  }
+]

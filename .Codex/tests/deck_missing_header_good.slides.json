@@ -1,0 +1,95 @@
+[
+  {
+    "layout": "cover",
+    "title": "構造表検証",
+    "affiliation": "Codex Working Deck",
+    "presenter": "Takuya",
+    "date": "2026-05-09",
+    "bg": "background.png",
+    "note": "構造表のヘッダー検証を行う。"
+  },
+  {
+    "header": {
+      "title": "サマリー（結論）",
+      "message": "構造表にはヘッダーが必要である。"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 結論\n構造表は **ヘッダー必須** とし、PPTX変換前に欠落を止める。"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_1col",
+    "note": "この入力は検証用であり、本文スライドの表に正しいヘッダーがある状態を作っている。"
+  },
+  {
+    "header": {
+      "title": "目次",
+      "message": "構成を章ごとにたどる"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 検証\n- ヘッダー付き表"
+        },
+        {
+          "type": "plain",
+          "markdown": ""
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_2col",
+    "note": "本資料の流れを確認する。目次の小見出しは各スライドタイトルから自動生成しているため、本文スライドとの不一致を避けられる。"
+  },
+  {
+    "header": {
+      "title": "ヘッダー付き表",
+      "message": "headとrowsの列数が一致すれば通過する。"
+    },
+    "rowHeightRatios": [
+      0.75,
+      0.25
+    ],
+    "grid": [
+      [
+        {
+          "type": "table",
+          "head": [
+            "観点",
+            "説明"
+          ],
+          "rows": [
+            [
+              "項目A",
+              "説明A"
+            ],
+            [
+              "項目B",
+              "説明B"
+            ]
+          ]
+        }
+      ],
+      [
+        {
+          "type": "conclusion",
+          "markdown": "**headあり** なら表の読み筋が保たれる。"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "table_conclusion",
+    "note": "表のヘッダーがあり、各行の列数が一致している場合に、構造表検証が通過することを確認する。"
+  }
+]

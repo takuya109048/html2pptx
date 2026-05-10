@@ -64,6 +64,7 @@ def main() -> int:
     context_md = skill_dir / "context.md"
     data_path = skill_dir / "context_data.json"
     loader = skill_dir / "context_loader.py"
+    catalog_loader = skill_dir / "template_catalog_loader.py"
 
     for path, limit in [(skill_md, SKILL_LIMIT), (context_md, CONTEXT_LIMIT)]:
         if not path.exists():
@@ -126,6 +127,22 @@ def main() -> int:
         errors.append(f"loader validate output {len(loader_text)}>{OUTPUT_LIMIT}")
     else:
         ok(loader_text)
+
+    if catalog_loader.exists():
+        catalog_result = subprocess.run(
+            [sys.executable, str(catalog_loader), "validate"],
+            cwd=str(skill_dir),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        catalog_text = (catalog_result.stdout + catalog_result.stderr).strip()
+        if catalog_result.returncode != 0 or not catalog_text.startswith("OK "):
+            errors.append(f"template catalog validate failed: {catalog_text[:200]}")
+        elif len(catalog_text) > OUTPUT_LIMIT:
+            errors.append(f"template catalog validate output {len(catalog_text)}>{OUTPUT_LIMIT}")
+        else:
+            ok(catalog_text)
 
     if errors:
         for error in errors:

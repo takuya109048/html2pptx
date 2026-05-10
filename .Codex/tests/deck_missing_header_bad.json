@@ -1,0 +1,35 @@
+{
+  "title": "構造表検証",
+  "subtitle": "",
+  "affiliation": "Codex Working Deck",
+  "presenter": "Takuya",
+  "date": "2026-05-09",
+  "note": "構造表のヘッダー欠落を検証する。",
+  "summary": {
+    "title": "サマリー（結論）",
+    "message": "構造表にはヘッダーが必要である。",
+    "note": "この入力は検証用であり、本文スライドの表にヘッダーがない状態を作っている。",
+    "blocks": {
+      "card-a": "### 結論\n構造表は **ヘッダー必須** とし、PPTX変換前に欠落を止める。"
+    }
+  },
+  "slides": [
+    {
+      "section": "検証",
+      "layout": "table_conclusion",
+      "title": "ヘッダー欠落の検出",
+      "message": "headが空ならstrict検証で止める。",
+      "note": "表のヘッダーがない場合に、変換器が警告して失敗することを確認する。",
+      "blocks": {
+        "table": {
+          "head": [],
+          "rows": [
+            ["項目A", "説明A"],
+            ["項目B", "説明B"]
+          ]
+        },
+        "conclusion": "**head欠落** はPPTX化前に修正対象として扱う。"
+      }
+    }
+  ]
+}
