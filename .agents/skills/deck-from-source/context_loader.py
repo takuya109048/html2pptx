@@ -10,19 +10,36 @@ from __future__ import annotations
 import glob
 import json
 import sys
-import tempfile
+import datetime
+import os
 from pathlib import Path
 from typing import Any
 
 MAX_OUTPUT_CHARS = 800
 STATE_NAME = "deck_context_state.json"
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 
 def runtime_dir() -> Path:
+    env_dir = os.environ.get("DECK_FROM_SOURCE_OUTPUT_DIR") or os.environ.get("DECK_OUTPUT_DIR")
+    if env_dir:
+        path = Path(env_dir)
+        path.mkdir(parents=True, exist_ok=True)
+        return path
     mnt = Path("/mnt/data")
-    if mnt.exists():
+    if os.name != "nt" and mnt.exists():
         return mnt
-    path = Path(tempfile.gettempdir()) / "deck_from_source_context"
+    path = Path.cwd()
+    if (path / "SKILL.md").exists() and (path / "context_data.json").exists():
+        parts = {part.lower() for part in path.parts}
+        if ".agents" in parts or ".codex" in parts or ".claude" in parts:
+            parents = list(path.parents)
+            if len(parents) >= 3:
+                path = parents[2]
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -42,6 +59,27 @@ def find_data_path() -> Path:
 
 def state_path() -> Path:
     return runtime_dir() / STATE_NAME
+
+
+def log_path() -> Path:
+    return runtime_dir() / "code_interpreter_log.md"
+
+
+def append_log(phase: str, purpose: str, result: str, inputs: list[str] | None = None, outputs: list[str] | None = None) -> None:
+    try:
+        ts = datetime.datetime.now().isoformat(timespec="seconds")
+        line = {
+            "time": ts,
+            "phase": phase,
+            "purpose": purpose,
+            "inputs": inputs or [],
+            "outputs": outputs or [],
+            "result": result,
+        }
+        with log_path().open("a", encoding="utf-8") as f:
+            f.write("- " + json.dumps(line, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
 
 
 def load_data() -> dict[str, Any]:
@@ -88,11 +126,16 @@ def emit_phase_index(data: dict[str, Any], phase: str, index: int) -> None:
         known = ",".join(sorted(data["phases"]))
         raise SystemExit(f"ERROR unknown phase. phases={known}")
     ids = data["phases"][phase]["chunks"]
+    text = format_chunk(data, phase, index)
     if index < len(ids):
         save_state({"phase": phase, "next_index": index + 1})
+        status = f"NEXT {index + 2:03d}/{len(ids):03d}" if index + 1 < len(ids) else f"DONE {len(ids):03d}/{len(ids):03d}"
     else:
         save_state({"phase": phase, "next_index": index, "done": True})
-    emit(format_chunk(data, phase, index))
+        status = f"DONE {len(ids):03d}/{len(ids):03d}"
+    chunk_id = ids[index] if index < len(ids) else "complete"
+    append_log(phase, "context_loader", f"{status} chunk={chunk_id}", outputs=[STATE_NAME])
+    emit(text)
 
 
 def validate(data: dict[str, Any]) -> str:
@@ -142,6 +185,7 @@ def main(argv: list[str]) -> None:
         chunk = data["chunks"].get(chunk_id)
         if not chunk:
             raise SystemExit(f"ERROR unknown chunk {chunk_id}")
+        append_log("get", "context_loader", f"DONE chunk={chunk_id}")
         emit(f"[{chunk_id}]\n{chunk['text']}")
     elif cmd == "status":
         state = load_state()
@@ -150,12 +194,23 @@ def main(argv: list[str]) -> None:
         idx = min(int(state["next_index"]), total)
         current = f"{idx:03d}/{total:03d}" if idx >= total else f"{idx + 1:03d}/{total:03d}"
         status = "DONE" if idx >= total else "NEXT"
+        append_log(phase, "context_loader status", f"{status} {current}")
         emit(f"STATUS {phase} {status} {current}")
     elif cmd == "validate":
-        emit(validate(data))
+        result = validate(data)
+        append_log("validate", "context_loader validate", result)
+        emit(result)
     else:
         raise SystemExit(f"ERROR unknown command {cmd}")
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except SystemExit as exc:
+        if exc.code:
+            append_log("context_loader", "context_loader error", f"ERROR {exc}")
+        raise
+    except Exception as exc:
+        append_log("context_loader", "context_loader error", f"ERROR {type(exc).__name__}: {exc}")
+        raise

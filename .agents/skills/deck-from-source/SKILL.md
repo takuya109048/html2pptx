@@ -1,80 +1,84 @@
 ---
 name: deck-from-source
-description: 原文ソース（テキスト、URL、ファイル）からdeck_source.jsonとPPTXを生成する。ユーザーが資料化、スライド化、PPTX作成、deck_source.json生成、発表資料への変換を求めたら使う。初回は生成へ進まずnanobanana2画像を使うかYes/Noだけを確認し、回答後に外部JSONコンテキストを読み切ってから分析、JSON生成、PPTX変換、json/pptxリンク提示まで完了する。スキル自体の修正依頼では生成フローに入らない。
+description: 原文ソース（テキスト、URL、ファイル）からdeck_source.jsonとPPTXを生成する。資料化、スライド化、PPTX作成、deck_source.json生成、発表資料化の依頼で使う。初回は生成せずnanobanana2画像を使うかYes/Noだけ確認し、回答後はフェーズごとに外部JSONを直前取得して、json/pptx/logリンク提示まで完了する。スキル修正依頼では生成フローに入らない。
 ---
 
 # deck-from-source
 
-原文ソースから発表用のdeck_source.jsonとPPTXを生成する。Markdownデッキは作らない。詳細ルールはcontext.mdを司令塔とし、必要に応じてcontext_data.jsonをcontext_loader.pyで1件ずつ読む。
+原文ソースからdeck_source.jsonとPPTXを生成する。context.mdを司令塔にし、作業直前にcontext_loader.pyで必要フェーズだけを1件ずつ読む。
 
 ## 適用条件
 
-デッキ生成、スライド化、PPTX化、deck_source.json生成の依頼でだけ生成フローに入る。
+デッキ生成、スライド化、PPTX化、deck_source.json生成の依頼で生成フローに入る。
 
-ユーザーがこのスキルのSKILL.md、context.md、context_data.json、context_loader.py、変換スクリプト、指示文の修正を求めている場合は生成フローへ入らない。Yes/No質問も出さず、対象ファイルの編集と検証を行う。
+このスキルの修正依頼では生成フローへ入らず、対象ファイルを編集、検証する。
 
 ## 毎ターン最初
 
-file searchで次だけを実行する。
+file searchが使える環境では次だけを実行する。Codexではローカルのcontext.mdを毎ターン読み直す。
 
 ```json
 { "queries": ["context.mdのmd全文をfile search"] }
 ```
 
-code interpreterに渡すcode本文は、冒頭に日本語の一文コメントを置き、何のために何を実行するかを自然文で示す。コメントはGUIアクティビティでユーザーに見えるため、秘密情報や長い仕様説明は書かない。初回コードは次を使う。
+code本文は冒頭に日本語の一文コメントを置く。出力先は`DECK_FROM_SOURCE_OUTPUT_DIR`、なければ`/mnt/data`、なければ現在ディレクトリ。
 
 ```python
-# アップロード済みファイル名を安定化するため、resolve_uploads.pyを探して実行し、後続処理で /mnt/data/{元ファイル名} を使えるようにします。
-import glob
-_m = glob.glob("/mnt/data/*resolve_uploads.py")
+# アップロード済みファイル名を安定化し、後続処理で同じ出力先のファイルを参照できるようにします。
+import glob, os
+MNT = os.environ.get("DECK_FROM_SOURCE_OUTPUT_DIR") or ("/mnt/data" if os.name != "nt" and os.path.exists("/mnt/data") else os.getcwd())
+_m = glob.glob(os.path.join(MNT, "*resolve_uploads.py"))
 if _m:
     exec(open(_m[0], encoding="utf-8").read())
 ```
 
-code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx 現在/総数 chunk_id]`、末尾に`NEXT 次/総数`または`DONE 総数/総数`を出して進捗を見せる。複数チャンクをループ出力しない。続きの取得では、直前の`NEXT 004/031`を次のcode冒頭コメントにも写し、GUIアクティビティ上でも進捗が変わるようにする。
+全code実行でcode_interpreter_log.mdへ時刻、フェーズ、目的、入出力、結果、NEXT/DONEまたはエラーを追記する。秘密情報は書かない。
 
 ## 詳細コンテキスト取得
 
-ターンBではDECK_SOURCE_JSONを書く前に、必ずcontext_loader.pyで該当フェーズをDONEまで読み切る。
+ターンBではcontext_data.jsonを直接読まない。既存生成物を叩き台にせず、原文から新規に作る。各作業直前に該当フェーズをDONEまで読む。
 
-Yesの場合:
+Yes時の順序:
+yes_plan -> yes_schema -> yes_layout -> yes_image -> yes_body -> yes_emphasis -> yes_notes -> yes_check_convert
 
-```python
-# turn_b_yes用の詳細コンテキスト読み込みを開始し、何件中何件目まで読めたかとNEXT/DONE状態を表示します。
-import glob, subprocess, sys
-_m = glob.glob("/mnt/data/*resolve_uploads.py")
-if _m:
-    exec(open(_m[0], encoding="utf-8").read())
-subprocess.run([sys.executable, "/mnt/data/context_loader.py", "start", "turn_b_yes"], check=True)
-```
+No時の順序:
+no_plan -> no_schema -> no_layout -> no_body -> no_emphasis -> no_notes -> no_check_convert
 
-Noの場合は最後の引数をturn_b_noにする。続きは1回のcode interpreter実行ごとに次だけを実行する。
+取得開始:
 
 ```python
-# 前回表示されたNEXT 002/031に従い、詳細コンテキスト002/031を読み込んで次のNEXT/DONE状態を確認します。
-import subprocess, sys
-subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next"], check=True)
+# yes_plan用の詳細コンテキスト読み込みを開始し、NEXT/DONE状態を確認します。
+import os, subprocess, sys
+MNT = os.environ.get("DECK_FROM_SOURCE_OUTPUT_DIR") or ("/mnt/data" if os.name != "nt" and os.path.exists("/mnt/data") else os.getcwd())
+subprocess.run([sys.executable, os.path.join(MNT, "context_loader.py"), "start", "yes_plan"], check=True)
 ```
 
-上の`002/031`は例であり、固定文のまま使い回さない。前回出力末尾が`NEXT 004/031`なら、次のcodeコメントも`004/031`に書き換える。出力先頭の`[ctx 現在/総数 chunk_id]`で読み込み進捗を確認し、末尾がDONEになるまで生成へ進まない。途中でエラーが出たら、欠けたファイルやフェーズを直してから再取得する。
+続き:
 
-strict-emphasis失敗時はrepair_emphasis、strict-densityや本文不足はrepair_density、文字化け、markup、title、section、block系はrepair_text、実行ファイル配置が必要な時はsetupを同じstart/next方式で読む。
+```python
+# 前回表示されたNEXT 002/006に従い、詳細コンテキスト002/006を読み込んでNEXT/DONE状態を確認します。
+import os, subprocess, sys
+MNT = os.environ.get("DECK_FROM_SOURCE_OUTPUT_DIR") or ("/mnt/data" if os.name != "nt" and os.path.exists("/mnt/data") else os.getcwd())
+subprocess.run([sys.executable, os.path.join(MNT, "context_loader.py"), "next"], check=True)
+```
+
+002/006は例。前回末尾がNEXT 004/006なら次のcodeコメントも004/006へ変える。Codexではshellで同じstart/nextを実行してよい。
+
+strict-emphasis失敗時はrepair_emphasis、strict-densityや本文不足はrepair_density、文字化け、markup、title、section、block系はrepair_text、実行ファイル配置が必要な時はsetupを同じ方式で読む。
 
 ## ターン判定
 
 ターンA:
-新しい原文ソースを受け取り、nanobanana2方針が未確定なら、分析、判断、JSON生成、PPTX生成をしない。次の質問だけを返す。
+新しい原文ソースを受け取り、nanobanana2方針が未確定なら、分析、判断、JSON生成、PPTX生成をしない。次だけを返す。
 
 「nanobanana2による生成画像を挿入プランにしますか？ Yes / No で答えてください。（Yesにすると説明図プロンプトやカード/フロー用アイコンプロンプトをdeck_source.jsonに追加します。Noなら画像プロンプトなしで生成します）」
 
-スライド枚数、発表者名、対象者は追加質問しない。必要ならターンBで自然に推定する。
-
 ターンB:
-直近のユーザー返答でYes/No方針を受け取ったら、前ターンのソースを使う。該当フェーズの詳細コンテキストをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、リンク提示まで1ターンで完了する。思考過程、分析メモ、構成案はユーザーに出さない。
+Yes/No方針を受け取ったら前ターンのソースを使う。直前読み込みと作業を交互に進め、JSON、PPTX、リンク提示まで完了する。思考過程や構成案は出さない。
 
 ## 生成の不変条件
 
-root.summaryを必ず書く。slides配列には本文スライドだけを書く。表紙、サマリー、目次はdeck_source_to_json.pyが自動生成する。
+root.summaryを必ず書く。slides配列には本文スライドだけを書く。表紙、サマリー、目次はdeck_source_to_json.pyが自動生成する。旧json/pptxは比較用に限り、成果物は今回ソースから再生成する。
 
 slides[].titleは目次小見出しなので名詞句か体言止めにし、主張や示唆はmessageへ移す。layoutごとの必須blocks名を守り、独自keyを作らない。nanobanana2がYesなら本文slidesにplain_1colを使わない。
 
@@ -82,12 +86,19 @@ slides[].titleは目次小見出しなので名詞句か体言止めにし、主
 
 ## PPTX変換コード
 
-DECK_SOURCE_JSONを確定したら、code interpreterで次の型を使う。TITLE_SLUGはファイル名専用であり、表紙に出るroot.titleは日本語のままにする。
+DECK_SOURCE_JSONを確定したら、次の型を使う。TITLE_SLUGはファイル名専用であり、表紙に出るroot.titleは日本語のままにする。
 
 ```python
-# 確定済みDECK_SOURCE_JSONをJSONに保存してstrict検証付きでPPTXへ変換し、deck_source.jsonとPPTXのリンクを表示します。
-import glob, json, os, subprocess, sys
-MNT = "/mnt/data"
+# 確定済みDECK_SOURCE_JSONを保存してPPTXへ変換し、json/pptx/logのリンクを表示します。
+import datetime, glob, json, os, subprocess, sys
+MNT = os.environ.get("DECK_FROM_SOURCE_OUTPUT_DIR") or ("/mnt/data" if os.name != "nt" and os.path.exists("/mnt/data") else os.getcwd())
+os.makedirs(MNT, exist_ok=True)
+LOG = os.path.join(MNT, "code_interpreter_log.md")
+def log(phase, purpose, result, inputs=None, outputs=None):
+    ts = datetime.datetime.now().isoformat(timespec="seconds")
+    with open(LOG, "a", encoding="utf-8") as f:
+        f.write(f"\n- {ts} phase={phase} purpose={purpose} result={result} inputs={inputs or []} outputs={outputs or []}\n")
+
 _m = glob.glob(f"{MNT}/*resolve_uploads.py")
 if _m:
     exec(open(_m[0], encoding="utf-8").read())
@@ -95,7 +106,6 @@ if _m:
 TITLE_SLUG = "short_english_title"
 USE_NANOBANANA2 = True
 DECK_SOURCE_JSON = {}
-
 source_path = os.path.join(MNT, f"{TITLE_SLUG}.json")
 slides_json_path = os.path.join(MNT, f"{TITLE_SLUG}.slides.json")
 pptx_path = os.path.join(MNT, f"{TITLE_SLUG}.pptx")
@@ -103,29 +113,17 @@ pptx_path = os.path.join(MNT, f"{TITLE_SLUG}.pptx")
 with open(source_path, "w", encoding="utf-8") as f:
     json.dump(DECK_SOURCE_JSON, f, ensure_ascii=False, indent=2)
 
-cmd = [
-    sys.executable,
-    os.path.join(MNT, "deck_source_to_json.py"),
-    source_path,
-    pptx_path,
-    "--json",
-    slides_json_path,
-    "--assets-dir",
-    MNT,
-    "--require-agenda",
-    "--strict-blocks",
-    "--strict-density",
-    "--strict-agenda-grouping",
-    "--strict-markup",
-    "--strict-emphasis",
-    "--strict-compact-blocks",
-    "--strict-title-style",
-    "--strict-text-integrity",
-]
+cmd = [sys.executable, os.path.join(MNT, "deck_source_to_json.py"), source_path, pptx_path, "--json", slides_json_path, "--assets-dir", MNT, "--require-agenda", "--strict-blocks", "--strict-density", "--strict-agenda-grouping", "--strict-markup", "--strict-emphasis", "--strict-compact-blocks", "--strict-title-style", "--strict-text-integrity"]
 if USE_NANOBANANA2:
     cmd.append("--nanobanana2")
 
-subprocess.run(cmd, check=True, cwd=MNT)
-for fn in [f"{TITLE_SLUG}.json", f"{TITLE_SLUG}.pptx"]:
+try:
+    subprocess.run(cmd, check=True, cwd=MNT)
+    log("check_convert", "strict変換", "DONE", [source_path], [pptx_path])
+except Exception as e:
+    log("check_convert", "strict変換", f"ERROR {type(e).__name__}: {e}", [source_path], [])
+    raise
+
+for fn in [f"{TITLE_SLUG}.json", f"{TITLE_SLUG}.pptx", "code_interpreter_log.md"]:
     print(f"- [Download {fn}](sandbox:/mnt/data/{fn})")
 ```

@@ -48,6 +48,20 @@ TITLE_STATEMENT_ENDING_RE = re.compile(
     r"(である|となる|になる|する|している|していく|できる|される|必要がある|"
     r"求められる|変える|避ける|置く|使う|示す|見る|読む|作る|守る|分ける|補う)$"
 )
+NANOBANANA_TEXT_LABEL_RE = re.compile(
+    r"(画像内文字|画像内の文字|画像内テキスト|日本語ラベル|短いラベル|タグ)"
+)
+NANOBANANA_TEXT_LIMIT_RE = re.compile(
+    r"((次の|以下|指定した|指定する).{0,40}(だけ|のみ|限定)|"
+    r"(だけ|のみ|限定).{0,40}(使用|使う|入れる))"
+)
+NANOBANANA_TEXT_AVOID_RE = re.compile(
+    r"(長文|文章|数値表|細かい注釈|追加ラベル|固有名詞)"
+)
+NANOBANANA_TEXT_FALLBACK_RE = re.compile(
+    r"((文字|ラベル).{0,16}(崩れても|読めなくても)|"
+    r"(形|矢印|配置|色分け|構図).{0,24}(意味|伝わる|表現))"
+)
 WEAK_TITLE_TERMS = {
     "全体像",
     "概要",
@@ -479,6 +493,37 @@ def validate_japanese_nanobanana_prompt(label: str, prompt: str) -> int:
     return 0
 
 
+def validate_nanobanana_text_guidance(label: str, prompt: str) -> int:
+    body = nanobanana_prompt_body(prompt).strip()
+    errors = 0
+    if not NANOBANANA_TEXT_LABEL_RE.search(body):
+        warn(
+            f"{label} text guidance failed: define image text as short labels "
+            "instead of free-form generated text."
+        )
+        errors += 1
+    if not NANOBANANA_TEXT_LIMIT_RE.search(body):
+        warn(
+            f"{label} text guidance failed: limit image text to specified "
+            "labels only, such as '画像内文字は次の語だけを使用する: ...'."
+        )
+        errors += 1
+    if not NANOBANANA_TEXT_AVOID_RE.search(body):
+        warn(
+            f"{label} text guidance failed: explicitly avoid long sentences, "
+            "numeric tables, fine annotations, proper-noun lists, and extra labels."
+        )
+        errors += 1
+    if not NANOBANANA_TEXT_FALLBACK_RE.search(body):
+        warn(
+            f"{label} text guidance failed: make the diagram understandable "
+            "through shapes, arrows, placement, color, or composition even if "
+            "the text degrades."
+        )
+        errors += 1
+    return errors
+
+
 def note_with_icon(slide_def: dict[str, Any], nanobanana2: bool) -> str:
     note = as_text(slide_def.get("note")).strip()
     layout = str(slide_def.get("layout", "")).strip()
@@ -789,6 +834,7 @@ def validate_summary(
             errors += 1
         else:
             errors += validate_japanese_nanobanana_prompt("summary image prompt", card_b)
+            errors += validate_nanobanana_text_guidance("summary image prompt", card_b)
     if not card_a:
         return errors
     if strict_density:
@@ -923,6 +969,10 @@ def validate_source(
                         f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt",
                         card_b,
                     )
+                    errors += validate_nanobanana_text_guidance(
+                        f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt",
+                        card_b,
+                    )
             if layout in NANOBANANA_ICON_LAYOUTS:
                 prompt = as_text(slide.get("icon_prompt")).strip()
                 if not prompt:
@@ -933,6 +983,10 @@ def validate_source(
                     errors += 1
                 else:
                     errors += validate_japanese_nanobanana_prompt(
+                        f"Slide #{index} layout '{layout}' icon_prompt",
+                        prompt,
+                    )
+                    errors += validate_nanobanana_text_guidance(
                         f"Slide #{index} layout '{layout}' icon_prompt",
                         prompt,
                     )
