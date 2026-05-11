@@ -71,15 +71,15 @@ def format_chunk(data: dict[str, Any], phase: str, index: int) -> str:
     ids = phase_data["chunks"]
     total = len(ids)
     if index >= total:
-        return f"DONE {phase} {total}/{total}"
+        return f"DONE {total:03d}/{total:03d}"
 
     chunk_id = ids[index]
     chunk = data["chunks"][chunk_id]["text"]
-    header = f"[{phase} {index + 1:03d}/{total:03d} {chunk_id}]"
+    header = f"[ctx {index + 1:03d}/{total:03d} {chunk_id}]"
     if index + 1 >= total:
-        footer = f"DONE {phase} {total}/{total}"
+        footer = f"DONE {total:03d}/{total:03d}"
     else:
-        footer = f"NEXT {phase} {index + 2:03d}/{total:03d}"
+        footer = f"NEXT {index + 2:03d}/{total:03d}"
     return f"{header}\n{chunk}\n{footer}"
 
 
@@ -148,7 +148,9 @@ def main(argv: list[str]) -> None:
         phase = state["phase"]
         total = len(data["phases"][phase]["chunks"])
         idx = min(int(state["next_index"]), total)
-        emit(f"STATUS {phase} next={idx + 1 if idx < total else 'DONE'}/{total}")
+        current = f"{idx:03d}/{total:03d}" if idx >= total else f"{idx + 1:03d}/{total:03d}"
+        status = "DONE" if idx >= total else "NEXT"
+        emit(f"STATUS {phase} {status} {current}")
     elif cmd == "validate":
         emit(validate(data))
     else:
