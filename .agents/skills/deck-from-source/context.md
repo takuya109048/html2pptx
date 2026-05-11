@@ -9,6 +9,7 @@ file searchではqueriesだけを使い、次を実行する。
 
 code interpreter初回:
 resolve_uploads.pyをglobで探して実行し、assistant-任意ID-元ファイル名を元ファイル名へコピーする。以降は/mnt/data/元ファイル名で参照する。
+code interpreterに渡すcode本文の先頭には、目的、実行内容、出力または影響を示す日本語コメントを2から4行で必ず置く。GUIのアクティビティに表示されるため、ユーザーが安心して確認できる粒度にし、秘密情報や長い仕様説明は書かない。
 
 ログ制限:
 カスタムGPTsのcode interpreterログは先頭400文字と末尾400文字の合計800文字だけが安定してAIへ渡る。800文字を超えた中間は省略される前提で扱う。長いコンテキストを一括printしない。context_loader.pyは1回に1チャンクだけ出す。AIは複数チャンクを読む時、1回ずつcode interpreterを実行する。

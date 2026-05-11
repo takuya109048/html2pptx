@@ -64,6 +64,31 @@ SKILL を作成する際の共通ルールを定義する。
   * `/mnt/data` 直下にコピー配置する
 * Python 実行時は、必ず `/mnt/data` 直下のファイルを利用する。
 
+#### code interpreter 呼び出しコードの冒頭コメント
+
+カスタムGPTsでは、code interpreter を呼び出す際に `{"code": "（コードの内容）"}` という引数形式を使う。
+この `code` の内容は、カスタムGPTsのGUI上でアクティビティとしてユーザーに表示される。
+そのため、code interpreter に渡すコード文字列の冒頭には、ユーザーが実行意図を確認できるように短いコメントを必ず入れる。
+
+* コメントは `code` 引数の外側ではなく、実行されるPythonコード本文の先頭に書く。
+* コメントには「目的」「実行内容」「出力または影響」を簡潔に含める。
+* コメントは日本語で、ユーザーが読んで安心できる粒度にする。
+* 長く書きすぎず、通常は2〜4行に収める。
+* 秘密情報、APIキー、内部パスの不要な詳細、長い仕様説明はコメントに含めない。
+* 1行だけの短い処理でも、少なくとも目的が分かるコメントを付ける。
+
+例:
+
+```python
+# 目的: アップロード済みファイル名を安定化し、後続処理で /mnt/data/{元ファイル名} を使えるようにします。
+# 実行内容: resolve_uploads.py を探して実行し、assistant-* プレフィックス付きファイルを元名でコピーします。
+# 出力: コピー結果またはスキップ理由を短く表示します。
+import glob
+matches = glob.glob("/mnt/data/*resolve_uploads.py")
+if matches:
+    exec(open(matches[0]).read())
+```
+
 #### code interpreter のコンソールログ制限
 
 カスタムGPTs環境では、code interpreter のコンソールログとしてAIに渡される文字数にも制限がある。
@@ -117,6 +142,9 @@ code interpreter で1回だけ実行する**。
 * SKILL.md には、チャット冒頭で以下を実行するよう指示を記載する:
 
 ```python
+# 目的: アップロード済みファイル名を安定化し、後続処理で /mnt/data/{元ファイル名} を使えるようにします。
+# 実行内容: resolve_uploads.py を探して実行し、assistant-* プレフィックス付きファイルを元名でコピーします。
+# 出力: コピー結果またはスキップ理由を短く表示します。
 import glob
 matches = glob.glob("/mnt/data/*resolve_uploads.py")
 if matches:
@@ -216,7 +244,8 @@ python count_chars.py .Codex/skills/<skill-name>/SKILL.md .Codex/skills/<skill-n
 10. 外部JSONを使う場合、`context.md` にはフェーズごとの取得対象、取得順、完了条件を必ず書く。
 11. 外部JSONの個別コンテキストは各800文字以内にする。
 12. 外部JSONの個別コンテキスト文字数とローダー実出力文字数は、設計・編集のたびにPythonで確認する。
-13. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
-14. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
-15. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
-16. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
+13. `code interpreter` に渡す `code` 文字列の冒頭には、目的・実行内容・出力または影響が分かる短いコメントを必ず入れる。
+14. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
+15. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
+16. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
+17. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
