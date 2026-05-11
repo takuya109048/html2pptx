@@ -13,6 +13,7 @@ code interpreterに渡すcode本文の先頭には、何のために何を実行
 
 ログ制限:
 カスタムGPTsのcode interpreterログは先頭400文字と末尾400文字の合計800文字だけが安定してAIへ渡る。800文字を超えた中間は省略される前提で扱う。長いコンテキストを一括printしない。context_loader.pyは1回に1チャンクだけ出す。AIは複数チャンクを読む時、1回ずつcode interpreterを実行する。
+続きの取得コードの冒頭コメントは固定文にしない。前回出力末尾がNEXT 004/031なら、次のcodeコメントにも004/031を入れ、GUIアクティビティだけでも進捗が分かるようにする。
 
 外部JSON:
 context_data.jsonは800文字以内の個別コンテキスト片を持つ。code interpreter呼び出し回数を減らすため、loaderの進捗ヘッダーとNEXTまたはDONEを含めても800文字以内に収まる範囲で、できるだけ800文字に近づけて分割する。
@@ -32,7 +33,7 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 code interpreterでresolve_uploads.pyを実行したうえで、context_loader.py start フェーズ名をsubprocessで実行する。
 
 続きの取得:
-context_loader.py nextを1回のcode interpreter実行につき1回だけ実行する。ループでまとめて実行しない。出力先頭の[ctx 現在/総数 chunk_id]で進捗を確認する。出力末尾がNEXTなら次を読む。出力末尾がDONEならそのフェーズは読み切り完了である。
+context_loader.py nextを1回のcode interpreter実行につき1回だけ実行する。ループでまとめて実行しない。出力先頭の[ctx 現在/総数 chunk_id]で進捗を確認する。出力末尾がNEXTなら次を読む。次回codeコメントにはそのNEXT値を写す。出力末尾がDONEならそのフェーズは読み切り完了である。
 
 停止条件:
 必要フェーズがDONEになるまで、ソース分析、構成決定、DECK_SOURCE_JSON生成、PPTX変換へ進まない。読み取り途中でユーザーへ分析メモや構成案を出さない。

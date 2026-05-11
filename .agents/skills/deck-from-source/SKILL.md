@@ -31,7 +31,7 @@ if _m:
     exec(open(_m[0], encoding="utf-8").read())
 ```
 
-code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx 現在/総数 chunk_id]`、末尾に`NEXT 次/総数`または`DONE 総数/総数`を出して進捗を見せる。複数チャンクをループ出力しない。
+code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx 現在/総数 chunk_id]`、末尾に`NEXT 次/総数`または`DONE 総数/総数`を出して進捗を見せる。複数チャンクをループ出力しない。続きの取得では、直前の`NEXT 004/031`を次のcode冒頭コメントにも写し、GUIアクティビティ上でも進捗が変わるようにする。
 
 ## 詳細コンテキスト取得
 
@@ -51,12 +51,12 @@ subprocess.run([sys.executable, "/mnt/data/context_loader.py", "start", "turn_b_
 Noの場合は最後の引数をturn_b_noにする。続きは1回のcode interpreter実行ごとに次だけを実行する。
 
 ```python
-# 詳細コンテキストの次の1件を読み込み、何件中何件目まで読めたかとNEXT/DONE状態を表示します。
+# 前回表示されたNEXT 002/031に従い、詳細コンテキスト002/031を読み込んで次のNEXT/DONE状態を確認します。
 import subprocess, sys
 subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next"], check=True)
 ```
 
-出力先頭の`[ctx 現在/総数 chunk_id]`で読み込み進捗を確認し、末尾がDONEになるまで生成へ進まない。途中でエラーが出たら、欠けたファイルやフェーズを直してから再取得する。
+上の`002/031`は例であり、固定文のまま使い回さない。前回出力末尾が`NEXT 004/031`なら、次のcodeコメントも`004/031`に書き換える。出力先頭の`[ctx 現在/総数 chunk_id]`で読み込み進捗を確認し、末尾がDONEになるまで生成へ進まない。途中でエラーが出たら、欠けたファイルやフェーズを直してから再取得する。
 
 strict-emphasis失敗時はrepair_emphasis、strict-densityや本文不足はrepair_density、文字化け、markup、title、section、block系はrepair_text、実行ファイル配置が必要な時はsetupを同じstart/next方式で読む。
 
