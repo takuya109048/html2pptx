@@ -47,7 +47,7 @@ repair_text: 文字化け、markup、title、section、block key、JSON構造エ
 setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 
 取得方法:
-最初の取得ではcode interpreterでresolve_uploads.pyを実行したうえで、context_loader.py start フェーズ名をsubprocessで実行する。Codexではshellで同じstart/nextを実行してよい。続きはcontext_loader.py nextを1回につき1回だけ実行する。ループでまとめて実行しない。出力先頭の[ctx 現在/総数 chunk_id]で進捗を確認する。出力末尾がNEXTなら次を読む。次回codeコメントにはそのNEXT値を写し、短い進捗文にする。出力末尾がDONEならそのフェーズは読み切り完了である。
+推奨は状態に依存しないcontext_loader.py read フェーズ名 番号である。最初はresolve_uploads.pyを実行したうえで、context_loader.py read yes_plan 1のように読む。出力末尾がNEXT 002/006なら次は同じフェーズでread yes_plan 2を実行する。リトライ時も同じreadを再実行すれば同じチャンクが返る。start/nextは互換用であり、迷った時やリトライ時はreadへ戻す。ループでまとめて実行しない。出力先頭の[ctx 現在/総数 chunk_id]で進捗を確認する。出力末尾がDONEならそのフェーズは読み切り完了である。
 
 停止条件:
 その作業フェーズがDONEになるまで、当該フェーズの分析、生成、変換、検証へ進まない。読み取り途中でユーザーへ分析メモや構成案を出さない。

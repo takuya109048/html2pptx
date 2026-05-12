@@ -121,21 +121,34 @@ def format_chunk(data: dict[str, Any], phase: str, index: int) -> str:
     return f"{header}\n{chunk}\n{footer}"
 
 
-def emit_phase_index(data: dict[str, Any], phase: str, index: int) -> None:
+def emit_phase_index(data: dict[str, Any], phase: str, index: int, *, save_cursor: bool = True) -> None:
     if phase not in data["phases"]:
         known = ",".join(sorted(data["phases"]))
         raise SystemExit(f"ERROR unknown phase. phases={known}")
     ids = data["phases"][phase]["chunks"]
     text = format_chunk(data, phase, index)
-    if index < len(ids):
+    if save_cursor and index < len(ids):
         save_state({"phase": phase, "next_index": index + 1})
         status = f"NEXT {index + 2:03d}/{len(ids):03d}" if index + 1 < len(ids) else f"DONE {len(ids):03d}/{len(ids):03d}"
-    else:
+    elif save_cursor:
         save_state({"phase": phase, "next_index": index, "done": True})
         status = f"DONE {len(ids):03d}/{len(ids):03d}"
+    else:
+        status = f"NEXT {index + 2:03d}/{len(ids):03d}" if index + 1 < len(ids) else f"DONE {len(ids):03d}/{len(ids):03d}"
     chunk_id = ids[index] if index < len(ids) else "complete"
-    append_log(phase, "context_loader", f"{status} chunk={chunk_id}", outputs=[STATE_NAME])
+    append_log(phase, "context_loader", f"{status} chunk={chunk_id}", outputs=[STATE_NAME] if save_cursor else [])
     emit(text)
+
+
+def parse_read_index(raw: str) -> int:
+    head = raw.split("/", 1)[0]
+    try:
+        value = int(head)
+    except ValueError as exc:
+        raise SystemExit("ERROR usage: read <phase> <number>") from exc
+    if value < 1:
+        raise SystemExit("ERROR read number must be 1 or greater")
+    return value - 1
 
 
 def validate(data: dict[str, Any]) -> str:
@@ -167,11 +180,17 @@ def validate(data: dict[str, Any]) -> str:
 def main(argv: list[str]) -> None:
     data = load_data()
     if len(argv) < 2:
-        emit("USAGE start <phase> | next | get <chunk_id> | status | validate")
+        emit("USAGE read <phase> <N> | start <phase> | next | get <chunk_id> | status | validate")
         return
 
     cmd = argv[1]
-    if cmd == "start":
+    if cmd == "read":
+        if len(argv) != 4:
+            raise SystemExit("ERROR usage: read <phase> <number>")
+        emit_phase_index(data, argv[2], parse_read_index(argv[3]), save_cursor=False)
+    elif cmd in data.get("phases", {}) and len(argv) == 2:
+        emit_phase_index(data, cmd, 0, save_cursor=False)
+    elif cmd == "start":
         if len(argv) != 3:
             raise SystemExit("ERROR usage: start <phase>")
         emit_phase_index(data, argv[2], 0)
