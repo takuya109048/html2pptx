@@ -10,13 +10,15 @@ Codexなどfile searchがない環境では、ローカルファイルのcontext
 
 チャット冒頭の初期化:
 Custom GPTsでは、最初のcode interpreter実行でresolve_uploads.pyを探して実行する。以後は/mnt/data/{元ファイル名}で安定して参照する。
-コード本文の先頭コメントは「アップロード済みファイル名を安定化するため、resolve_uploads.pyを探して実行します。」のように短く書く。
+コード本文の先頭コメントは「アップロード済みファイル名を安定化するため、resolve_uploads.pyを探して実行します。」のように短く書く。初回はcontext_loader.pyの安定名がまだ使えない可能性があるため、resolve_uploads.py自身がcode_interpreter_log.mdへ開始、正常完了、例外発生を自然文で記録する。
 
 code interpreter基本:
 出力先はDECK_FROM_SOURCE_OUTPUT_DIR、なければ/mnt/data、どちらもなければ現在の作業ディレクトリにする。成果物とcode_interpreter_log.mdはこの出力先に置く。code本文の先頭には、何を実行するかが分かる短い日本語コメントを置く。
+すべてのcode interpreter呼び出しは、どんな小さな処理でもログ対象である。context_loader.py自体は内部でログを書くが、それ以外のPythonコードでは必ず処理開始、正常完了、例外発生をappend_logで記録する。基本形は、from context_loader import append_log、append_log("activity","code interpreter start","何を始めるか")、try内で実処理、成功時にappend_log("activity","code interpreter done","何を完了したか")、exceptでappend_log("activity","code interpreter error",f"ERROR {type(exc).__name__}: {exc}")を書いてからraiseする。単なるファイル一覧確認、ダウンロードリンク出力、検証、再実行判断の記録だけでも省略しない。
 
 ログ:
 すべてのcode interpreter呼び出しで出力先のcode_interpreter_log.mdへ追記する。各行はJSONやコード風の辞書ではなく、タイムスタンプ付きの自然な日本語一文だけにする。タイムスタンプはシステム時刻がUTCでも必ず日本時間UTC+09:00へ変換し、例として2026-05-13T10:15:00+09:00（日本時間）に計画フェーズで入力を確認し、deck_source.jsonの生成準備を完了しました。の形にする。記録内容は作業フェーズ、目的、入力、出力、結果、NEXT/DONEまたはエラー概要である。秘密情報、APIキー、不要な内部パス詳細は書かない。context_loader.pyは自動で自然文ログを追記する。変換コードや独自検証コードでも、可能ならcontext_loader.pyのappend_logを使って同じ形式で追記する。最終リンクにはdeck_source.json、pptx、code_interpreter_log.mdを必ず出す。
+GPTs判断で想定外の分岐、エラー処理、再生成、repair開始、ユーザーへ出さない内部修正を行う場合は、次の作業へ進む前にcode interpreterでcontext_loader.py log-event activity 判断内容を1回実行して記録する。file search完了やcontext.md再読込完了も、code interpreterを使える場面ではlog-eventで残す。
 
 コンテキスト取得:
 context_data.json本体を直接開いて読まない。ターン冒頭で全フェーズを一括読み込みしない。番号指定、chunk_id指定は禁止である。
@@ -34,6 +36,7 @@ setup
 repeat
 status
 validate
+log-event <phase> <message>
 
 read、start、next、get、フェーズ名の直接指定は旧APIであり使わない。旧APIが必要に見えても使わず、必ずinitまたはadvanceへ戻る。
 
