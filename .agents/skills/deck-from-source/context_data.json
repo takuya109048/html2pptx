@@ -2,7 +2,7 @@
   "version": "deck-from-source-context-v1",
   "max_chunk_chars": 800,
   "max_console_chars": 800,
-  "usage": "Run context_loader.py init yes|no, then advance <ACK>. Run only one context-emitting loader command per code interpreter execution. If output ends with NEXT 002/006 ACK xxxxxxxx, stop that execution; in the next execution run advance xxxxxxxx. When output ends with DONE, do that phase work before phase-done <ACK>. Do not read all phases at the beginning.",
+  "usage": "Run context_loader.py init yes|no, then advance <ACK>. Multiple code interpreter calls in the same turn are OK, but run only one context-emitting loader command inside each code block. If output ends with NEXT 002/006 ACK xxxxxxxx, stop that execution; in the next execution run advance xxxxxxxx. When output ends with DONE, do that phase work before phase-done <ACK>. Do not read all phases at the beginning.",
   "phases": {
     "yes_plan": {
       "description": "Yes時。ソース分析、保存名、構成フレーム、密度方針の直前に読む。",
@@ -199,7 +199,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONは詳細ルールを800文字以内の小片として保持する。AIはcontext_loader.py init yes/noで開始し、advance ACKで1チャンクずつ読み、DONEまで読んでからその作業だけを行う。1回のcode interpreter実行でローダーを複数回呼ばない。context.mdだけでは構成を作らない。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n2. ターンBではplan、schema、layout、image、body、emphasis、notes、check_convertを順番に、直前読み込みと作業の組で進める。\n3. planフェーズDONE前に章立て、枚数、保存名、構成案を作らない。\n4. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。不明部分は自然な汎用値で補う。\n5. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n6. slides配列には本文スライドだけを書く。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONは詳細ルールを800文字以内の小片として保持する。AIはcontext_loader.py init yes/noで開始し、advance ACKで1チャンクずつ読み、DONEまで読んでからその作業だけを行う。同じターンで複数回code interpreterを呼ぶのはよいが、1つのコード本文内でローダーを複数回起動しない。context.mdだけでは構成を作らない。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n2. ターンBではplan、schema、layout、image、body、emphasis、notes、check_convertを順番に、直前読み込みと作業の組で進める。\n3. planフェーズDONE前に章立て、枚数、保存名、構成案を作らない。\n4. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。不明部分は自然な汎用値で補う。\n5. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n6. slides配列には本文スライドだけを書く。"
     },
     "turn_b_yes.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -456,7 +456,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONは詳細ルールを800文字以内の小片として保持する。AIはcontext_loader.py init yes/noで開始し、advance ACKで1チャンクずつ読み、DONEまで読んでからその作業だけを行う。1回のcode interpreter実行でローダーを複数回呼ばない。context.mdだけでは構成を作らない。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n2. ターンBではplan、schema、layout、image、body、emphasis、notes、check_convertを順番に、直前読み込みと作業の組で進める。\n3. planフェーズDONE前に章立て、枚数、保存名、構成案を作らない。\n4. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。不明部分は自然な汎用値で補う。\n5. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n6. slides配列には本文スライドだけを書く。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONは詳細ルールを800文字以内の小片として保持する。AIはcontext_loader.py init yes/noで開始し、advance ACKで1チャンクずつ読み、DONEまで読んでからその作業だけを行う。同じターンで複数回code interpreterを呼ぶのはよいが、1つのコード本文内でローダーを複数回起動しない。context.mdだけでは構成を作らない。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n2. ターンBではplan、schema、layout、image、body、emphasis、notes、check_convertを順番に、直前読み込みと作業の組で進める。\n3. planフェーズDONE前に章立て、枚数、保存名、構成案を作らない。\n4. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。不明部分は自然な汎用値で補う。\n5. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n6. slides配列には本文スライドだけを書く。"
     },
     "turn_b_no.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",

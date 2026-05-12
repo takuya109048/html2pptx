@@ -19,7 +19,8 @@ code interpreter基本:
 すべてのcode interpreter呼び出しで出力先のcode_interpreter_log.mdへ追記する。記録項目はタイムスタンプ、作業フェーズ、目的、入力、出力、結果、NEXT/DONEまたはエラー概要である。秘密情報、APIキー、不要な内部パス詳細は書かない。context_loader.pyは自動でログを追記する。変換コードや独自検証コードにもログ追記を含める。最終リンクにはdeck_source.json、pptx、code_interpreter_log.mdを必ず出す。
 
 コンテキスト取得:
-context_data.json本体を直接開いて読まない。ターン冒頭で全フェーズを一括読み込みしない。番号指定、chunk_id指定、ループ、subprocess複数回実行、whileでの連続取得は禁止である。
+context_data.json本体を直接開いて読まない。ターン冒頭で全フェーズを一括読み込みしない。番号指定、chunk_id指定は禁止である。
+同じターン内でcode interpreter呼び出しを複数回に分け、1チャンクずつ取得することは正しい。禁止なのは、1つのcode interpreterコード本文の中でループ、関数、複数のsubprocess.run、複数のexecなどを使ってローダーを2回以上起動することである。1つのcode interpreterコード本文には、コンテキストを出すローダーコマンドを1回だけ書く。
 
 公開コマンドは次だけである。
 init yes
@@ -42,7 +43,7 @@ Yes方針ならcontext_loader.py init yesを1回だけ実行する。No方針な
 出力末尾がDONE 006/006 ACK xxxxxxxxなら、そのフェーズの読み取りは完了である。すぐ次を読まず、そのフェーズの作業だけを行う。作業が終わった後、次フェーズへ入る直前にcontext_loader.py phase-done xxxxxxxxを1回だけ実行する。
 phase-doneは次フェーズの最初の1チャンクだけを返す。以後はNEXTならadvance、DONEなら作業、作業後にphase-doneを繰り返す。
 ROUTE_DONEが出たら全フェーズの読み取りは完了である。
-ACKが合わない、またはbatch read blockedが出たら、一括取得をやめる。statusで現在位置を確認し、次のcode interpreter実行で1コマンドだけ実行する。出力を見失った場合だけrepeatを使う。
+ACKはstateファイルに平文保存されない。出力を見失った場合だけrepeatを使い、新しいACKを再発行する。statusは現在位置だけを確認するために使い、ACK取得には使わない。
 
 停止条件:
 その作業フェーズがDONEになるまで、当該フェーズの分析、生成、変換、検証へ進まない。特にplan相当フェーズのDONE前に、スライド構成、章立て、枚数、保存名を作らない。読み取り途中でユーザーへ分析メモや構成案を出さない。

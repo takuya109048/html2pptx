@@ -10,18 +10,16 @@ from __future__ import annotations
 
 import datetime
 import glob
+import hashlib
 import json
 import os
 import secrets
 import sys
-import time
 from pathlib import Path
 from typing import Any
 
 MAX_OUTPUT_CHARS = 800
-MIN_READ_INTERVAL_SECONDS = 3.0
 STATE_NAME = "deck_context_state.json"
-READ_GUARD_NAME = "deck_context_read_guard.json"
 LEGACY_COMMANDS = {"read", "start", "next", "get"}
 
 FLOW_PHASES: dict[str, list[str]] = {
@@ -103,10 +101,6 @@ def log_path() -> Path:
     return runtime_dir() / "code_interpreter_log.md"
 
 
-def read_guard_path() -> Path:
-    return runtime_dir() / READ_GUARD_NAME
-
-
 def append_log(
     phase: str,
     purpose: str,
@@ -164,11 +158,18 @@ def new_ack() -> str:
     return secrets.token_hex(4)
 
 
+def ack_hash(raw_ack: str) -> str:
+    return hashlib.sha256(raw_ack.encode("utf-8")).hexdigest()
+
+
 def require_ack(state: dict[str, Any], raw_ack: str | None) -> None:
-    expected = str(state.get("ack", ""))
-    if not expected:
+    expected_hash = str(state.get("ack_hash", ""))
+    legacy_expected = str(state.get("ack", ""))
+    if not expected_hash and not legacy_expected:
         raise SystemExit("ERROR no ACK in state. Run init yes|no again.")
-    if raw_ack != expected:
+    if expected_hash and ack_hash(raw_ack or "") != expected_hash:
+        raise SystemExit("ERROR ACK required. Use the ACK printed at the end of the previous loader output.")
+    if legacy_expected and raw_ack != legacy_expected:
         raise SystemExit("ERROR ACK required. Use the ACK printed at the end of the previous loader output.")
 
 
@@ -178,31 +179,6 @@ def current_phase(state: dict[str, Any]) -> str:
     if pos >= len(phases):
         raise SystemExit("ERROR route is complete.")
     return str(phases[pos])
-
-
-def enforce_one_context_emit(command: str, phase: str, index: int) -> None:
-    path = read_guard_path()
-    now = time.time()
-    if path.exists():
-        try:
-            previous = json.loads(path.read_text(encoding="utf-8"))
-            elapsed = now - float(previous.get("time", 0))
-        except Exception:
-            elapsed = MIN_READ_INTERVAL_SECONDS
-        if elapsed < MIN_READ_INTERVAL_SECONDS:
-            message = (
-                "ERROR batch read blocked. Run one loader command that emits context per "
-                "code interpreter execution, then inspect NEXT/DONE and ACK before continuing."
-            )
-            append_log(phase, "context_loader batch guard", message)
-            raise SystemExit(message)
-    path.write_text(
-        json.dumps(
-            {"time": now, "command": command, "phase": phase, "index": index + 1},
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
-    )
 
 
 def format_chunk(data: dict[str, Any], phase: str, index: int, ack: str) -> tuple[str, str, str]:
@@ -233,10 +209,10 @@ def emit_next_chunk(data: dict[str, Any], state: dict[str, Any], command: str) -
         save_state(state)
         raise SystemExit("ERROR phase already DONE. Do the phase work, then run: context_loader.py phase-done <ACK>")
 
-    enforce_one_context_emit(command, phase, index)
     ack = new_ack()
     text, status, chunk_id = format_chunk(data, phase, index, ack)
-    state["ack"] = ack
+    state.pop("ack", None)
+    state["ack_hash"] = ack_hash(ack)
     state["phase"] = phase
     state["next_index"] = index + 1
     state["phase_done"] = status == "DONE"
@@ -297,7 +273,8 @@ def finish_phase(data: dict[str, Any], raw_ack: str | None) -> None:
     state["phase_done"] = False
     if state["phase_pos"] >= len(state.get("phases", [])):
         state["route_done"] = True
-        state["ack"] = new_ack()
+        state.pop("ack", None)
+        state.pop("ack_hash", None)
         save_state(state)
         append_log(phase, "context_loader phase-done", "ROUTE_DONE", outputs=[STATE_NAME])
         emit(f"ROUTE_DONE flow={state.get('flow')} phases={len(completed):03d}/{len(completed):03d}")
@@ -308,9 +285,12 @@ def finish_phase(data: dict[str, Any], raw_ack: str | None) -> None:
 def repeat_last(data: dict[str, Any]) -> None:
     state = load_state()
     last = state.get("last_chunk")
-    ack = str(state.get("ack", ""))
-    if not isinstance(last, dict) or not ack:
+    if not isinstance(last, dict):
         raise SystemExit("ERROR no last chunk to repeat.")
+    ack = new_ack()
+    state.pop("ack", None)
+    state["ack_hash"] = ack_hash(ack)
+    save_state(state)
     phase = str(last["phase"])
     index = int(last["index"])
     text, status, chunk_id = format_chunk(data, phase, index, ack)
@@ -330,7 +310,7 @@ def status(data: dict[str, Any]) -> None:
         idx = min(int(state.get("next_index", 0)), total)
         phase_status = "DONE" if state.get("phase_done") else "NEXT"
         shown = idx if state.get("phase_done") else idx + 1
-        text = f"STATUS {state.get('flow')} {phase} {phase_status} {shown:03d}/{total:03d} ACK {state.get('ack', '')}"
+        text = f"STATUS {state.get('flow')} {phase} {phase_status} {shown:03d}/{total:03d} ACK_REQUIRED"
     append_log("status", "context_loader status", text)
     emit(text)
 
