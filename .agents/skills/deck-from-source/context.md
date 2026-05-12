@@ -13,9 +13,10 @@ code interpreter基本:
 
 作業計画チェックリスト:
 ターンBで生成作業に入る前に、checklist_manager.py init yesまたはinit noを実行し、出力先にtask_checklist.mdを作成する。チェックリストには作業項目ID、対応フェーズ、読むべきcontext_loader.pyフェーズ、完了条件を入れる。チェックリストは手編集しない。進捗確認、次項目取得、完了チェック、検証はchecklist_manager.pyで行う。
+layout確定後は、slides配列を保存したdeck_source.jsonを指定してchecklist_manager.py insert-slidesを実行し、P03-T01直後へ各スライドのサブチェックリストを挿入する。サブ項目も手編集せず、status、next、check、verifyの対象にする。
 
 進捗確認:
-各フェーズ直前にchecklist_manager.py statusまたはnextを実行し、現在位置と次に読むコンテキストIDを確認する。statusとnextの出力は800文字以内で、完了数、次の1件、ctx、DONE/NEXTだけを短く表示する。迷った場合、後続フェーズへ移る場合、修復ループに入る場合も必ずstatusを確認する。
+各フェーズ直前にchecklist_manager.py statusまたはnextを実行し、現在位置と次に読むコンテキストIDを確認する。statusとnextの出力は800文字以内で、完了数、次の1件、ctx、DONE/NEXTだけを短く表示する。ctxがカンマ区切りの場合は左から順に各context_loader.pyフェーズをDONEまで読む。迷った場合、後続フェーズへ移る場合、修復ループに入る場合も必ずstatusを確認する。
 
 チェック更新:
 各作業単位の完了後にchecklist_manager.py check 項目IDを実行する。checkはtask_checklist.mdの該当行を[x]にし、code_interpreter_log.mdへフェーズ、項目ID、結果を追記する。最終変換後にchecklist_manager.py verifyを実行し、未完了、重複ID、ctx欠落、出力800文字超過がないことを確認する。
@@ -67,19 +68,18 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 スライド枚数、発表者名、対象者は追加質問しない。
 
 ターンB:
-直近の返答でYesまたはNo方針を受け取ったら、前ターンのソースを使う。生成作業の前にchecklist_manager.py init yesまたはinit noでtask_checklist.mdを作る。上記の生成フェーズ順に、チェックリスト確認、直前読み込み、作業、チェック更新を交互に進める。思考過程、分析メモ、構成案はユーザーに出さない。リンク提示まで1ターンで完了する。
+直近の返答でYesまたはNo方針を受け取ったら、前ターンのソースを使う。生成作業の前にchecklist_manager.py init yesまたはinit noでtask_checklist.mdを作る。layout確定後にinsert-slidesでスライド単位のサブチェックリストを挿入する。以後は1枚ずつ、チェックリスト確認、直前読み込み、対象スライドだけの作業、チェック更新を交互に進める。思考過程、分析メモ、構成案はユーザーに出さない。リンク提示まで1ターンで完了する。
 
 生成時の内部順序:
 1. checklist_manager.py initでtask_checklist.mdを作り、statusで先頭項目を確認する。
 2. planフェーズをDONEまで読み、ソース分析と全体構成を決め、該当項目をcheckする。
 3. schemaフェーズをDONEまで読み、root、summary、slides骨格を書き、該当項目をcheckする。
 4. layoutフェーズをDONEまで読み、各スライドのlayoutとblocksを確定し、該当項目をcheckする。
-5. Yesの場合だけimageフェーズをDONEまで読み、画像プロンプトを作り、該当項目をcheckする。
-6. bodyフェーズをDONEまで読み、表示本文を厚くし、該当項目をcheckする。
-7. emphasisフェーズをDONEまで読み、太字スキムラインを入れ、該当項目をcheckする。
-8. notesフェーズをDONEまで読み、speaker noteを作り、該当項目をcheckする。
-9. check_convertフェーズをDONEまで読み、FINAL_SELF_CHECK後にstrict変換し、verifyする。
-10. strictエラーが出たら、status確認後に該当repairフェーズをDONEまで読み、JSONを修復して再実行し、修復項目をcheckする。
+5. slides配列を一時保存し、checklist_manager.py insert-slides deck_source.jsonを実行して、スライド単位のサブ項目をP03-T01直後に挿入する。
+6. statusで次のS001-T01などを確認する。サブ項目のctxに出るフェーズを左から順にDONEまで読み、対象スライド1枚だけのimage_promptまたはicon_prompt、blocks本文、太字スキムライン、speaker noteを完成させ、該当S項目をcheckする。
+7. 前のスライドをcheckするまで次のスライドへ進まない。すべてのS項目が完了するまで、1枚ずつ同じ手順を繰り返す。
+8. check_convertフェーズをDONEまで読み、FINAL_SELF_CHECK後にstrict変換し、verifyする。
+9. strictエラーが出たら、status確認後に該当repairフェーズをDONEまで読み、JSONを修復して再実行し、修復項目をcheckする。
 
 変換出力:
 check_convertフェーズをDONEまで読んでから、deck_source_to_json.pyをstrict系オプション付きで実行する。ユーザーへ提示するのはdeck_source.json、pptx、code_interpreter_log.md、task_checklist.mdである。slides.jsonは中間生成物として扱い、ダウンロードリンクを出さない。
