@@ -13,10 +13,10 @@ code interpreter基本:
 
 作業計画チェックリスト:
 ターンBで生成作業に入る前に、checklist_manager.py init yesまたはinit noを実行し、出力先にtask_checklist.mdを作成する。チェックリストには作業項目ID、対応フェーズ、読むべきcontext_loader.pyフェーズ、完了条件を入れる。チェックリストは手編集しない。進捗確認、次項目取得、完了チェック、検証はchecklist_manager.pyで行う。
-layout確定後は、slides配列を保存したdeck_source.jsonを指定してchecklist_manager.py insert-slidesを実行し、P03-T01直後へ各スライドのサブチェックリストを挿入する。サブ項目も手編集せず、status、next、check、verifyの対象にする。
+layout確定後は、slides配列を保存したdeck_source.jsonを指定してchecklist_manager.py insert-slidesを実行し、P03-T01直後へ各スライドのサブチェックリストを挿入する。サブ項目は、スライドごとにimage、body、emphasis、notesのような分割コンテキスト単位で並べる。サブ項目も手編集せず、status、next、check、verifyの対象にする。
 
 進捗確認:
-各フェーズ直前にchecklist_manager.py statusまたはnextを実行し、現在位置と次に読むコンテキストIDを確認する。statusとnextの出力は800文字以内で、完了数、次の1件、ctx、DONE/NEXTだけを短く表示する。ctxがカンマ区切りの場合は左から順に各context_loader.pyフェーズをDONEまで読む。迷った場合、後続フェーズへ移る場合、修復ループに入る場合も必ずstatusを確認する。
+各フェーズ直前にchecklist_manager.py statusまたはnextを実行し、現在位置と次に読むコンテキストIDを確認する。statusとnextの出力は800文字以内で、完了数、次の1件、ctx、DONE/NEXTだけを短く表示する。表示されたctxをcontext_loader.py start ctxで開始し、nextを1回ずつ実行してDONEまで読む。DONE前に作業へ進まない。迷った場合、後続フェーズへ移る場合、修復ループに入る場合も必ずstatusを確認する。
 
 チェック更新:
 各作業単位の完了後にchecklist_manager.py check 項目IDを実行する。checkはtask_checklist.mdの該当行を[x]にし、code_interpreter_log.mdへフェーズ、項目ID、結果を追記する。最終変換後にchecklist_manager.py verifyを実行し、未完了、重複ID、ctx欠落、出力800文字超過がないことを確認する。
@@ -75,9 +75,9 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 2. planフェーズをDONEまで読み、ソース分析と全体構成を決め、該当項目をcheckする。
 3. schemaフェーズをDONEまで読み、root、summary、slides骨格を書き、該当項目をcheckする。
 4. layoutフェーズをDONEまで読み、各スライドのlayoutとblocksを確定し、該当項目をcheckする。
-5. slides配列を一時保存し、checklist_manager.py insert-slides deck_source.jsonを実行して、スライド単位のサブ項目をP03-T01直後に挿入する。
-6. statusで次のS001-T01などを確認する。サブ項目のctxに出るフェーズを左から順にDONEまで読み、対象スライド1枚だけのimage_promptまたはicon_prompt、blocks本文、太字スキムライン、speaker noteを完成させ、該当S項目をcheckする。
-7. 前のスライドをcheckするまで次のスライドへ進まない。すべてのS項目が完了するまで、1枚ずつ同じ手順を繰り返す。
+5. slides配列を一時保存し、checklist_manager.py insert-slides deck_source.jsonを実行して、分割コンテキスト単位のサブ項目をP03-T01直後に挿入する。
+6. statusで次のS001-I01、S001-B01、S001-E01、S001-N01などを確認する。表示されたctxだけをDONEまで読み、対象スライドの該当作業だけを行い、該当S項目をcheckする。
+7. 同じスライドの最後のS項目をcheckするまで次のスライドへ進まない。すべてのS項目が完了するまで、1枚ずつ、かつコンテキスト単位ごとに同じ手順を繰り返す。
 8. check_convertフェーズをDONEまで読み、FINAL_SELF_CHECK後にstrict変換し、verifyする。
 9. strictエラーが出たら、status確認後に該当repairフェーズをDONEまで読み、JSONを修復して再実行し、修復項目をcheckする。
 

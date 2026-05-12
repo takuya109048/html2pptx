@@ -45,7 +45,7 @@ REPAIR_ITEMS = [
 ]
 
 LINE_RE = re.compile(r"^(?P<indent>\s*)- \[(?P<mark>[ xX])\] (?P<id>[^|]+)(?P<meta>(?: \| .*)?)$")
-SLIDE_ITEM_RE = re.compile(r"^S\d{3}-T\d{2}$")
+SLIDE_ITEM_RE = re.compile(r"^S\d{3}-[A-Z]\d{2}$")
 
 
 def runtime_dir() -> Path:
@@ -271,10 +271,19 @@ def resolve_source_json(source: str | Path | None) -> Path:
     raise SystemExit("ERROR source json not found")
 
 
-def slide_context(mode: str) -> str:
+def slide_steps(mode: str) -> list[tuple[str, str, str, str]]:
     if mode == "yes":
-        return "yes_image,yes_body,yes_emphasis,yes_notes"
-    return "no_body,no_emphasis,no_notes"
+        return [
+            ("I01", "yes_image", "画像プロンプト作成", "image_promptまたはicon_promptを1枚分完成"),
+            ("B01", "yes_body", "本文密度補強", "blocks本文を1枚分完成"),
+            ("E01", "yes_emphasis", "太字スキムライン", "太字とマークアップを1枚分完成"),
+            ("N01", "yes_notes", "speaker note作成", "noteを1枚分完成"),
+        ]
+    return [
+        ("B01", "no_body", "本文密度補強", "blocks本文を1枚分完成"),
+        ("E01", "no_emphasis", "太字スキムライン", "太字とマークアップを1枚分完成"),
+        ("N01", "no_notes", "speaker note作成", "文字化け確認とnoteを1枚分完成"),
+    ]
 
 
 def build_slide_items(source_json: Path, mode: str) -> list[dict[str, str]]:
@@ -285,17 +294,18 @@ def build_slide_items(source_json: Path, mode: str) -> list[dict[str, str]]:
     items: list[dict[str, str]] = []
     for idx, slide in enumerate(slides, start=1):
         title = clean_field(slide.get("title") if isinstance(slide, dict) else "", 36) or f"slide {idx}"
-        items.append(
-            {
-                "id": f"S{idx:03d}-T01",
-                "phase": f"{mode}_slide_build",
-                "ctx": slide_context(mode),
-                "parent": "P03-T01",
-                "slide": str(idx),
-                "task": clean_field(f"スライド{idx}: {title} 作成・修正", 72),
-                "done": "layout、blocks、強調、noteを1枚分完成",
-            }
-        )
+        for suffix, ctx, task, done in slide_steps(mode):
+            items.append(
+                {
+                    "id": f"S{idx:03d}-{suffix}",
+                    "phase": f"{mode}_slide_build",
+                    "ctx": ctx,
+                    "parent": "P03-T01",
+                    "slide": str(idx),
+                    "task": clean_field(f"スライド{idx}: {title} {task}", 72),
+                    "done": done,
+                }
+            )
     return items
 
 
