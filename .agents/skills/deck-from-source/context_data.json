@@ -208,7 +208,7 @@
         "output_files.002",
         "story_analysis.001"
       ],
-      "text": "## OUTPUT_FILES\n\n保存名:\n- root.titleは日本語のままにし、保存名だけ内容が分かる短い英語名にする。\n- 3から6語程度に収め、snake_caseまたはkebab-caseを使う。例: CLAUDE.md設計の実務ガイドならclaude_md_design_guide。\n- 英数字、ハイフン、アンダースコアだけを使う。空白、日本語、記号、絵文字は使わない。\n- json、slides.json、pptxは同じベース名にする。slides.jsonは中間生成物として保存してよい。\n\nリンク提示:\n\n- ユーザーへ提示するダウンロードリンクはdeck_source.jsonとpptxだけである。\n- slides.jsonのダウンロードリンクは出さない。最終報告でも成果物として列挙しない。\n\n## STORY_ANALYSIS\n\nプレゼン文脈を内部で把握する。\n\n確認観点:\n| 項目 | 判断例 |\n|-----|-------|\n| 発表目的 | 情報共有、説得、提案、依頼、報告 |\n| 対象 | 社内、上司、顧客、経営層、一般 |\n| 時間 | 5分、10分、15から20分、30分以上 |\n\n枚数目安:\n| 時間 | coverと目次込み推奨枚数 |\n|-----|----------------------|\n| 5分 | 5から7枚 |\n| 10分 | 8から12枚 |\n| 15から20分 | 12から18枚 |\n| 30分以上 | 18から25枚 |"
+      "text": "## OUTPUT_FILES\n\n保存名:\n- root.titleは日本語のままにし、保存名だけ内容が分かる短い英語名にする。\n- 3から6語程度に収め、snake_caseまたはkebab-caseを使う。例: CLAUDE.md設計の実務ガイドならclaude_md_design_guide。\n- 英数字、ハイフン、アンダースコアだけを使う。空白、日本語、記号、絵文字は使わない。\n- json、slides.json、pptxは同じベース名にする。slides.jsonは中間生成物として保存してよい。\n\nリンク提示:\n\n- ユーザーへ提示するダウンロードリンクはdeck_source.json, pptx, code_interpreter_log.md, task_checklist.mdだけである。\n- slides.jsonのダウンロードリンクは出さない。最終報告でも成果物として列挙しない。\n\n## STORY_ANALYSIS\n\nプレゼン文脈を内部で把握する。\n\n確認観点:\n| 項目 | 判断例 |\n|-----|-------|\n| 発表目的 | 情報共有、説得、提案、依頼、報告 |\n| 対象 | 社内、上司、顧客、経営層、一般 |\n| 時間 | 5分、10分、15から20分、30分以上 |\n\n枚数目安:\n| 時間 | coverと目次込み推奨枚数 |\n|-----|----------------------|\n| 5分 | 5から7枚 |\n| 10分 | 8から12枚 |\n| 15から20分 | 12から18枚 |\n| 30分以上 | 18から25枚 |"
     },
     "turn_b_yes.packed.003": {
       "section": "STORY_ANALYSIS",
@@ -465,7 +465,7 @@
         "output_files.002",
         "story_analysis.001"
       ],
-      "text": "## OUTPUT_FILES\n\n保存名:\n- root.titleは日本語のままにし、保存名だけ内容が分かる短い英語名にする。\n- 3から6語程度に収め、snake_caseまたはkebab-caseを使う。例: CLAUDE.md設計の実務ガイドならclaude_md_design_guide。\n- 英数字、ハイフン、アンダースコアだけを使う。空白、日本語、記号、絵文字は使わない。\n- json、slides.json、pptxは同じベース名にする。slides.jsonは中間生成物として保存してよい。\n\nリンク提示:\n\n- ユーザーへ提示するダウンロードリンクはdeck_source.jsonとpptxだけである。\n- slides.jsonのダウンロードリンクは出さない。最終報告でも成果物として列挙しない。\n\n## STORY_ANALYSIS\n\nプレゼン文脈を内部で把握する。\n\n確認観点:\n| 項目 | 判断例 |\n|-----|-------|\n| 発表目的 | 情報共有、説得、提案、依頼、報告 |\n| 対象 | 社内、上司、顧客、経営層、一般 |\n| 時間 | 5分、10分、15から20分、30分以上 |\n\n枚数目安:\n| 時間 | coverと目次込み推奨枚数 |\n|-----|----------------------|\n| 5分 | 5から7枚 |\n| 10分 | 8から12枚 |\n| 15から20分 | 12から18枚 |\n| 30分以上 | 18から25枚 |"
+      "text": "## OUTPUT_FILES\n\n保存名:\n- root.titleは日本語のままにし、保存名だけ内容が分かる短い英語名にする。\n- 3から6語程度に収め、snake_caseまたはkebab-caseを使う。例: CLAUDE.md設計の実務ガイドならclaude_md_design_guide。\n- 英数字、ハイフン、アンダースコアだけを使う。空白、日本語、記号、絵文字は使わない。\n- json、slides.json、pptxは同じベース名にする。slides.jsonは中間生成物として保存してよい。\n\nリンク提示:\n\n- ユーザーへ提示するダウンロードリンクはdeck_source.json, pptx, code_interpreter_log.md, task_checklist.mdだけである。\n- slides.jsonのダウンロードリンクは出さない。最終報告でも成果物として列挙しない。\n\n## STORY_ANALYSIS\n\nプレゼン文脈を内部で把握する。\n\n確認観点:\n| 項目 | 判断例 |\n|-----|-------|\n| 発表目的 | 情報共有、説得、提案、依頼、報告 |\n| 対象 | 社内、上司、顧客、経営層、一般 |\n| 時間 | 5分、10分、15から20分、30分以上 |\n\n枚数目安:\n| 時間 | coverと目次込み推奨枚数 |\n|-----|----------------------|\n| 5分 | 5から7枚 |\n| 10分 | 8から12枚 |\n| 15から20分 | 12から18枚 |\n| 30分以上 | 18から25枚 |"
     },
     "turn_b_no.packed.003": {
       "section": "STORY_ANALYSIS",
@@ -942,7 +942,7 @@
         "setup_script.001",
         "setup_script.002"
       ],
-      "text": "## SETUP_SCRIPT\n\nsetup_deck.pyとして保存し、/mnt/dataへ実行ファイル群をコピーする。既存ファイルがあっても上書きしてよい。出力は800文字以内に抑える。\n\npython\nimport shutil\nimport sys\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parent\nSKILL_DIR = ROOT / \".agents\" / \"skills\" / \"deck-from-source\"\n\nif not (SKILL_DIR / \"deck_source_to_json.py\").exists():\n    SKILL_DIR = ROOT / \".claude\" / \"skills\" / \"deck-from-source\"\nDEST_DIR = Path(\"/mnt/data\")\n\nFILES = [\n    \"resolve_uploads.py\",\n    \"context_loader.py\",\n    \"context_data.json\",\n    \"deck_source_to_json.py\",\n    \"md_to_json.py\","
+      "text": "## SETUP_SCRIPT\n\nsetup_deck.pyとして保存し、/mnt/dataへ実行ファイル群をコピーする。既存ファイルがあっても上書きしてよい。出力は800文字以内に抑える。\n\npython\nimport shutil\nimport sys\nfrom pathlib import Path\n\nROOT = Path(__file__).resolve().parent\nSKILL_DIR = ROOT / \".agents\" / \"skills\" / \"deck-from-source\"\n\nif not (SKILL_DIR / \"deck_source_to_json.py\").exists():\n    SKILL_DIR = ROOT / \".claude\" / \"skills\" / \"deck-from-source\"\nDEST_DIR = Path(\"/mnt/data\")\n\nFILES = [\n    \"resolve_uploads.py\",\n    \"context_loader.py\",\n    \"checklist_manager.py\",\n    \"context_data.json\",\n    \"deck_source_to_json.py\",\n    \"md_to_json.py\","
     },
     "setup.packed.002": {
       "section": "SETUP_SCRIPT",

@@ -22,6 +22,7 @@ SKILL を作成する際の共通ルールを定義する。
 * `context.md` も肥大化させず、code interpreter で必要な外部JSONコンテキストを正しいタイミングで読み込ませる司令塔にする。
 * 詳細ルール・参照情報・補足仕様は、必要に応じて外部JSONへ分離する。
 * 外部JSONコンテキストはターン冒頭で一括読み込みせず、各作業フェーズの直前に必要分だけ取得する。
+* Codexにスキル関係の修正指示（新規作成、既存SKILLの編集、改善、検証、運用ルール変更など）が出た場合は、必ず `C:\Users\takuy\.codex\skills\.system\skill-creator\SKILL.md` の `skill-creator` を用いる。
 
 ### file search の利用方針
 
@@ -119,6 +120,47 @@ if matches:
 * 秘密情報、APIキー、個人情報、不要な内部パスの詳細はログに書かない。
 * ログ追記のための処理も code interpreter の実行コード内に含める。共通ヘルパーを使う場合は、そのSKILLフォルダ直下に置き、実行時は `/mnt/data` 直下へコピー配置して使う。
 * 最終回答前には、生成物のダウンロードリンクと一緒に、このログファイルのダウンロードリンクも必ず提示する。
+
+#### 作業計画チェックリストの運用
+
+カスタムGPTs用SKILLでは、スキルを発揮する作業に入る前に、必ず作業計画を細かいMarkdownチェックリストとして `/mnt/data` 直下に作成する。
+
+* チェックリストファイル名は原則として `/mnt/data/task_checklist.md` とする。
+* チェックリストは、そのターンの作業フェーズ、各フェーズで読むべきコンテキストID、完了条件、検証項目を含める。
+* チェックリストは作業者が直接手編集せず、必ず code interpreter のPythonコードで作成・更新する。
+* チェックを入れる処理、進捗確認、次タスク取得、整合性検証はPythonで実行する。
+* SKILLフォルダ直下に `checklist_manager.py` を置き、実行時に `/mnt/data` 直下へコピー配置して使う。
+* `checklist_manager.py` は、少なくとも `init`、`status`、`next`、`check`、`verify` 相当の操作を提供する。
+* `status` と `next` のコンソール出力は、800文字制限に収まるよう、現在フェーズ、完了数、次の1件、必要コンテキストID、NEXT/DONE状態だけを短く出す。
+* 作業フェーズを始める直前に `next` または `status` で現在位置を確認し、そのフェーズに必要な外部JSONコンテキストを読み、DONEを確認してから実作業へ進む。
+* 各作業単位が終わるたびに `check` で対象項目を完了済みにし、`code_interpreter_log.md` にも同じフェーズ、項目ID、結果を追記する。
+* 後続フェーズに移る前、または迷子になった場合は、必ず `status` を実行して現在位置と次に読むコンテキストを確認する。
+* `verify` は、未完了項目、重複ID、存在しないコンテキストID、DONE前に進んだフェーズがないかを検査する。
+* チェックリストファイルは実行時の一時状態ファイルなので、SKILLフォルダ内には作成しない。必要に応じて最終回答のダウンロードリンクに含める。
+
+チェックリスト作成時のcode interpreter冒頭コメント例:
+
+```python
+# 作業の迷子を防ぐため、今回の作業計画をMarkdownチェックリストとして作成し、次に読むコンテキストを確認できるようにします。
+from checklist_manager import init_checklist
+init_checklist("/mnt/data/task_checklist.md", items)
+```
+
+進捗確認時のcode interpreter冒頭コメント例:
+
+```python
+# 現在の進捗と次に読むべきコンテキストを800文字以内で確認します。
+from checklist_manager import show_status
+show_status("/mnt/data/task_checklist.md")
+```
+
+チェック更新時のcode interpreter冒頭コメント例:
+
+```python
+# 完了した作業項目にチェックを入れ、次に進む前の状態を確認します。
+from checklist_manager import check_item
+check_item("/mnt/data/task_checklist.md", "P02-T03")
+```
 
 #### 外部JSONコンテキストの利用方針
 
@@ -274,3 +316,8 @@ python count_chars.py .Codex/skills/<skill-name>/SKILL.md .Codex/skills/<skill-n
 23. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
 24. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
 25. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
+26. スキルを発揮する作業に入る前に、必ず `/mnt/data/task_checklist.md` をMarkdownチェックリストとして作成する。
+27. チェックリストの作成、チェック更新、進捗確認、整合性検証は必ずPythonコードで行う。
+28. 各作業フェーズの直前にチェックリストで現在位置を確認し、その時点で必要なコンテキストだけを読み込む。
+29. チェックリストの進捗確認出力は800文字以内に収め、現在フェーズ、完了数、次タスク、必要コンテキストID、NEXT/DONE状態だけを短く出す。
+30. 新規作成するSKILLには、必要に応じてSKILLフォルダ直下に `checklist_manager.py` を配置し、実行時は `/mnt/data` 直下へコピーして使う。
