@@ -17,6 +17,7 @@ from typing import Any
 
 MAX_OUTPUT_CHARS = 800
 DEFAULT_NAME = "task_checklist.md"
+CONTEXT_STATE_NAME = "deck_context_state.json"
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -65,6 +66,10 @@ def default_path() -> Path:
 
 def log_path() -> Path:
     return runtime_dir() / "code_interpreter_log.md"
+
+
+def context_state_path() -> Path:
+    return runtime_dir() / CONTEXT_STATE_NAME
 
 
 def emit(text: str) -> None:
@@ -195,11 +200,15 @@ def format_status(items: list[dict[str, str]]) -> str:
     if not item:
         repair_total = len(items) - total
         return f"STATUS DONE primary={done}/{total} optional_repair={repair_total}"
+    ctx = item["ctx"]
     return (
         f"STATUS NEXT {done}/{total}\n"
-        f"id={item['id']} phase={item['phase']} ctx={item['ctx']}\n"
+        f"id={item['id']} phase={item['phase']} ctx={ctx}\n"
         f"task={item['task']}\n"
-        f"done={item['done']}"
+        f"done={item['done']}\n"
+        f"load=python context_loader.py start {ctx}\n"
+        f"repeat=python context_loader.py next until DONE\n"
+        f"check=python checklist_manager.py check {item['id']}"
     )
 
 
@@ -220,6 +229,7 @@ def check_item(path: str | Path | None, item_id: str) -> None:
     text = target.read_text(encoding="utf-8")
     found = False
     phase = "checklist"
+    ctx = ""
     new_lines: list[str] = []
     for line in text.splitlines():
         match = LINE_RE.match(line)
@@ -227,16 +237,56 @@ def check_item(path: str | Path | None, item_id: str) -> None:
             found = True
             meta = parse_meta(match.group("meta"))
             phase = meta.get("phase", "checklist")
+            ctx = meta.get("ctx", "")
             line = line.replace("- [ ] ", "- [x] ", 1)
         new_lines.append(line)
     if not found:
         raise SystemExit(f"ERROR item not found: {item_id}")
+    require_context_done(item_id, ctx)
     target.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
     items = parse(target)
     done, total = counts(items, primary_only=not item_id.startswith("R"))
     result = f"DONE item={item_id} progress={done}/{total}"
     append_log(phase, "check", result, outputs=[target.name])
     emit(result)
+
+
+def context_done(ctx: str) -> bool:
+    state_file = context_state_path()
+    if not state_file.exists():
+        return False
+    try:
+        state = json.loads(state_file.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    if state.get("phase") != ctx:
+        return False
+    if state.get("done") is True:
+        return True
+    try:
+        data_path = Path(__file__).resolve().with_name("context_data.json")
+        if not data_path.exists():
+            data_path = runtime_dir() / "context_data.json"
+        data = json.loads(data_path.read_text(encoding="utf-8"))
+        total = len(data["phases"][ctx]["chunks"])
+        return int(state.get("next_index", -1)) >= total
+    except Exception:
+        return False
+
+
+def require_context_done(item_id: str, ctx: str) -> None:
+    if not ctx:
+        return
+    if context_done(ctx):
+        return
+    message = (
+        f"ERROR context not DONE item={item_id} ctx={ctx}\n"
+        f"run=python context_loader.py start {ctx}\n"
+        "then=python context_loader.py next until DONE"
+    )
+    append_log(ctx, "check blocked", message.replace("\n", " / "))
+    emit(message)
+    raise SystemExit(1)
 
 
 def detect_mode(path: Path, mode: str | None = None) -> str:

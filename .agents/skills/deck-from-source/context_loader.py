@@ -128,8 +128,9 @@ def emit_phase_index(data: dict[str, Any], phase: str, index: int) -> None:
     ids = data["phases"][phase]["chunks"]
     text = format_chunk(data, phase, index)
     if index < len(ids):
-        save_state({"phase": phase, "next_index": index + 1})
-        status = f"NEXT {index + 2:03d}/{len(ids):03d}" if index + 1 < len(ids) else f"DONE {len(ids):03d}/{len(ids):03d}"
+        done = index + 1 >= len(ids)
+        save_state({"phase": phase, "next_index": index + 1, "done": done})
+        status = f"NEXT {index + 2:03d}/{len(ids):03d}" if not done else f"DONE {len(ids):03d}/{len(ids):03d}"
     else:
         save_state({"phase": phase, "next_index": index, "done": True})
         status = f"DONE {len(ids):03d}/{len(ids):03d}"
