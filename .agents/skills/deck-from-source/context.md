@@ -1,57 +1,51 @@
 # context.md deck-from-source 司令塔
 
 目的:
-このファイルは毎ターンfile searchで読む唯一のコンテキストである。詳細本文はcontext_data.jsonへ分離し、このファイルは作業フェーズ判定とcode interpreterでの詳細コンテキスト取得に責任を持つ。
-context.mdは構成作成用の本文ではなく、外部JSONを読むためのゲート表である。context.mdだけを読んだ状態では、スライド構成、章立て、枚数、保存名、JSON骨格を決めない。
+このファイルは毎ターンfile searchで読む唯一のコンテキストである。詳細本文とフェーズ順はcontext_loader.pyが管理する。context.mdだけを読んだ状態では、スライド構成、章立て、枚数、保存名、JSON骨格を決めない。
 
 毎ターン最初:
 file searchではqueriesだけを使い、次を実行する。
 { "queries": ["context.mdのmd全文をfile search"] }
 Codexなどfile searchがない環境では、ローカルファイルのcontext.mdを毎ターン読み直して同じ前提にする。
 
+チャット冒頭の初期化:
+Custom GPTsでは、最初のcode interpreter実行でresolve_uploads.pyを探して実行する。以後は/mnt/data/{元ファイル名}で安定して参照する。
+コード本文の先頭コメントは「アップロード済みファイル名を安定化するため、resolve_uploads.pyを探して実行します。」のように短く書く。
+
 code interpreter基本:
-出力先はDECK_FROM_SOURCE_OUTPUT_DIR、なければ/mnt/data、どちらもなければ現在の作業ディレクトリにする。Codexではこの出力先に成果物とログを置く。code本文の先頭には、何を実行するかが分かる短い日本語コメントを置く。
+出力先はDECK_FROM_SOURCE_OUTPUT_DIR、なければ/mnt/data、どちらもなければ現在の作業ディレクトリにする。成果物とcode_interpreter_log.mdはこの出力先に置く。code本文の先頭には、何を実行するかが分かる短い日本語コメントを置く。
 
-実行ログ:
-すべてのcode interpreter呼び出しで出力先のcode_interpreter_log.mdへ追記する。記録項目はタイムスタンプ、作業フェーズ、目的、入力、出力、結果、NEXT/DONEまたはエラー概要である。秘密情報、APIキー、不要な内部パス詳細は書かない。context_loader.pyはstart、next、status、validate時に自動でログを追記する。変換コードや独自検証コードにもログ追記を含める。最終リンクにはdeck_source.json、pptx、code_interpreter_log.mdを必ず出す。
+ログ:
+すべてのcode interpreter呼び出しで出力先のcode_interpreter_log.mdへ追記する。記録項目はタイムスタンプ、作業フェーズ、目的、入力、出力、結果、NEXT/DONEまたはエラー概要である。秘密情報、APIキー、不要な内部パス詳細は書かない。context_loader.pyは自動でログを追記する。変換コードや独自検証コードにもログ追記を含める。最終リンクにはdeck_source.json、pptx、code_interpreter_log.mdを必ず出す。
 
-ログ制限:
-長いコンテキストを一括printしない。context_loader.pyは1回に1チャンクだけ出す。複数チャンクを読む時は1回ずつcode interpreterを実行する。続きの取得コードの冒頭コメントには、前回NEXT値を含む短い進捗文を書く。
+コンテキスト取得:
+context_data.json本体を直接開いて読まない。ターン冒頭で全フェーズを一括読み込みしない。番号指定、chunk_id指定、ループ、subprocess複数回実行、whileでの連続取得は禁止である。
 
-外部JSON:
-context_data.json本体を直接開いて読まない。ターン冒頭で全フェーズを一括読み込みしない。各作業フェーズの直前に、そのフェーズだけをreadで1チャンクずつ実行してDONEまで読む。DONE後にそのフェーズの作業だけを行う。planフェーズのDONE前に構成案を作ることは禁止である。
+公開コマンドは次だけである。
+init yes
+init no
+advance <ACK>
+phase-done <ACK>
+repair emphasis
+repair density
+repair text
+setup
+repeat
+status
+validate
 
-生成フェーズ:
-Yesの場合は次の順で読む。
-yes_plan: ソース分析、保存名、構成フレーム、密度方針を決める直前。
-yes_schema: root、summary、slides、JSON骨格を書く直前。
-yes_layout: layoutと必須blocksを選ぶ直前。
-yes_image: nanobanana2用のimage_prompt、icon_promptを作る直前。
-yes_body: blocks本文の密度と表現を作る直前。
-yes_emphasis: 太字スキムラインと強調表現を入れる直前。
-yes_notes: speaker noteを書く直前。
-yes_check_convert: FINAL_SELF_CHECKとPPTX変換の直前。
+read、start、next、get、フェーズ名の直接指定は旧APIであり使わない。旧APIが必要に見えても使わず、必ずinitまたはadvanceへ戻る。
 
-Noの場合は次の順で読む。
-no_plan: ソース分析、保存名、構成フレーム、密度方針を決める直前。
-no_schema: root、summary、slides、JSON骨格を書く直前。
-no_layout: layoutと必須blocksを選ぶ直前。
-no_body: blocks本文の密度と表現を作る直前。
-no_emphasis: 太字スキムラインと強調表現を入れる直前。
-no_notes: speaker noteと文字化け確認を書く直前。
-no_check_convert: FINAL_SELF_CHECKとPPTX変換の直前。
-
-修復フェーズ:
-repair_emphasis: strict-emphasis、太字不足、弱い太字、スキムライン失敗を直す直前。
-repair_density: strict-density、本文不足、noteだけ厚い、カードが薄い時に直す直前。
-repair_text: 文字化け、markup、title、section、block key、JSON構造エラーを直す直前。
-setup: /mnt/dataに実行ファイル群が見つからない時に読む。
-
-取得方法:
-推奨は状態に依存しないcontext_loader.py read フェーズ名 番号である。最初はresolve_uploads.pyを実行したうえで、context_loader.py read yes_plan 1のように読む。出力末尾がNEXT 002/006なら次は同じフェーズでread yes_plan 2を実行する。リトライ時も同じreadを再実行すれば同じチャンクが返る。start/nextは互換用であり、迷った時やリトライ時はreadへ戻す。ループでまとめて実行しない。出力先頭の[ctx 現在/総数 chunk_id]で進捗を確認する。出力末尾がDONEならそのフェーズは読み切り完了である。
+取得手順:
+Yes方針ならcontext_loader.py init yesを1回だけ実行する。No方針ならcontext_loader.py init noを1回だけ実行する。実行すると現在フェーズの最初の1チャンクだけが出る。
+出力末尾がNEXT 002/006 ACK xxxxxxxxなら、そのcode interpreter実行を終える。次のcode interpreter実行でcontext_loader.py advance xxxxxxxxを1回だけ実行する。
+出力末尾がDONE 006/006 ACK xxxxxxxxなら、そのフェーズの読み取りは完了である。すぐ次を読まず、そのフェーズの作業だけを行う。作業が終わった後、次フェーズへ入る直前にcontext_loader.py phase-done xxxxxxxxを1回だけ実行する。
+phase-doneは次フェーズの最初の1チャンクだけを返す。以後はNEXTならadvance、DONEなら作業、作業後にphase-doneを繰り返す。
+ROUTE_DONEが出たら全フェーズの読み取りは完了である。
+ACKが合わない、またはbatch read blockedが出たら、一括取得をやめる。statusで現在位置を確認し、次のcode interpreter実行で1コマンドだけ実行する。出力を見失った場合だけrepeatを使う。
 
 停止条件:
-その作業フェーズがDONEになるまで、当該フェーズの分析、生成、変換、検証へ進まない。特にyes_planまたはno_planのDONE前に、スライド構成、章立て、枚数、保存名を作らない。読み取り途中でユーザーへ分析メモや構成案を出さない。
+その作業フェーズがDONEになるまで、当該フェーズの分析、生成、変換、検証へ進まない。特にplan相当フェーズのDONE前に、スライド構成、章立て、枚数、保存名を作らない。読み取り途中でユーザーへ分析メモや構成案を出さない。
 
 ターンA:
 新しい原文ソースを受け取り、nanobanana2方針が未確定なら、分析、判断、JSON生成、PPTX生成をしない。次の質問だけを返す。
@@ -59,21 +53,17 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 スライド枚数、発表者名、対象者は追加質問しない。
 
 ターンB:
-直近の返答でYesまたはNo方針を受け取ったら、前ターンのソースを使う。上記の生成フェーズ順に、直前読み込みと作業を交互に進める。思考過程、分析メモ、構成案はユーザーに出さない。リンク提示まで1ターンで完了する。
+直近の返答でYesまたはNo方針を受け取ったら、前ターンのソースを使う。context_loader.pyの状態機械に従い、読み取りと作業を交互に進める。思考過程、分析メモ、構成案はユーザーに出さない。リンク提示まで1ターンで完了する。
 
 生成時の内部順序:
-1. planフェーズをDONEまで読み、ソース分析と全体構成を決める。
-2. schemaフェーズをDONEまで読み、root、summary、slides骨格を書く。
-3. layoutフェーズをDONEまで読み、各スライドのlayoutとblocksを確定する。
-4. Yesの場合だけimageフェーズをDONEまで読み、画像プロンプトを作る。
-5. bodyフェーズをDONEまで読み、表示本文を厚くする。
-6. emphasisフェーズをDONEまで読み、太字スキムラインを入れる。
-7. notesフェーズをDONEまで読み、speaker noteを作る。
-8. check_convertフェーズをDONEまで読み、FINAL_SELF_CHECK後にstrict変換する。
-9. strictエラーが出たら、該当repairフェーズをDONEまで読み、JSONを修復して再実行する。
+1. init yesまたはinit noで開始し、plan相当フェーズをDONEまで読む。
+2. plan相当フェーズの作業として、ソース分析、保存名、全体構成、密度方針を決める。
+3. phase-doneで次フェーズへ進み、schema、layout、Yes時のimage、body、emphasis、notes、check_convert相当の各フェーズを、DONEまで読む、作業する、phase-doneする、の順で進める。
+4. check_convert相当フェーズをDONEまで読んでから、FINAL_SELF_CHECK後にstrict変換する。
+5. strictエラーが出たら、repair emphasis、repair density、repair textのうち該当するものを開始し、DONEまで読んでからJSONを修復して再実行する。
 
 変換出力:
-check_convertフェーズをDONEまで読んでから、deck_source_to_json.pyをstrict系オプション付きで実行する。ユーザーへ提示するのはdeck_source.json、pptx、code_interpreter_log.mdである。slides.jsonは中間生成物として扱い、ダウンロードリンクを出さない。
+check_convert相当フェーズをDONEまで読んでから、deck_source_to_json.pyを--require-context-doneとstrict系オプション付きで実行する。ユーザーへ提示するのはdeck_source.json、pptx、code_interpreter_log.mdである。slides.jsonは中間生成物として扱い、ダウンロードリンクを出さない。
 
 スキル修正依頼:
 ユーザーがこのスキル自体の修正、リファクタリング、検証を求めた場合は、デッキ生成フローへ入らない。nanobanana2のYes/No質問も出さない。対象ファイルを編集し、count_chars.pyとcontext_loader.py validateで検証する。

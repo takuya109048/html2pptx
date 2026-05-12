@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -180,6 +181,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Reject replacement characters and suspicious runs of question marks.",
     )
+    parser.add_argument(
+        "--require-context-done",
+        action="store_true",
+        help="Require deck_context_state.json to show check_convert context was read to DONE.",
+    )
     return parser.parse_args()
 
 
@@ -204,6 +210,51 @@ def load_source(path: Path, assets_dir: Path | None) -> dict[str, Any]:
                 raise ValueError("deck_source.json root must be an object.")
             return data
     raise FileNotFoundError(path)
+
+
+def context_state_candidates(input_json: Path, assets_dir: Path | None) -> list[Path]:
+    candidates: list[Path] = []
+    for env_name in ("DECK_FROM_SOURCE_OUTPUT_DIR", "DECK_OUTPUT_DIR"):
+        env_dir = os.environ.get(env_name)
+        if env_dir:
+            candidates.append(Path(env_dir) / "deck_context_state.json")
+    candidates.append(input_json.parent / "deck_context_state.json")
+    if assets_dir is not None:
+        candidates.append(assets_dir / "deck_context_state.json")
+    mnt = Path("/mnt/data")
+    if mnt.exists():
+        candidates.append(mnt / "deck_context_state.json")
+    candidates.append(Path.cwd() / "deck_context_state.json")
+    seen: set[Path] = set()
+    unique: list[Path] = []
+    for candidate in candidates:
+        resolved = candidate.resolve() if candidate.exists() else candidate
+        if resolved not in seen:
+            seen.add(resolved)
+            unique.append(candidate)
+    return unique
+
+
+def require_context_done(input_json: Path, assets_dir: Path | None) -> bool:
+    for candidate in context_state_candidates(input_json, assets_dir):
+        if not candidate.exists():
+            continue
+        try:
+            state = json.loads(candidate.read_text(encoding="utf-8"))
+        except Exception as exc:
+            warn(f"Failed to read deck context state: {exc}")
+            return False
+        done_phases = set(state.get("completed_phases") or [])
+        current_phase = str(state.get("phase", ""))
+        check_phases = {"yes_check_convert", "no_check_convert"}
+        if done_phases & check_phases:
+            return True
+        if current_phase in check_phases and state.get("phase_done"):
+            return True
+        warn("check_convert context is not DONE. Read it with context_loader.py before converting.")
+        return False
+    warn("deck_context_state.json not found. Run context_loader.py through check_convert before converting.")
+    return False
 
 
 def as_text(value: Any) -> str:
@@ -1114,6 +1165,8 @@ def convert_source_to_slides(source: dict[str, Any], templates: dict[str, Any], 
 def main() -> int:
     args = parse_args()
     assets_dir = args.assets_dir
+    if args.require_context_done and not require_context_done(args.input_json, assets_dir):
+        return 1
     if assets_dir is not None and args.templates == Path(__file__).resolve().parent / "templates.json":
         args.templates = _find_prefixed(assets_dir, "templates.json")
     templates = load_json(args.templates)

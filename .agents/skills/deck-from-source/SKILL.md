@@ -5,7 +5,7 @@ description: 原文ソース（テキスト、URL、ファイル）からdeck_so
 
 # deck-from-source
 
-原文ソースからdeck_source.jsonとPPTXを生成する。SKILL.mdは肥大化させず、毎ターンcontext.mdを確実に読む責任を持つ。詳細ルール、フェーズ順、code interpreterでのコンテキスト取得、変換、検証はcontext.mdに従う。
+原文ソースからdeck_source.jsonとPPTXを生成する。SKILL.mdは肥大化させず、毎ターンcontext.mdを確実に読む責任を持つ。詳細ルール、フェーズ順、code interpreterでのコンテキスト取得、変換、検証はcontext.mdとcontext_loader.pyの状態機械に従う。
 
 ## 適用条件
 
@@ -23,10 +23,12 @@ file searchが使える環境では次だけを実行し、取得したcontext.m
 
 Codexではローカルのcontext.mdを毎ターン読み直す。context.mdを読まずに分析、生成、変換、検証へ進まない。context.mdだけを読んだ状態では、スライド構成、章立て、枚数、保存名、JSON骨格を作らない。
 
+Custom GPTsではチャット冒頭でresolve_uploads.pyをcode interpreterで1回実行し、アップロード済みファイル名を安定化する。code本文の先頭には、何を実行するかが分かる短い日本語コメントを書く。
+
 ## 実行原則
 
 新しい原文ソースを受け取り、nanobanana2方針が未確定なら、context.mdのターンAに従う。
 
-Yes/No方針を受け取ったら、context.mdのターンBに従い、各フェーズ直前にcontext_loader.py read フェーズ名 番号で必要な外部JSONコンテキストをDONEまで読む。planフェーズのDONE前にスライド構成を作らない。読了前にそのフェーズの作業へ進まない。
+Yes/No方針を受け取ったら、context.mdのターンBに従う。必要な外部JSONコンテキストはcontext_loader.py init yes、init no、advance <ACK>、phase-done <ACK>で1チャンクずつ読む。read、start、next、get、フェーズ名の直接指定は旧APIなので使わない。1回のcode interpreter実行では、コンテキストを出すローダーコマンドを1回だけ実行する。plan相当フェーズのDONE前にスライド構成を作らない。
 
 最終出力はcontext.mdの指定どおり、deck_source.json、PPTX、code_interpreter_log.mdのリンクを提示する。
