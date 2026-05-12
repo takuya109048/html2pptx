@@ -16,7 +16,7 @@ code interpreter基本:
 出力先はDECK_FROM_SOURCE_OUTPUT_DIR、なければ/mnt/data、どちらもなければ現在の作業ディレクトリにする。成果物とcode_interpreter_log.mdはこの出力先に置く。code本文の先頭には、何を実行するかが分かる短い日本語コメントを置く。
 
 ログ:
-すべてのcode interpreter呼び出しで出力先のcode_interpreter_log.mdへ追記する。記録項目はタイムスタンプ、作業フェーズ、目的、入力、出力、結果、NEXT/DONEまたはエラー概要である。秘密情報、APIキー、不要な内部パス詳細は書かない。context_loader.pyは自動でログを追記する。変換コードや独自検証コードにもログ追記を含める。最終リンクにはdeck_source.json、pptx、code_interpreter_log.mdを必ず出す。
+すべてのcode interpreter呼び出しで出力先のcode_interpreter_log.mdへ追記する。各行はJSONやコード風の辞書ではなく、タイムスタンプ付きの自然な日本語一文だけにする。タイムスタンプはシステム時刻がUTCでも必ず日本時間UTC+09:00へ変換し、例として2026-05-13T10:15:00+09:00（日本時間）に計画フェーズで入力を確認し、deck_source.jsonの生成準備を完了しました。の形にする。記録内容は作業フェーズ、目的、入力、出力、結果、NEXT/DONEまたはエラー概要である。秘密情報、APIキー、不要な内部パス詳細は書かない。context_loader.pyは自動で自然文ログを追記する。変換コードや独自検証コードでも、可能ならcontext_loader.pyのappend_logを使って同じ形式で追記する。最終リンクにはdeck_source.json、pptx、code_interpreter_log.mdを必ず出す。
 
 コンテキスト取得:
 context_data.json本体を直接開いて読まない。ターン冒頭で全フェーズを一括読み込みしない。番号指定、chunk_id指定は禁止である。

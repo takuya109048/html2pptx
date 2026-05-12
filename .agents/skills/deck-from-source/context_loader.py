@@ -21,6 +21,7 @@ from typing import Any
 MAX_OUTPUT_CHARS = 800
 STATE_NAME = "deck_context_state.json"
 LEGACY_COMMANDS = {"read", "start", "next", "get"}
+JST = datetime.timezone(datetime.timedelta(hours=9), "JST")
 
 FLOW_PHASES: dict[str, list[str]] = {
     "yes": [
@@ -101,6 +102,101 @@ def log_path() -> Path:
     return runtime_dir() / "code_interpreter_log.md"
 
 
+def jst_timestamp() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).astimezone(JST).isoformat(timespec="seconds")
+
+
+def compact_text(value: str) -> str:
+    return " ".join(str(value).split())
+
+
+def human_phase(phase: str) -> str:
+    phase_topics = {
+        "plan": "計画",
+        "schema": "JSON骨格",
+        "layout": "レイアウト",
+        "image": "画像設計",
+        "body": "本文作成",
+        "emphasis": "強調表現",
+        "notes": "発表者ノート",
+        "check_convert": "変換前確認",
+    }
+    if phase.startswith("yes_") or phase.startswith("no_"):
+        route = "画像あり方針" if phase.startswith("yes_") else "画像なし方針"
+        topic = phase_topics.get(phase.split("_", 1)[1], phase)
+        return f"{route}の{topic}フェーズ"
+    if phase.startswith("repair_"):
+        repair_topic = {
+            "emphasis": "強調表現の修復",
+            "density": "情報密度の修復",
+            "text": "文字化けの修復",
+        }.get(phase.split("_", 1)[1], phase)
+        return f"{repair_topic}フェーズ"
+    labels = {
+        "setup": "初期設定フェーズ",
+        "status": "進捗確認",
+        "validate": "設定検証",
+        "context_loader": "コンテキスト読み込み",
+    }
+    return labels.get(phase, f"{phase}フェーズ")
+
+
+def human_action(purpose: str) -> str:
+    actions = {
+        "context_loader init": "最初のコンテキスト取得",
+        "context_loader advance": "次のコンテキスト取得",
+        "context_loader phase-done": "フェーズ完了の記録",
+        "context_loader repeat": "直前コンテキストの再表示",
+        "context_loader status": "現在位置の確認",
+        "context_loader validate": "設定の検証",
+        "context_loader error": "エラー内容の記録",
+    }
+    return actions.get(purpose, compact_text(purpose))
+
+
+def human_result(result: str) -> str:
+    text = compact_text(result)
+    parts = text.split()
+    if parts and parts[0] in {"NEXT", "DONE"}:
+        status = parts[0]
+        progress = parts[1] if len(parts) > 1 and "/" in parts[1] else ""
+        if progress:
+            current, total = progress.split("/", 1)
+            current_num = int(current)
+            total_num = int(total)
+            if status == "NEXT":
+                return f"全{total_num}件中{current_num}件目を読み取り、次の読み取りが必要な状態にしました"
+            return f"全{total_num}件の読み取りを終え、このフェーズを作業可能な状態にしました"
+        if status == "NEXT":
+            return "次の読み取りが必要な状態にしました"
+        return "このフェーズを作業可能な状態にしました"
+    if text == "ROUTE_DONE":
+        return "すべてのフェーズの読み取りを完了しました"
+    if text.startswith("ROUTE_DONE "):
+        return "すべてのフェーズの読み取りを完了しました"
+    if text.startswith("STATUS "):
+        return "現在の読み取り位置を確認しました"
+    if text.startswith("OK "):
+        return "検証は成功しました"
+    if text.startswith("ERROR "):
+        return f"エラーとして「{text}」を記録しました"
+    return f"結果は「{text}」でした"
+
+
+def human_io(inputs: list[str] | None, outputs: list[str] | None) -> str:
+    input_items = [compact_text(item) for item in inputs or [] if compact_text(item)]
+    output_items = [compact_text(item) for item in outputs or [] if compact_text(item)]
+    input_text = "、".join(input_items)
+    output_text = "、".join(output_items)
+    if input_text and output_text:
+        return f"入力として{input_text}を使い、出力として{output_text}を更新しました"
+    if input_text:
+        return f"入力として{input_text}を使いました"
+    if output_text:
+        return f"出力として{output_text}を更新しました"
+    return ""
+
+
 def append_log(
     phase: str,
     purpose: str,
@@ -109,17 +205,15 @@ def append_log(
     outputs: list[str] | None = None,
 ) -> None:
     try:
-        ts = datetime.datetime.now().isoformat(timespec="seconds")
-        line = {
-            "time": ts,
-            "phase": phase,
-            "purpose": purpose,
-            "inputs": inputs or [],
-            "outputs": outputs or [],
-            "result": result,
-        }
+        fragments = [
+            f"{jst_timestamp()}（日本時間）に{human_phase(phase)}で{human_action(purpose)}を行い、{human_result(result)}"
+        ]
+        io_text = human_io(inputs, outputs)
+        if io_text:
+            fragments.append(io_text)
+        sentence = "、".join(fragments) + "。"
         with log_path().open("a", encoding="utf-8") as f:
-            f.write("- " + json.dumps(line, ensure_ascii=False) + "\n")
+            f.write("- " + sentence + "\n")
     except Exception:
         pass
 
