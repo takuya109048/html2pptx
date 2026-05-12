@@ -21,12 +21,12 @@ file searchが使える環境では次だけを実行し、取得したcontext.m
 { "queries": ["context.mdのmd全文をfile search"] }
 ```
 
-Codexではローカルのcontext.mdを毎ターン読み直す。context.mdを読まずに分析、生成、変換、検証へ進まない。
+Codexではローカルのcontext.mdを毎ターン読み直す。context.mdを読まずに分析、生成、変換、検証へ進まない。context.mdだけを読んだ状態では、スライド構成、章立て、枚数、保存名、JSON骨格を作らない。
 
 ## 実行原則
 
 新しい原文ソースを受け取り、nanobanana2方針が未確定なら、context.mdのターンAに従う。
 
-Yes/No方針を受け取ったら、context.mdのターンBに従い、各フェーズ直前にcontext_loader.py read フェーズ名 番号で必要な外部JSONコンテキストをDONEまで読む。読了前にそのフェーズの作業へ進まない。
+Yes/No方針を受け取ったら、context.mdのターンBに従い、各フェーズ直前にcontext_loader.py read フェーズ名 番号で必要な外部JSONコンテキストをDONEまで読む。planフェーズのDONE前にスライド構成を作らない。読了前にそのフェーズの作業へ進まない。
 
 最終出力はcontext.mdの指定どおり、deck_source.json、PPTX、code_interpreter_log.mdのリンクを提示する。
