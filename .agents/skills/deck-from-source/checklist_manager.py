@@ -17,7 +17,6 @@ from typing import Any
 
 MAX_OUTPUT_CHARS = 800
 DEFAULT_NAME = "task_checklist.md"
-CONTEXT_STATE_NAME = "deck_context_state.json"
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -29,14 +28,21 @@ YES_ITEMS = [
     ("P01-T01", "yes_plan", "ソース分析と全体構成", "保存名、章立て、密度方針を決める"),
     ("P02-T01", "yes_schema", "JSON骨格作成", "root、summary、slides骨格を書く"),
     ("P03-T01", "yes_layout", "layout確定", "各スライドのlayoutと必須blocksを決める"),
-    ("P04-T01", "yes_check_convert", "FINAL_SELF_CHECKと変換", "strict変換を通し成果物を作る"),
+    ("P04-T01", "yes_image", "画像プロンプト作成", "summary.image_promptとicon_promptを書く"),
+    ("P05-T01", "yes_body", "本文密度補強", "blocks本文を薄い名詞句で終わらせない"),
+    ("P06-T01", "yes_emphasis", "太字スキムライン", "本文中に短い太字の読み筋を作る"),
+    ("P07-T01", "yes_notes", "speaker note作成", "各noteを本文の補助として書く"),
+    ("P08-T01", "yes_check_convert", "FINAL_SELF_CHECKと変換", "strict変換を通し成果物を作る"),
 ]
 
 NO_ITEMS = [
     ("P01-T01", "no_plan", "ソース分析と全体構成", "保存名、章立て、密度方針を決める"),
     ("P02-T01", "no_schema", "JSON骨格作成", "root、summary、slides骨格を書く"),
     ("P03-T01", "no_layout", "layout確定", "各スライドのlayoutと必須blocksを決める"),
-    ("P04-T01", "no_check_convert", "FINAL_SELF_CHECKと変換", "strict変換を通し成果物を作る"),
+    ("P04-T01", "no_body", "本文密度補強", "blocks本文を薄い名詞句で終わらせない"),
+    ("P05-T01", "no_emphasis", "太字スキムライン", "本文中に短い太字の読み筋を作る"),
+    ("P06-T01", "no_notes", "speaker note作成", "文字化け確認とnote作成を行う"),
+    ("P07-T01", "no_check_convert", "FINAL_SELF_CHECKと変換", "strict変換を通し成果物を作る"),
 ]
 
 REPAIR_ITEMS = [
@@ -45,8 +51,9 @@ REPAIR_ITEMS = [
     ("R03-T01", "repair_text", "文字と構造修復", "文字化け、markup、block keyを直す"),
 ]
 
-LINE_RE = re.compile(r"^(?P<indent>\s*)- \[(?P<mark>[ xX])\] (?P<id>[^|]+)(?P<meta>(?: \| .*)?)$")
-SLIDE_ITEM_RE = re.compile(r"^S\d{3}-[A-Z]\d{2}$")
+LINE_RE = re.compile(
+    r"^- \[(?P<mark>[ xX])\] (?P<id>[^|]+) \| phase=(?P<phase>[^|]+) \| ctx=(?P<ctx>[^|]+) \| task=(?P<task>[^|]+) \| done=(?P<done>.+)$"
+)
 
 
 def runtime_dir() -> Path:
@@ -66,10 +73,6 @@ def default_path() -> Path:
 
 def log_path() -> Path:
     return runtime_dir() / "code_interpreter_log.md"
-
-
-def context_state_path() -> Path:
-    return runtime_dir() / CONTEXT_STATE_NAME
 
 
 def emit(text: str) -> None:
@@ -110,21 +113,6 @@ def normalize_items(items: list[Any]) -> list[dict[str, str]]:
     return normalized
 
 
-def clean_field(value: Any, max_len: int = 80) -> str:
-    text = str(value or "").replace("\n", " ").replace("|", " ").strip()
-    text = re.sub(r"\s+", " ", text)
-    if len(text) > max_len:
-        text = text[: max_len - 1].rstrip() + "…"
-    return text
-
-
-def render_item(item: dict[str, str], checked: bool = False, indent: str = "") -> str:
-    mark = "x" if checked else " "
-    keys = ["phase", "ctx", "parent", "slide", "task", "done"]
-    meta = " | ".join(f"{key}={item[key]}" for key in keys if item.get(key))
-    return f"{indent}- [{mark}] {item['id']} | {meta}"
-
-
 def init_checklist(path: str | Path | None = None, items: list[Any] | None = None, mode: str | None = None) -> Path:
     target = Path(path) if path else default_path()
     if items is None:
@@ -144,21 +132,12 @@ def init_checklist(path: str | Path | None = None, items: list[Any] | None = Non
         "",
     ]
     for item in normalized:
-        lines.append(render_item(item))
+        lines.append(
+            f"- [ ] {item['id']} | phase={item['phase']} | ctx={item['ctx']} | task={item['task']} | done={item['done']}"
+        )
     target.write_text("\n".join(lines) + "\n", encoding="utf-8")
     append_log("checklist", "init", f"DONE items={len(normalized)}", outputs=[target.name])
     return target
-
-
-def parse_meta(meta: str) -> dict[str, str]:
-    data: dict[str, str] = {}
-    for part in meta.split("|"):
-        part = part.strip()
-        if not part or "=" not in part:
-            continue
-        key, value = part.split("=", 1)
-        data[key.strip()] = value.strip()
-    return data
 
 
 def parse(path: str | Path | None = None) -> list[dict[str, str]]:
@@ -171,10 +150,7 @@ def parse(path: str | Path | None = None) -> list[dict[str, str]]:
         if not match:
             continue
         data = {k: v.strip() for k, v in match.groupdict().items()}
-        data.update(parse_meta(data.pop("meta", "")))
         data["checked"] = "1" if data["mark"].lower() == "x" else "0"
-        for key in ["phase", "ctx", "task", "done", "parent", "slide"]:
-            data.setdefault(key, "")
         items.append(data)
     return items
 
@@ -200,15 +176,11 @@ def format_status(items: list[dict[str, str]]) -> str:
     if not item:
         repair_total = len(items) - total
         return f"STATUS DONE primary={done}/{total} optional_repair={repair_total}"
-    ctx = item["ctx"]
     return (
         f"STATUS NEXT {done}/{total}\n"
-        f"id={item['id']} phase={item['phase']} ctx={ctx}\n"
+        f"id={item['id']} phase={item['phase']} ctx={item['ctx']}\n"
         f"task={item['task']}\n"
-        f"done={item['done']}\n"
-        f"load=python context_loader.py start {ctx}\n"
-        f"repeat=python context_loader.py next until DONE\n"
-        f"check=python checklist_manager.py check {item['id']}"
+        f"done={item['done']}"
     )
 
 
@@ -229,176 +201,21 @@ def check_item(path: str | Path | None, item_id: str) -> None:
     text = target.read_text(encoding="utf-8")
     found = False
     phase = "checklist"
-    ctx = ""
     new_lines: list[str] = []
     for line in text.splitlines():
         match = LINE_RE.match(line)
         if match and match.group("id").strip() == item_id:
             found = True
-            meta = parse_meta(match.group("meta"))
-            phase = meta.get("phase", "checklist")
-            ctx = meta.get("ctx", "")
+            phase = match.group("phase").strip()
             line = line.replace("- [ ] ", "- [x] ", 1)
         new_lines.append(line)
     if not found:
         raise SystemExit(f"ERROR item not found: {item_id}")
-    require_context_done(item_id, ctx)
     target.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
     items = parse(target)
     done, total = counts(items, primary_only=not item_id.startswith("R"))
     result = f"DONE item={item_id} progress={done}/{total}"
     append_log(phase, "check", result, outputs=[target.name])
-    emit(result)
-
-
-def context_done(ctx: str) -> bool:
-    state_file = context_state_path()
-    if not state_file.exists():
-        return False
-    try:
-        state = json.loads(state_file.read_text(encoding="utf-8"))
-    except Exception:
-        return False
-    if state.get("phase") != ctx:
-        return False
-    if state.get("done") is True:
-        return True
-    try:
-        data_path = Path(__file__).resolve().with_name("context_data.json")
-        if not data_path.exists():
-            data_path = runtime_dir() / "context_data.json"
-        data = json.loads(data_path.read_text(encoding="utf-8"))
-        total = len(data["phases"][ctx]["chunks"])
-        return int(state.get("next_index", -1)) >= total
-    except Exception:
-        return False
-
-
-def require_context_done(item_id: str, ctx: str) -> None:
-    if not ctx:
-        return
-    if context_done(ctx):
-        return
-    message = (
-        f"ERROR context not DONE item={item_id} ctx={ctx}\n"
-        f"run=python context_loader.py start {ctx}\n"
-        "then=python context_loader.py next until DONE"
-    )
-    append_log(ctx, "check blocked", message.replace("\n", " / "))
-    emit(message)
-    raise SystemExit(1)
-
-
-def detect_mode(path: Path, mode: str | None = None) -> str:
-    selected = (mode or "").lower()
-    if selected in {"yes", "no"}:
-        return selected
-    text = path.read_text(encoding="utf-8")
-    match = re.search(r"^mode:\s*(yes|no)\s*$", text, flags=re.MULTILINE)
-    if match:
-        return match.group(1)
-    items = parse(path)
-    for item in items:
-        if item["ctx"].startswith("yes_"):
-            return "yes"
-        if item["ctx"].startswith("no_"):
-            return "no"
-    raise SystemExit("ERROR mode not found; pass --mode yes or --mode no")
-
-
-def resolve_source_json(source: str | Path | None) -> Path:
-    if source:
-        candidate = Path(source)
-        if candidate.exists():
-            return candidate
-        runtime_candidate = runtime_dir() / candidate
-        if runtime_candidate.exists():
-            return runtime_candidate
-        raise SystemExit(f"ERROR source json not found: {source}")
-    matches = sorted(runtime_dir().glob("*deck_source.json"))
-    if matches:
-        return matches[0]
-    raise SystemExit("ERROR source json not found")
-
-
-def slide_steps(mode: str) -> list[tuple[str, str, str, str]]:
-    if mode == "yes":
-        return [
-            ("I01", "yes_image", "画像プロンプト作成", "image_promptまたはicon_promptを1枚分完成"),
-            ("B01", "yes_body", "本文密度補強", "blocks本文を1枚分完成"),
-            ("E01", "yes_emphasis", "太字スキムライン", "太字とマークアップを1枚分完成"),
-            ("N01", "yes_notes", "speaker note作成", "noteを1枚分完成"),
-        ]
-    return [
-        ("B01", "no_body", "本文密度補強", "blocks本文を1枚分完成"),
-        ("E01", "no_emphasis", "太字スキムライン", "太字とマークアップを1枚分完成"),
-        ("N01", "no_notes", "speaker note作成", "文字化け確認とnoteを1枚分完成"),
-    ]
-
-
-def build_slide_items(source_json: Path, mode: str) -> list[dict[str, str]]:
-    data = json.loads(source_json.read_text(encoding="utf-8-sig"))
-    slides = data.get("slides")
-    if not isinstance(slides, list) or not slides:
-        raise SystemExit("ERROR source json has no slides array")
-    items: list[dict[str, str]] = []
-    for idx, slide in enumerate(slides, start=1):
-        title = clean_field(slide.get("title") if isinstance(slide, dict) else "", 36) or f"slide {idx}"
-        for suffix, ctx, task, done in slide_steps(mode):
-            items.append(
-                {
-                    "id": f"S{idx:03d}-{suffix}",
-                    "phase": f"{mode}_slide_build",
-                    "ctx": ctx,
-                    "parent": "P03-T01",
-                    "slide": str(idx),
-                    "task": clean_field(f"スライド{idx}: {title} {task}", 72),
-                    "done": done,
-                }
-            )
-    return items
-
-
-def insert_slide_items(
-    path: str | Path | None = None,
-    source: str | Path | None = None,
-    mode: str | None = None,
-    replace: bool = False,
-) -> None:
-    target = Path(path) if path else default_path()
-    if not target.exists():
-        raise SystemExit(f"ERROR checklist not found: {target}")
-    selected_mode = detect_mode(target, mode)
-    source_json = resolve_source_json(source)
-    slide_items = build_slide_items(source_json, selected_mode)
-    lines = target.read_text(encoding="utf-8").splitlines()
-    existing = [
-        item["id"]
-        for item in parse(target)
-        if SLIDE_ITEM_RE.match(item["id"]) and item.get("parent") == "P03-T01"
-    ]
-    if existing and not replace:
-        result = f"OK slide subitems already present count={len(existing)}"
-        append_log("checklist", "insert-slides", f"{result} source={source_json.name}", outputs=[target.name])
-        emit(result)
-        return
-
-    new_lines: list[str] = []
-    inserted = False
-    for line in lines:
-        match = LINE_RE.match(line)
-        item_id = match.group("id").strip() if match else ""
-        if replace and SLIDE_ITEM_RE.match(item_id):
-            continue
-        new_lines.append(line)
-        if item_id == "P03-T01":
-            new_lines.extend(render_item(item, indent="  ") for item in slide_items)
-            inserted = True
-    if not inserted:
-        raise SystemExit("ERROR parent item not found: P03-T01")
-    target.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
-    result = f"DONE insert-slides count={len(slide_items)} mode={selected_mode}"
-    append_log("checklist", "insert-slides", f"{result} source={source_json.name}", outputs=[target.name])
     emit(result)
 
 
@@ -411,9 +228,6 @@ def verify(path: str | Path | None = None) -> None:
     for item in items:
         if not item["ctx"]:
             errors.append(f"missing_ctx:{item['id']}")
-        for ctx in [part.strip() for part in item["ctx"].split(",") if part.strip()]:
-            if not re.match(r"^(yes|no|repair|setup)[A-Za-z0-9_]*$", ctx):
-                errors.append(f"bad_ctx:{item['id']}:{ctx}")
     unfinished = [item["id"] for item in items if item["checked"] != "1" and not item["id"].startswith("R")]
     if unfinished:
         errors.append(f"unfinished:{','.join(unfinished[:3])}")
@@ -430,11 +244,9 @@ def verify(path: str | Path | None = None) -> None:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Manage task_checklist.md")
-    parser.add_argument("command", choices=["init", "status", "next", "check", "verify", "insert-slides"])
+    parser.add_argument("command", choices=["init", "status", "next", "check", "verify"])
     parser.add_argument("value", nargs="?")
     parser.add_argument("--path", default=None)
-    parser.add_argument("--mode", choices=["yes", "no"], default=None)
-    parser.add_argument("--replace", action="store_true")
     args = parser.parse_args(argv[1:])
 
     if args.command == "init":
@@ -451,8 +263,6 @@ def main(argv: list[str]) -> int:
         check_item(args.path, args.value)
     elif args.command == "verify":
         verify(args.path)
-    elif args.command == "insert-slides":
-        insert_slide_items(args.path, args.value, mode=args.mode, replace=args.replace)
     return 0
 
 
