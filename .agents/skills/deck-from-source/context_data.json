@@ -13,7 +13,6 @@
         "turn_b_yes.packed.004",
         "turn_b_yes.packed.005",
         "turn_b_yes.packed.006",
-        "slide_iteration_gate.001",
         "turn_b_yes.packed.007",
         "turn_b_yes.packed.008",
         "turn_b_yes.packed.009",
@@ -50,7 +49,6 @@
         "turn_b_no.packed.004",
         "turn_b_no.packed.005",
         "turn_b_no.packed.006",
-        "slide_iteration_gate.001",
         "turn_b_no.packed.007",
         "turn_b_no.packed.008",
         "turn_b_no.packed.009",
@@ -153,7 +151,7 @@
         "story_analysis.002",
         "story_analysis.003"
       ],
-      "text": "フレームワーク選択:\n| 目的 | 型 | 構造 |\n|-----|----|------|\n| 要点を短く伝える | SDS | Summary、Details、Summary |\n| 説得、提案 | PREP | Point、Reason、Example、Point |\n| 依頼、交渉 | DESC | Describe、Express、Suggest、Choose |\n| 汎用長尺 | 序論本論結論 | 導入、主張と根拠、まとめ |\n| 営業提案 | AIDMA | Attention、Interest、Desire、Memory、Action |\n\nストーリー設計:\n\n1. ソース全体から聴衆に最も伝えたい1文を定義する。\n2. 選んだ型に沿ってセクションへ分け、本文スライドの構成リストを作る。\n3. 主張、根拠、データ、事例、手順、並列要素、結論を抽出する。\n4. titleは目次小見出しである。名詞句か体言止めにし、主張文はmessageへ移す。役割の定義、設計原則のような抽象語だけにせず、固有語、数値、対比軸、判断軸、行動対象のいずれかを含める。"
+      "text": "フレームワーク選択:\n| 目的 | 型 | 構造 |\n|-----|----|------|\n| 要点を短く伝える | SDS | Summary、Details、Summary |\n| 説得、提案 | PREP | Point、Reason、Example、Point |\n| 依頼、交渉 | DESC | Describe、Express、Suggest、Choose |\n| 汎用長尺 | 序論本論結論 | 導入、主張と根拠、まとめ |\n| 営業提案 | AIDMA | Attention、Interest、Desire、Memory、Action |\n\nストーリー設計:\n\n1. ソース全体から聴衆に最も伝えたい1文を定義する。\n2. 選んだ型に沿ってセクションへ分け、本文スライドのslides配列を作る。\n3. 主張、根拠、データ、事例、手順、並列要素、結論を抽出する。\n4. titleは目次小見出しである。名詞句か体言止めにし、主張文はmessageへ移す。役割の定義、設計原則のような抽象語だけにせず、固有語、数値、対比軸、判断軸、行動対象のいずれかを含める。"
     },
     "turn_b_yes.packed.004": {
       "section": "STORY_ANALYSIS+SOURCE_ENRICHMENT",
@@ -410,7 +408,7 @@
         "story_analysis.002",
         "story_analysis.003"
       ],
-      "text": "フレームワーク選択:\n| 目的 | 型 | 構造 |\n|-----|----|------|\n| 要点を短く伝える | SDS | Summary、Details、Summary |\n| 説得、提案 | PREP | Point、Reason、Example、Point |\n| 依頼、交渉 | DESC | Describe、Express、Suggest、Choose |\n| 汎用長尺 | 序論本論結論 | 導入、主張と根拠、まとめ |\n| 営業提案 | AIDMA | Attention、Interest、Desire、Memory、Action |\n\nストーリー設計:\n\n1. ソース全体から聴衆に最も伝えたい1文を定義する。\n2. 選んだ型に沿ってセクションへ分け、本文スライドの構成リストを作る。\n3. 主張、根拠、データ、事例、手順、並列要素、結論を抽出する。\n4. titleは目次小見出しである。名詞句か体言止めにし、主張文はmessageへ移す。役割の定義、設計原則のような抽象語だけにせず、固有語、数値、対比軸、判断軸、行動対象のいずれかを含める。"
+      "text": "フレームワーク選択:\n| 目的 | 型 | 構造 |\n|-----|----|------|\n| 要点を短く伝える | SDS | Summary、Details、Summary |\n| 説得、提案 | PREP | Point、Reason、Example、Point |\n| 依頼、交渉 | DESC | Describe、Express、Suggest、Choose |\n| 汎用長尺 | 序論本論結論 | 導入、主張と根拠、まとめ |\n| 営業提案 | AIDMA | Attention、Interest、Desire、Memory、Action |\n\nストーリー設計:\n\n1. ソース全体から聴衆に最も伝えたい1文を定義する。\n2. 選んだ型に沿ってセクションへ分け、本文スライドのslides配列を作る。\n3. 主張、根拠、データ、事例、手順、並列要素、結論を抽出する。\n4. titleは目次小見出しである。名詞句か体言止めにし、主張文はmessageへ移す。役割の定義、設計原則のような抽象語だけにせず、固有語、数値、対比軸、判断軸、行動対象のいずれかを含める。"
     },
     "turn_b_no.packed.004": {
       "section": "STORY_ANALYSIS+SOURCE_ENRICHMENT",
@@ -619,13 +617,6 @@
         "final_self_check.006"
       ],
       "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
-    },
-    "slide_iteration_gate.001": {
-      "section": "SLIDE_ITERATION_GATE",
-      "source_chunks": [
-        "slide_iteration.001"
-      ],
-      "text": "## SLIDE_ITERATION_GATE\n\n本文スライドは統合DECK_SOURCE_JSONへ直接書かない。rootとsummaryだけのroot JSONを先に作り、本文は1枚につき1つのslide JSONとして分離する。\n\nslide JSONの条件:\n- 1ファイルまたは1オブジェクトに本文スライド1件だけを置く。\n- section、layout、title、message、note、blocks、必要なicon_promptだけを持つ。\n- slides配列、root、summary、表紙、目次を入れない。\n\n各slide JSONごとに、役割、前後接続、layout、必須blocks、本文密度、太字スキムライン、文字化け、nanobanana2制約、前後重複を検証する。不合格なら同じslide JSONを直し、合格してから次へ進む。\n\n全slide JSONがそろった後だけ、番号順に読み直してslides配列へ統合しPPTX化する。中間JSONのリンクは出さない。"
     },
     "repair_emphasis.packed.001": {
       "section": "HIGHLIGHT_PLANNING",

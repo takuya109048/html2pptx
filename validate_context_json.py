@@ -67,7 +67,7 @@ def combined_output(result: subprocess.CompletedProcess[str]) -> str:
     return (result.stdout + result.stderr).strip()
 
 
-def check_loader_api(loader: Path, errors: list[str]) -> None:
+def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> None:
     start_result = run_loader(loader, "start", "turn_b_yes")
     start_text = combined_output(start_result)
     if start_result.returncode != 0 or "NEXT 002/" not in start_text:
@@ -89,9 +89,21 @@ def check_loader_api(loader: Path, errors: list[str]) -> None:
     if status_result.returncode != 0 or "STATUS turn_b_yes NEXT 003/" not in status_text:
         errors.append(f"loader status failed: {status_text[:200]}")
 
-    get_result = run_loader(loader, "get", "slide_iteration_gate.001")
+    get_chunk_id = next(
+        (
+            chunk_id
+            for phase_data in data.get("phases", {}).values()
+            for chunk_id in phase_data.get("chunks", [])
+        ),
+        None,
+    )
+    if not get_chunk_id:
+        errors.append("loader get failed: no chunk ids available")
+        return
+
+    get_result = run_loader(loader, "get", get_chunk_id)
     get_text = combined_output(get_result)
-    if get_result.returncode != 0 or "SLIDE_ITERATION_GATE" not in get_text:
+    if get_result.returncode != 0 or f"[{get_chunk_id}]" not in get_text:
         errors.append(f"loader get failed: {get_text[:200]}")
     if len(get_text) > OUTPUT_LIMIT:
         errors.append(f"loader get output {len(get_text)}>{OUTPUT_LIMIT}")
@@ -200,7 +212,7 @@ def main() -> int:
         errors.append(f"loader validate output {len(loader_text)}>{OUTPUT_LIMIT}")
     else:
         ok(loader_text)
-        check_loader_api(loader, errors)
+        check_loader_api(loader, data, errors)
 
     if catalog_loader.exists():
         catalog_result = subprocess.run(
