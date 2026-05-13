@@ -52,20 +52,18 @@ root.summaryは必須である。
 slides配列には本文スライドだけを書く。表紙、サマリー、目次は入れない。
 slides.titleは目次小見出しであり、名詞句か体言止めにする。主張や示唆はmessageへ移す。
 layoutごとの必須blocks名を守る。独自keyは作らない。
-テンプレート適合より読者理解を優先する。少しでも型にはめた感が出る場合は、plain_1col、plain_2col、画像説明用plain_2colへ逃がすか、直前に背景スライドを追加する。
-nanobanana2 Yesでも、画像やアイコンが理解を助けない場合は本文slidesにplain_1colを使ってよい。
+nanobanana2 Yesでは本文slidesにplain_1colを使わない。
 Markdownデッキ記法、メタテーブル、フェンス、HTML改行タグ、文字化けを入れない。
 
 生成時の内部順序:
 1. 詳細コンテキストをDONEまで読む。
 2. 原文を詳細原稿へ内部展開する。ただし原文にない固有数値、事例名、実績、専門用語は作らない。
 3. スライド構成とsectionを決める。本文スライドが4枚以上なら、全sectionが1枚ずつで終わる構成にしない。
-4. 各スライドで「この構造が突然出ても背景、理由、判断軸が分かるか」を確認し、無理があればplain/image/背景スライドへ変更する。
-5. 各スライド本文を書く前に太字スキムラインを内部設計する。
-6. DECK_SOURCE_JSONを書く。
-7. FINAL_SELF_CHECK相当の目視点検を行い、必要なら本文を直す。
-8. deck_source_to_json.pyをstrict系オプション付きで実行する。
-9. strictエラーが出たら、該当repairフェーズをDONEまで読み、JSONを修復して再実行する。
+4. 各スライド本文を書く前に太字スキムラインを内部設計する。
+5. DECK_SOURCE_JSONを書く。
+6. FINAL_SELF_CHECK相当の目視点検を行い、必要なら本文を直す。
+7. deck_source_to_json.pyをstrict系オプション付きで実行する。
+8. strictエラーが出たら、該当repairフェーズをDONEまで読み、JSONを修復して再実行する。
 
 変換出力:
 ユーザーへ提示するのはdeck_source.jsonとpptxだけである。slides.jsonは中間生成物として扱い、ダウンロードリンクを出さない。

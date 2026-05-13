@@ -5,11 +5,11 @@
     "SLIDES": [
       {
         "layout": "cover",
-        "title":       "タイトル",
+        "title": "タイトル",
         "affiliation": "所属",
-        "presenter":   "発表者名",
-        "date":        "日付",
-        "bg":          "background.png"
+        "presenter": "発表者名",
+        "date": "日付",
+        "bg": "background.png"
       }
     ]
   },
@@ -22,27 +22,55 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.75, 0.25],
-        "grid": [
-          [
-            {
-              "type": "table",
-              "head": ["見出し1", "見出し2", "見出し3", "見出し4"],
-              "rows": [
-                ["テキスト", "テキスト", "テキスト", "テキスト"],
-                ["テキスト", "テキスト", "テキスト", "テキスト"],
-                ["テキスト", "テキスト", "テキスト", "テキスト"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "table",
+            "head": [
+              "見出し1",
+              "見出し2",
+              "見出し3",
+              "見出し4"
+            ],
+            "rows": [
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
+              ],
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
+              ],
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
               ]
-            }
-          ],
-          [
-            {
-              "type": "conclusion",
-              "markdown": "結論テキスト"
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 9
+          },
+          {
+            "type": "conclusion",
+            "markdown": "結論テキスト",
+            "x": 0,
+            "y": 9,
+            "w": 24,
+            "h": 3
+          }
+        ]
       }
     ]
   },
@@ -55,23 +83,59 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            {
-              "type": "table",
-              "head": ["見出し1", "見出し2", "見出し3", "見出し4"],
-              "rows": [
-                ["テキスト", "テキスト", "テキスト", "テキスト"],
-                ["テキスト", "テキスト", "テキスト", "テキスト"],
-                ["テキスト", "テキスト", "テキスト", "テキスト"],
-                ["テキスト", "テキスト", "テキスト", "テキスト"],
-                ["テキスト", "テキスト", "テキスト", "テキスト"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "table",
+            "head": [
+              "見出し1",
+              "見出し2",
+              "見出し3",
+              "見出し4"
+            ],
+            "rows": [
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
+              ],
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
+              ],
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
+              ],
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
+              ],
+              [
+                "テキスト",
+                "テキスト",
+                "テキスト",
+                "テキスト"
               ]
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -84,15 +148,38 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 3,
+        "areas": [
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 8,
+            "h": 12
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 8,
+            "y": 0,
+            "w": 8,
+            "h": 12
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 16,
+            "y": 0,
+            "w": 8,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -105,13 +192,22 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "plain",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -124,14 +220,30 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 2,
+        "areas": [
+          {
+            "type": "plain",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 12
+          },
+          {
+            "type": "plain",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 12,
+            "y": 0,
+            "w": 12,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -144,20 +256,62 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.28, 0.72],
-        "grid": [
-          [
-            { "type": "step_head", "markdown": "ステップA" },
-            { "type": "step_head", "markdown": "ステップB" },
-            { "type": "step_head", "markdown": "ステップC" }
-          ],
-          [
-            { "type": "card", "markdown": "- テキスト" },
-            { "type": "card", "markdown": "- テキスト" },
-            { "type": "card", "markdown": "- テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 3,
+        "areas": [
+          {
+            "type": "step_head",
+            "markdown": "ステップA",
+            "x": 0,
+            "y": 0,
+            "w": 8,
+            "h": 3
+          },
+          {
+            "type": "step_head",
+            "markdown": "ステップB",
+            "x": 8,
+            "y": 0,
+            "w": 8,
+            "h": 3
+          },
+          {
+            "type": "step_head",
+            "markdown": "ステップC",
+            "x": 16,
+            "y": 0,
+            "w": 8,
+            "h": 3
+          },
+          {
+            "type": "card",
+            "markdown": "- テキスト",
+            "x": 0,
+            "y": 3,
+            "w": 8,
+            "h": 9
+          },
+          {
+            "type": "card",
+            "markdown": "- テキスト",
+            "x": 8,
+            "y": 3,
+            "w": 8,
+            "h": 9
+          },
+          {
+            "type": "card",
+            "markdown": "- テキスト",
+            "x": 16,
+            "y": 3,
+            "w": 8,
+            "h": 9
+          }
+        ]
       }
     ]
   },
@@ -170,22 +324,78 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.28, 0.72],
-        "grid": [
-          [
-            { "type": "step_head", "markdown": "ステップA" },
-            { "type": "step_head", "markdown": "ステップB" },
-            { "type": "step_head", "markdown": "ステップC" },
-            { "type": "step_head", "markdown": "ステップD" }
-          ],
-          [
-            { "type": "card", "markdown": "- テキスト" },
-            { "type": "card", "markdown": "- テキスト" },
-            { "type": "card", "markdown": "- テキスト" },
-            { "type": "card", "markdown": "- テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 4,
+        "areas": [
+          {
+            "type": "step_head",
+            "markdown": "ステップA",
+            "x": 0,
+            "y": 0,
+            "w": 6,
+            "h": 3
+          },
+          {
+            "type": "step_head",
+            "markdown": "ステップB",
+            "x": 6,
+            "y": 0,
+            "w": 6,
+            "h": 3
+          },
+          {
+            "type": "step_head",
+            "markdown": "ステップC",
+            "x": 12,
+            "y": 0,
+            "w": 6,
+            "h": 3
+          },
+          {
+            "type": "step_head",
+            "markdown": "ステップD",
+            "x": 18,
+            "y": 0,
+            "w": 6,
+            "h": 3
+          },
+          {
+            "type": "card",
+            "markdown": "- テキスト",
+            "x": 0,
+            "y": 3,
+            "w": 6,
+            "h": 9
+          },
+          {
+            "type": "card",
+            "markdown": "- テキスト",
+            "x": 6,
+            "y": 3,
+            "w": 6,
+            "h": 9
+          },
+          {
+            "type": "card",
+            "markdown": "- テキスト",
+            "x": 12,
+            "y": 3,
+            "w": 6,
+            "h": 9
+          },
+          {
+            "type": "card",
+            "markdown": "- テキスト",
+            "x": 18,
+            "y": 3,
+            "w": 6,
+            "h": 9
+          }
+        ]
       }
     ]
   },
@@ -198,21 +408,53 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.25, 0.08, 0.67],
-        "grid": [
-          [
-            { "type": "section", "span": 3, "markdown": "テキスト" }
-          ],
-          [
-            { "type": "arrow", "span": 3 }
-          ],
-          [
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 3,
+        "areas": [
+          {
+            "type": "section",
+            "markdown": "テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 3
+          },
+          {
+            "type": "arrow",
+            "x": 0,
+            "y": 3,
+            "w": 24,
+            "h": 1
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 4,
+            "w": 8,
+            "h": 8
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 8,
+            "y": 4,
+            "w": 8,
+            "h": 8
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 16,
+            "y": 4,
+            "w": 8,
+            "h": 8
+          }
+        ]
       }
     ]
   },
@@ -225,21 +467,53 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.65, 0.08, 0.27],
-        "grid": [
-          [
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
-          ],
-          [
-            { "type": "arrow", "span": 3 }
-          ],
-          [
-            { "type": "conclusion", "span": 3, "markdown": "結論テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 3,
+        "areas": [
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 8,
+            "h": 8
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 8,
+            "y": 0,
+            "w": 8,
+            "h": 8
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 16,
+            "y": 0,
+            "w": 8,
+            "h": 8
+          },
+          {
+            "type": "arrow",
+            "x": 0,
+            "y": 8,
+            "w": 24,
+            "h": 1
+          },
+          {
+            "type": "conclusion",
+            "markdown": "結論テキスト",
+            "x": 0,
+            "y": 9,
+            "w": 24,
+            "h": 3
+          }
+        ]
       }
     ]
   },
@@ -252,17 +526,38 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.35, 0.65],
-        "grid": [
-          [
-            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" }
-          ],
-          [
-            { "type": "image", "markdown": "画像", "span": 2 }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 2,
+        "areas": [
+          {
+            "type": "plain",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 4
+          },
+          {
+            "type": "plain",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 12,
+            "y": 0,
+            "w": 12,
+            "h": 4
+          },
+          {
+            "type": "image",
+            "markdown": "画像",
+            "x": 0,
+            "y": 4,
+            "w": 24,
+            "h": 8
+          }
+        ]
       }
     ]
   },
@@ -275,14 +570,31 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            { "type": "plain", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "image", "markdown": "画像", "gridN": 3 }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 2,
+        "areas": [
+          {
+            "type": "plain",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 12
+          },
+          {
+            "type": "image",
+            "markdown": "画像",
+            "gridN": 3,
+            "x": 12,
+            "y": 0,
+            "w": 12,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -295,21 +607,47 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            {
-              "type": "matrix",
-              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
-              "rows": [
-                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
-                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"],
-                ["行ラベル3", "内容A-3", "内容B-3", "内容C-3"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "matrix",
+            "head": [
+              "",
+              "列ラベルA",
+              "列ラベルB",
+              "列ラベルC"
+            ],
+            "rows": [
+              [
+                "行ラベル1",
+                "内容A-1",
+                "内容B-1",
+                "内容C-1"
+              ],
+              [
+                "行ラベル2",
+                "内容A-2",
+                "内容B-2",
+                "内容C-2"
+              ],
+              [
+                "行ラベル3",
+                "内容A-3",
+                "内容B-3",
+                "内容C-3"
               ]
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -322,21 +660,47 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            {
-              "type": "flow_matrix",
-              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
-              "rows": [
-                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
-                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"],
-                ["行ラベル3", "内容A-3", "内容B-3", "内容C-3"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "flow_matrix",
+            "head": [
+              "",
+              "列ラベルA",
+              "列ラベルB",
+              "列ラベルC"
+            ],
+            "rows": [
+              [
+                "行ラベル1",
+                "内容A-1",
+                "内容B-1",
+                "内容C-1"
+              ],
+              [
+                "行ラベル2",
+                "内容A-2",
+                "内容B-2",
+                "内容C-2"
+              ],
+              [
+                "行ラベル3",
+                "内容A-3",
+                "内容B-3",
+                "内容C-3"
               ]
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -349,21 +713,43 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            {
-              "type": "compare",
-              "head": ["", "左タイトル", "右タイトル"],
-              "rows": [
-                ["行ラベル1", "左テキスト", "右テキスト"],
-                ["行ラベル2", "左テキスト", "右テキスト"],
-                ["行ラベル3", "左テキスト", "右テキスト"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "compare",
+            "head": [
+              "",
+              "左タイトル",
+              "右タイトル"
+            ],
+            "rows": [
+              [
+                "行ラベル1",
+                "左テキスト",
+                "右テキスト"
+              ],
+              [
+                "行ラベル2",
+                "左テキスト",
+                "右テキスト"
+              ],
+              [
+                "行ラベル3",
+                "左テキスト",
+                "右テキスト"
               ]
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -376,20 +762,41 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            {
-              "type": "h_flow_matrix",
-              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
-              "rows": [
-                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
-                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "h_flow_matrix",
+            "head": [
+              "",
+              "列ラベルA",
+              "列ラベルB",
+              "列ラベルC"
+            ],
+            "rows": [
+              [
+                "行ラベル1",
+                "内容A-1",
+                "内容B-1",
+                "内容C-1"
+              ],
+              [
+                "行ラベル2",
+                "内容A-2",
+                "内容B-2",
+                "内容C-2"
               ]
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -402,21 +809,47 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            {
-              "type": "h_flow_matrix",
-              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC"],
-              "rows": [
-                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1"],
-                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2"],
-                ["行ラベル3", "内容A-3", "内容B-3", "内容C-3"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "h_flow_matrix",
+            "head": [
+              "",
+              "列ラベルA",
+              "列ラベルB",
+              "列ラベルC"
+            ],
+            "rows": [
+              [
+                "行ラベル1",
+                "内容A-1",
+                "内容B-1",
+                "内容C-1"
+              ],
+              [
+                "行ラベル2",
+                "内容A-2",
+                "内容B-2",
+                "内容C-2"
+              ],
+              [
+                "行ラベル3",
+                "内容A-3",
+                "内容B-3",
+                "内容C-3"
               ]
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -429,20 +862,44 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [1.0],
-        "grid": [
-          [
-            {
-              "type": "h_flow_matrix",
-              "head": ["", "列ラベルA", "列ラベルB", "列ラベルC", "列ラベルD"],
-              "rows": [
-                ["行ラベル1", "内容A-1", "内容B-1", "内容C-1", "内容D-1"],
-                ["行ラベル2", "内容A-2", "内容B-2", "内容C-2", "内容D-2"]
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 1,
+        "areas": [
+          {
+            "type": "h_flow_matrix",
+            "head": [
+              "",
+              "列ラベルA",
+              "列ラベルB",
+              "列ラベルC",
+              "列ラベルD"
+            ],
+            "rows": [
+              [
+                "行ラベル1",
+                "内容A-1",
+                "内容B-1",
+                "内容C-1",
+                "内容D-1"
+              ],
+              [
+                "行ラベル2",
+                "内容A-2",
+                "内容B-2",
+                "内容C-2",
+                "内容D-2"
               ]
-            }
-          ]
-        ],
-        "logo": "logo.png"
+            ],
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 12
+          }
+        ]
       }
     ]
   },
@@ -455,18 +912,46 @@
           "title": "タイトル",
           "message": ""
         },
-        "rowHeightRatios": [0.25, 0.75],
-        "grid": [
-          [
-            { "type": "section", "span": 3, "markdown": "テキスト" }
-          ],
-          [
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" },
-            { "type": "card", "markdown": "## 見出し\n\n- テキスト" }
-          ]
-        ],
-        "logo": "logo.png"
+        "logo": "logo.png",
+        "paperGrid": {
+          "cols": 24,
+          "rows": 12
+        },
+        "backgroundColumns": 3,
+        "areas": [
+          {
+            "type": "section",
+            "markdown": "テキスト",
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 3
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 0,
+            "y": 3,
+            "w": 8,
+            "h": 9
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 8,
+            "y": 3,
+            "w": 8,
+            "h": 9
+          },
+          {
+            "type": "card",
+            "markdown": "## 見出し\n\n- テキスト",
+            "x": 16,
+            "y": 3,
+            "w": 8,
+            "h": 9
+          }
+        ]
       }
     ]
   }

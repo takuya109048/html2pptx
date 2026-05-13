@@ -37,55 +37,59 @@ const SLIDES = [
       "title": "タイトル",
       "message": ""
     },
-    "rowHeightRatios": [
-      1.0
-    ],
-    "grid": [
-      [
-        {
-          "type": "table",
-          "head": [
-            "見出し1",
-            "見出し2",
-            "見出し3",
-            "見出し4"
-          ],
-          "rows": [
-            [
-              "テキスト",
-              "テキスト",
-              "テキスト",
-              "テキスト"
-            ],
-            [
-              "テキスト",
-              "テキスト",
-              "テキスト",
-              "テキスト"
-            ],
-            [
-              "テキスト",
-              "テキスト",
-              "テキスト",
-              "テキスト"
-            ],
-            [
-              "テキスト",
-              "テキスト",
-              "テキスト",
-              "テキスト"
-            ],
-            [
-              "テキスト",
-              "テキスト",
-              "テキスト",
-              "テキスト"
-            ]
-          ]
-        }
-      ]
-    ],
     "logo": "logo.png",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "table",
+        "head": [
+          "見出し1",
+          "見出し2",
+          "見出し3",
+          "見出し4"
+        ],
+        "rows": [
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
     "page": 1
   }
 ];
@@ -93,7 +97,7 @@ const DESIGN = {
   "COLORS": {
     "headerBg": "4A4A4A",
     "headerText": "FFFFFF",
-    "surface": "F5F5F5",
+    "surface": "FFFFFF",
     "text": "333333",
     "textMuted": "888888",
     "border": "E0E0E0",
@@ -532,37 +536,52 @@ const D = (() => {
     slide.appendChild(headerEl);
 
     // ── グリッド計算 ──
-    const grid = sd.grid || [];
-    const numRows = grid.length;
-    const numCols = Math.max(...grid.map(row =>
-      row.reduce((sum, cell) => sum + (cell.span || 1), 0)
-    ));
-
     const mainX = D.mainPadX;
     const mainW = D.slideW - D.mainPadX * 2;
     const contentY = D.headerH + D.mainPadY;
     const contentH = D.footerY - D.headerH - D.mainPadY * 2;
     const gap = D.gridGap;
 
-    const ratios = sd.rowHeightRatios || Array(numRows).fill(1 / numRows);
-    const rowHeights = ratios.map(r => contentH * r);
+    function computePaperCells() {
+      const paper = sd.paperGrid || {};
+      const cols = Number(paper.cols || 24);
+      const rows = Number(paper.rows || 12);
+      const areas = Array.isArray(sd.areas) ? sd.areas : [];
+      const unitW = (mainW - gap * (cols + 1)) / cols;
+      const unitH = (contentH - gap * (rows + 1)) / rows;
+      const result = areas.map((cell, index) => {
+        const x = Number(cell.x || 0);
+        const y = Number(cell.y || 0);
+        const w = Number(cell.w || 1);
+        const h = Number(cell.h || 1);
+        const next = areas[index + 1] || null;
+        return {
+          cell,
+          cx: mainX + gap + x * (unitW + gap),
+          cy: contentY + gap + y * (unitH + gap),
+          cw: unitW * w + gap * Math.max(0, w - 1),
+          ch: unitH * h + gap * Math.max(0, h - 1),
+          col: x, span: w, numCols: cols,
+          nextCell: next && Number(next.y || 0) === y ? next : null,
+        };
+      });
+      return { cells: result, numCols: cols };
+    }
 
-    const unitW = (mainW - gap * (numCols + 1)) / numCols;
-    const cellX = (col) => mainX + gap + col * (unitW + gap);
-    const cellW = (span) => unitW * span + gap * (span - 1);
-    const rowTop = (row) => contentY + rowHeights.slice(0, row).reduce((a, b) => a + b, 0);
-    const cellY = (row) => rowTop(row) + (row === 0 ? gap : gap / 2);
-    const cellH = (row) => rowHeights[row] - (row === 0 ? gap : gap / 2) - (row === numRows - 1 ? gap : gap / 2);
+    const computed = computePaperCells();
+    const layoutCells = computed.cells;
+    const numCols = computed.numCols;
 
     // ── グリッド背景（plain セルのみの場合はスキップ） ──
-    const hasNonPlain = grid.some(row => row.some(cell => cell.type !== "plain"));
+    const hasNonPlain = layoutCells.some(({ cell }) => cell.type !== "plain");
     if (hasNonPlain) {
       const areaBgKeys = ["area1Bg", "area2Bg", "area3Bg"];
-      for (let col = 0; col < numCols; col++) {
+      const bgCols = sd.backgroundColumns || Math.min(4, new Set(layoutCells.map(({ col }) => col)).size || 1);
+      for (let col = 0; col < bgCols; col++) {
         slide.appendChild(el("div", {
-          left: D.px(mainX + col * (mainW / numCols)),
+          left: D.px(mainX + col * (mainW / bgCols)),
           top: D.py(contentY),
-          width: D.px(mainW / numCols),
+          width: D.px(mainW / bgCols),
           height: D.py(contentH),
           background: "#" + D.COLORS[areaBgKeys[col] || "area1Bg"],
         }));
@@ -570,13 +589,8 @@ const D = (() => {
     }
 
     // ── セルの描画 ──
-    for (let row = 0; row < numRows; row++) {
-      const cells = grid[row];
-      let col = 0;
-      for (const cell of cells) {
-        const span = cell.span || 1;
-        const cx = cellX(col), cy = cellY(row);
-        const cw = cellW(span), ch = cellH(row);
+    for (const layoutCell of layoutCells) {
+        const { cell, cx, cy, cw, ch, col, span, nextCell } = layoutCell;
         const padX = D.cardPadX, padY = D.cardPadY;
 
         if (cell.type === "section") {
@@ -862,7 +876,6 @@ const D = (() => {
           const pPadX = D.headerPadX, pPadY = D.mainPadY;
           addMdBox("md-plain", cx + pPadX, cy + pPadY, cw - pPadX * 2, ch - pPadY * 2, cell.markdown || "");
           // 隣接セル間の縦仕切り線（隣が image の場合はボーダーが既にあるので描かない）
-          const nextCell = cells[cells.indexOf(cell) + 1];
           if (col + span < numCols && !(nextCell && nextCell.type === "image")) {
             slide.appendChild(el("div", {
               left: D.px(cx + cw + gap / 2), top: D.py(cy),
@@ -919,8 +932,6 @@ const D = (() => {
             addMdBox("md-card", cx + padX, bodyY, cw - padX * 2, bodyH, bodyMd);
           }
         }
-        col += span;
-      }
     }
 
     // ── フッター ──

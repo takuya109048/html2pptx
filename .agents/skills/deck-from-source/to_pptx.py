@@ -631,34 +631,32 @@ def _set_box_text_frame(box, cell_text, size, bold, color_hex):
 # ── グリッド計算 ────────────────────────────────────────
 
 def compute_cells(sd):
-    """grid定義からセル位置を計算（JSエンジンと同一公式）"""
-    mainX  = L["mainPadX"]
-    mainY  = L["headerH"] + L["mainPadY"]
-    mainW  = L["slideW"]  - L["mainPadX"] * 2
-    mainH  = L["footerY"] - mainY - L["mainPadY"]
-    gap    = L["gridGap"]
-    grid   = sd["grid"]
-    numRows = len(grid)
-    numCols = max(sum(c.get("span", 1) for c in row) for row in grid)
-    ratios  = sd.get("rowHeightRatios", [1.0 / numRows] * numRows)
-    rowHeights = [mainH * r for r in ratios]
-
-    def rowTop(r):
-        return mainY + sum(rowHeights[:r])
-
-    unitW = (mainW - gap * (numCols + 1)) / numCols
+    paper = sd.get("paperGrid", {})
+    cols = int(paper.get("cols", 24))
+    rows = int(paper.get("rows", 12))
+    areas = sd.get("areas", [])
+    if cols <= 0 or rows <= 0 or not isinstance(areas, list):
+        return []
+    mainX = L["mainPadX"]
+    mainY = L["headerH"] + L["mainPadY"]
+    mainW = L["slideW"] - L["mainPadX"] * 2
+    mainH = L["footerY"] - mainY - L["mainPadY"]
+    gap = L["gridGap"]
+    unitW = (mainW - gap * (cols + 1)) / cols
+    unitH = (mainH - gap * (rows + 1)) / rows
     cells = []
-    for ri, row in enumerate(grid):
-        col = 0
-        for cell in row:
-            span = cell.get("span", 1)
-            cx = mainX + gap + col * (unitW + gap)
-            cy = rowTop(ri) + (gap if ri == 0 else gap / 2)
-            cw = unitW * span + gap * (span - 1)
-            ch = rowHeights[ri] - (gap if ri == 0 else gap / 2) \
-                                - (gap if ri == numRows - 1 else gap / 2)
-            cells.append({"cell": cell, "x": cx, "y": cy, "w": cw, "h": ch})
-            col += span
+    for cell in areas:
+        if not isinstance(cell, dict):
+            continue
+        x = int(cell.get("x", 0))
+        y = int(cell.get("y", 0))
+        w = int(cell.get("w", 1))
+        h = int(cell.get("h", 1))
+        cx = mainX + gap + x * (unitW + gap)
+        cy = mainY + gap + y * (unitH + gap)
+        cw = unitW * w + gap * max(0, w - 1)
+        ch = unitH * h + gap * max(0, h - 1)
+        cells.append({"cell": cell, "x": cx, "y": cy, "w": cw, "h": ch})
     return cells
 
 
@@ -1165,7 +1163,7 @@ def main():
                     render_footer(slide, sd, total_slides)
                 else:
                     render_header(slide, sd)
-                    if "grid" in sd:
+                    if "areas" in sd:
                         for ci in compute_cells(sd):
                             render_cell(slide, ci)
                     render_footer(slide, sd, total_slides)

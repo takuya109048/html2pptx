@@ -34,545 +34,870 @@
 const SLIDES = [
   {
     "layout": "cover",
-    "title": "スライドタイトル A-01 / **Title** *Placeholder*",
-    "affiliation": "所属 X-01 / Affiliation",
-    "presenter": "山田 花子",
-    "date": "Date Z-01 / 2026-00-00",
-    "bg": "background.png",
-    "note": "ノートテキスト。**太字**、*斜体*、`コード`のデモ用サンプルです。",
+    "title": "タイトル",
+    "affiliation": "所属",
+    "presenter": "発表者名",
+    "date": "日付",
+    "bg": "background.png"
+  },
+  {
+    "header": {
+      "title": "タイトル",
+      "message": ""
+    },
+    "logo": "logo.png",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "table",
+        "head": [
+          "見出し1",
+          "見出し2",
+          "見出し3",
+          "見出し4"
+        ],
+        "rows": [
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 9
+      },
+      {
+        "type": "conclusion",
+        "markdown": "結論テキスト",
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 3
+      }
+    ],
     "page": 1
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      0.75,
-      0.25
-    ],
-    "grid": [
-      [
-        {
-          "type": "table",
-          "head": [
-            "見出し X-01",
-            "見出し X-02",
-            "見出し X-03",
-            "見出し X-04"
-          ],
-          "rows": [
-            [
-              "テキスト A-01",
-              "**テキスト B-01**",
-              "*テキスト C-01*",
-              "テキスト D-01"
-            ],
-            [
-              "テキスト A-02",
-              "**テキスト B-02**",
-              "*テキスト C-02*",
-              "`テキスト D-02`"
-            ],
-            [
-              "テキスト A-03",
-              "**テキスト B-03**",
-              "*テキスト C-03*",
-              "~~テキスト D-03~~"
-            ],
-            [
-              "テキスト A-04",
-              "**テキスト B-04**",
-              "*テキスト C-04*",
-              "テキスト D-04"
-            ]
-          ]
-        }
-      ],
-      [
-        {
-          "type": "conclusion",
-          "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "table_conclusion",
-    "note": "table_conclusionレイアウトのデモです。表と結論を組み合わせます。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "table",
+        "head": [
+          "見出し1",
+          "見出し2",
+          "見出し3",
+          "見出し4"
+        ],
+        "rows": [
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ],
+          [
+            "テキスト",
+            "テキスト",
+            "テキスト",
+            "テキスト"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
     "page": 2
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      1.0
-    ],
-    "grid": [
-      [
-        {
-          "type": "table",
-          "head": [
-            "見出し X-01",
-            "見出し X-02",
-            "見出し X-03",
-            "見出し X-04"
-          ],
-          "rows": [
-            [
-              "テキスト A-01",
-              "**テキスト B-01**",
-              "*テキスト C-01*",
-              "テキスト D-01"
-            ],
-            [
-              "テキスト A-02",
-              "**テキスト B-02**",
-              "*テキスト C-02*",
-              "`テキスト D-02`"
-            ],
-            [
-              "テキスト A-03",
-              "**テキスト B-03**",
-              "*テキスト C-03*",
-              "~~テキスト D-03~~"
-            ],
-            [
-              "テキスト A-04",
-              "**テキスト B-04**",
-              "*テキスト C-04*",
-              "テキスト D-04"
-            ],
-            [
-              "テキスト A-05",
-              "**テキスト B-05**",
-              "*テキスト C-05*",
-              "テキスト D-05"
-            ]
-          ]
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "table",
-    "note": "tableレイアウトのデモです。表のみのスライドです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 3,
+    "areas": [
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 12
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 12
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 12
+      }
+    ],
     "page": 3
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` ~~Placeholder~~"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      1.0
-    ],
-    "grid": [
-      [
-        {
-          "type": "card",
-          "markdown": "### 見出し C-01 / **Heading**\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-02 / **Heading**\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-03 / **Heading**\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "list_3card",
-    "note": "list_3cardレイアウトのデモです。横並び3カードのサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "plain",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
     "page": 4
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      1.0
-    ],
-    "grid": [
-      [
-        {
-          "type": "plain",
-          "markdown": "### 見出し H2 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**と*斜体*）\n- 箇条書き 第2項目（`コード`と~~取り消し~~）\n\n1. 番号リスト 第1項目\n2. 番号リスト 第2項目"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "plain_1col",
-    "note": "plain_1colレイアウトのデモです。1カラムテキストのサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 2,
+    "areas": [
+      {
+        "type": "plain",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 12
+      },
+      {
+        "type": "plain",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 12
+      }
+    ],
     "page": 5
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      1.0
-    ],
-    "grid": [
-      [
-        {
-          "type": "plain",
-          "markdown": "### 見出し H2-左 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n1. 番号リスト 第1項目（*斜体*）\n   1. サブ第2レベル\n2. 番号リスト 第2項目（~~取り消し~~）"
-        },
-        {
-          "type": "plain",
-          "markdown": "### 見出し H2-右 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n- 箇条書き 第1項目\n  - ネスト第2レベル（**太字**）\n- 箇条書き 第2項目（`コード`）"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "plain_2col",
-    "note": "plain_2colレイアウトのデモです。2カラムテキストのサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 3,
+    "areas": [
+      {
+        "type": "step_head",
+        "markdown": "ステップA",
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 3
+      },
+      {
+        "type": "step_head",
+        "markdown": "ステップB",
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 3
+      },
+      {
+        "type": "step_head",
+        "markdown": "ステップC",
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 3
+      },
+      {
+        "type": "card",
+        "markdown": "- テキスト",
+        "x": 0,
+        "y": 3,
+        "w": 8,
+        "h": 9
+      },
+      {
+        "type": "card",
+        "markdown": "- テキスト",
+        "x": 8,
+        "y": 3,
+        "w": 8,
+        "h": 9
+      },
+      {
+        "type": "card",
+        "markdown": "- テキスト",
+        "x": 16,
+        "y": 3,
+        "w": 8,
+        "h": 9
+      }
+    ],
     "page": 6
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* ~~Text~~ Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      0.28,
-      0.72
-    ],
-    "grid": [
-      [
-        {
-          "type": "step_head",
-          "markdown": "ステップA",
-          "label": "step-a"
-        },
-        {
-          "type": "step_head",
-          "markdown": "ステップB",
-          "label": "step-b"
-        },
-        {
-          "type": "step_head",
-          "markdown": "ステップC",
-          "label": "step-c"
-        }
-      ],
-      [
-        {
-          "type": "card",
-          "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "- **太字 bold** 第1項目 B-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "- **太字 bold** 第1項目 C-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "flow_3step",
-    "note": "flow_3stepレイアウトのデモです。3ステップフローのサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 4,
+    "areas": [
+      {
+        "type": "step_head",
+        "markdown": "ステップA",
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      },
+      {
+        "type": "step_head",
+        "markdown": "ステップB",
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      },
+      {
+        "type": "step_head",
+        "markdown": "ステップC",
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      },
+      {
+        "type": "step_head",
+        "markdown": "ステップD",
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      },
+      {
+        "type": "card",
+        "markdown": "- テキスト",
+        "x": 0,
+        "y": 3,
+        "w": 6,
+        "h": 9
+      },
+      {
+        "type": "card",
+        "markdown": "- テキスト",
+        "x": 6,
+        "y": 3,
+        "w": 6,
+        "h": 9
+      },
+      {
+        "type": "card",
+        "markdown": "- テキスト",
+        "x": 12,
+        "y": 3,
+        "w": 6,
+        "h": 9
+      },
+      {
+        "type": "card",
+        "markdown": "- テキスト",
+        "x": 18,
+        "y": 3,
+        "w": 6,
+        "h": 9
+      }
+    ],
     "page": 7
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      0.28,
-      0.72
-    ],
-    "grid": [
-      [
-        {
-          "type": "step_head",
-          "markdown": "ステップA",
-          "label": "step-a"
-        },
-        {
-          "type": "step_head",
-          "markdown": "ステップB",
-          "label": "step-b"
-        },
-        {
-          "type": "step_head",
-          "markdown": "ステップC",
-          "label": "step-c"
-        },
-        {
-          "type": "step_head",
-          "markdown": "ステップD",
-          "label": "step-d"
-        }
-      ],
-      [
-        {
-          "type": "card",
-          "markdown": "- **太字 bold** 第1項目 A-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "- **太字 bold** 第1項目 B-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "- **太字 bold** 第1項目 C-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "flow_4step",
-    "note": "flow_4stepレイアウトのデモです。4ステップフローのサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 3,
+    "areas": [
+      {
+        "type": "section",
+        "markdown": "テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 3
+      },
+      {
+        "type": "arrow",
+        "x": 0,
+        "y": 3,
+        "w": 24,
+        "h": 1
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 4,
+        "w": 8,
+        "h": 8
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 8,
+        "y": 4,
+        "w": 8,
+        "h": 8
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 16,
+        "y": 4,
+        "w": 8,
+        "h": 8
+      }
+    ],
     "page": 8
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      0.25,
-      0.08,
-      0.67
-    ],
-    "grid": [
-      [
-        {
-          "type": "section",
-          "span": 3,
-          "markdown": "**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
-        }
-      ],
-      [
-        {
-          "type": "arrow",
-          "span": 3
-        }
-      ],
-      [
-        {
-          "type": "card",
-          "markdown": "### 見出し C-01 / **Heading**\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-02 / **Heading**\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-03 / **Heading**\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "diffuse_3card",
-    "note": "diffuse_3cardレイアウトのデモです。共通方針から3カードへ拡散するサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 3,
+    "areas": [
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      {
+        "type": "arrow",
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 1
+      },
+      {
+        "type": "conclusion",
+        "markdown": "結論テキスト",
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 3
+      }
+    ],
     "page": 9
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      0.65,
-      0.08,
-      0.27
-    ],
-    "grid": [
-      [
-        {
-          "type": "card",
-          "markdown": "### 見出し C-01 / **Heading**\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-02 / **Heading**\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-03 / **Heading**\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        }
-      ],
-      [
-        {
-          "type": "arrow",
-          "span": 3
-        }
-      ],
-      [
-        {
-          "type": "conclusion",
-          "span": 3,
-          "markdown": "**結論テキスト bold**。*補足 italic*、~~旧情報~~ → 更新済み、`参照 XYZ-001`。"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "converge_3card",
-    "note": "converge_3cardレイアウトのデモです。3カードから結論へ収束するサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 2,
+    "areas": [
+      {
+        "type": "plain",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 4
+      },
+      {
+        "type": "plain",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 4
+      },
+      {
+        "type": "image",
+        "markdown": "画像",
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 8
+      }
+    ],
     "page": 10
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      0.35,
-      0.65
-    ],
-    "grid": [
-      [
-        {
-          "type": "plain",
-          "markdown": "### 見出し H2-左 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
-        },
-        {
-          "type": "plain",
-          "markdown": "### 見出し H2-右 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
-        }
-      ],
-      [
-        {
-          "type": "image",
-          "markdown": "**画像プレースホルダー** / *Image* `Placeholder`",
-          "span": 2
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "plain_image_row",
-    "note": "plain_image_rowレイアウトのデモです。2カラムテキスト＋画像（縦）のサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 2,
+    "areas": [
+      {
+        "type": "plain",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 12
+      },
+      {
+        "type": "image",
+        "markdown": "画像",
+        "gridN": 3,
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 12
+      }
+    ],
     "page": 11
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      1.0
-    ],
-    "grid": [
-      [
-        {
-          "type": "plain",
-          "markdown": "### 見出し H2 / **Heading**\n通常テキスト。**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。\n\n- 箇条書き 第1項目（**太字**）\n- 箇条書き 第2項目（*斜体*）\n- 箇条書き 第3項目（`コード`）"
-        },
-        {
-          "type": "image",
-          "markdown": "**画像プレースホルダー** / *Image* `Placeholder`",
-          "gridN": 3
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "plain_image_col",
-    "note": "plain_image_colレイアウトのデモです。テキスト＋画像（横）のサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "matrix",
+        "head": [
+          "",
+          "列ラベルA",
+          "列ラベルB",
+          "列ラベルC"
+        ],
+        "rows": [
+          [
+            "行ラベル1",
+            "内容A-1",
+            "内容B-1",
+            "内容C-1"
+          ],
+          [
+            "行ラベル2",
+            "内容A-2",
+            "内容B-2",
+            "内容C-2"
+          ],
+          [
+            "行ラベル3",
+            "内容A-3",
+            "内容B-3",
+            "内容C-3"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
     "page": 12
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      1.0
-    ],
-    "grid": [
-      [
-        {
-          "type": "matrix",
-          "head": [
-            "",
-            "列ラベルA / Col A",
-            "列ラベルB / Col B",
-            "列ラベルC / Col C"
-          ],
-          "rows": [
-            [
-              "行ラベル1 / Row 1",
-              "内容A-1",
-              "内容B-1",
-              "内容C-1"
-            ],
-            [
-              "行ラベル2 / Row 2",
-              "内容A-2",
-              "内容B-2",
-              "内容C-2"
-            ],
-            [
-              "行ラベル3 / Row 3",
-              "内容A-3",
-              "内容B-3",
-              "内容C-3"
-            ]
-          ]
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "matrix_3x3",
-    "note": "matrix_3x3レイアウトのデモです。3×3マトリックスのサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "flow_matrix",
+        "head": [
+          "",
+          "列ラベルA",
+          "列ラベルB",
+          "列ラベルC"
+        ],
+        "rows": [
+          [
+            "行ラベル1",
+            "内容A-1",
+            "内容B-1",
+            "内容C-1"
+          ],
+          [
+            "行ラベル2",
+            "内容A-2",
+            "内容B-2",
+            "内容C-2"
+          ],
+          [
+            "行ラベル3",
+            "内容A-3",
+            "内容B-3",
+            "内容C-3"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
     "page": 13
   },
   {
     "header": {
-      "title": "スライドタイトル A-01 / **Slide** *Title* Placeholder",
-      "message": "サブタイトルテキスト B-02 / *Subtitle* `Text` Placeholder"
+      "title": "タイトル",
+      "message": ""
     },
-    "rowHeightRatios": [
-      0.25,
-      0.75
-    ],
-    "grid": [
-      [
-        {
-          "type": "section",
-          "span": 3,
-          "markdown": "**太字 bold**、*斜体 italic*、~~取り消し線~~、`コード code`。"
-        }
-      ],
-      [
-        {
-          "type": "card",
-          "markdown": "### 見出し C-01 / **Heading**\n- **太字 bold** 第1項目 D-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-02 / **Heading**\n- **太字 bold** 第1項目 E-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        },
-        {
-          "type": "card",
-          "markdown": "### 見出し C-03 / **Heading**\n- **太字 bold** 第1項目 F-01\n- *斜体 italic* 第2項目（`コード`）\n- ~~取り消し~~ → 更新 第3項目"
-        }
-      ]
-    ],
     "logo": "logo.png",
-    "layout": "bg_3card",
-    "note": "bg_3cardレイアウトのデモです。背景ボックス＋横並び3カードのサンプルです。",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "compare",
+        "head": [
+          "",
+          "左タイトル",
+          "右タイトル"
+        ],
+        "rows": [
+          [
+            "行ラベル1",
+            "左テキスト",
+            "右テキスト"
+          ],
+          [
+            "行ラベル2",
+            "左テキスト",
+            "右テキスト"
+          ],
+          [
+            "行ラベル3",
+            "左テキスト",
+            "右テキスト"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
     "page": 14
+  },
+  {
+    "header": {
+      "title": "タイトル",
+      "message": ""
+    },
+    "logo": "logo.png",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "h_flow_matrix",
+        "head": [
+          "",
+          "列ラベルA",
+          "列ラベルB",
+          "列ラベルC"
+        ],
+        "rows": [
+          [
+            "行ラベル1",
+            "内容A-1",
+            "内容B-1",
+            "内容C-1"
+          ],
+          [
+            "行ラベル2",
+            "内容A-2",
+            "内容B-2",
+            "内容C-2"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
+    "page": 15
+  },
+  {
+    "header": {
+      "title": "タイトル",
+      "message": ""
+    },
+    "logo": "logo.png",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "h_flow_matrix",
+        "head": [
+          "",
+          "列ラベルA",
+          "列ラベルB",
+          "列ラベルC"
+        ],
+        "rows": [
+          [
+            "行ラベル1",
+            "内容A-1",
+            "内容B-1",
+            "内容C-1"
+          ],
+          [
+            "行ラベル2",
+            "内容A-2",
+            "内容B-2",
+            "内容C-2"
+          ],
+          [
+            "行ラベル3",
+            "内容A-3",
+            "内容B-3",
+            "内容C-3"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
+    "page": 16
+  },
+  {
+    "header": {
+      "title": "タイトル",
+      "message": ""
+    },
+    "logo": "logo.png",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 1,
+    "areas": [
+      {
+        "type": "h_flow_matrix",
+        "head": [
+          "",
+          "列ラベルA",
+          "列ラベルB",
+          "列ラベルC",
+          "列ラベルD"
+        ],
+        "rows": [
+          [
+            "行ラベル1",
+            "内容A-1",
+            "内容B-1",
+            "内容C-1",
+            "内容D-1"
+          ],
+          [
+            "行ラベル2",
+            "内容A-2",
+            "内容B-2",
+            "内容C-2",
+            "内容D-2"
+          ]
+        ],
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 12
+      }
+    ],
+    "page": 17
+  },
+  {
+    "header": {
+      "title": "タイトル",
+      "message": ""
+    },
+    "logo": "logo.png",
+    "paperGrid": {
+      "cols": 24,
+      "rows": 12
+    },
+    "backgroundColumns": 3,
+    "areas": [
+      {
+        "type": "section",
+        "markdown": "テキスト",
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 3
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 0,
+        "y": 3,
+        "w": 8,
+        "h": 9
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 8,
+        "y": 3,
+        "w": 8,
+        "h": 9
+      },
+      {
+        "type": "card",
+        "markdown": "## 見出し\n\n- テキスト",
+        "x": 16,
+        "y": 3,
+        "w": 8,
+        "h": 9
+      }
+    ],
+    "page": 18
   }
 ];
 const DESIGN = {
   "COLORS": {
     "headerBg": "4A4A4A",
     "headerText": "FFFFFF",
-    "surface": "F5F5F5",
+    "surface": "FFFFFF",
     "text": "333333",
     "textMuted": "888888",
     "border": "E0E0E0",
@@ -691,8 +1016,8 @@ const DESIGN = {
 
 const D = (() => {
   const L = DESIGN.LAYOUT;
-  const px = (inch) => (inch / L.slideW * 100) + "%";
-  const py = (inch) => (inch / L.slideH * 100) + "%";
+  const px = (inch) => (inch / L.slideW * 100) + "cqw";
+  const py = (inch) => (inch / L.slideW * 100) + "cqw";
   return { ...L, "COLORS": DESIGN.COLORS, "FONTS": DESIGN.FONTS, px, py };
 })();
 
@@ -745,7 +1070,7 @@ const D = (() => {
       font-size: ${ptToCqw(D.FONTS.bgTitle.size)};
       font-weight: 700; line-height: 1.3;
       margin-bottom: 0.4em; padding-bottom: 0.2em;
-      border-bottom: 1px solid #${D.COLORS.border};
+      border-bottom: ${pxToCqw(1)} solid #${D.COLORS.border};
     }
     .md-bg p {
       font-size: ${ptToCqw(D.FONTS.bgBody.size)};
@@ -764,7 +1089,7 @@ const D = (() => {
       font-size: ${ptToCqw(D.FONTS.conclTitle.size)};
       font-weight: 700; line-height: 1.3;
       margin-bottom: 0.35em; padding-bottom: 0.15em;
-      border-bottom: 1px solid #${D.COLORS.conclusionBorder};
+      border-bottom: ${pxToCqw(1)} solid #${D.COLORS.conclusionBorder};
     }
     .md-concl p {
       font-size: ${ptToCqw(D.FONTS.conclBody.size)};
@@ -844,9 +1169,32 @@ const D = (() => {
     .slide-matrix-item {
       background: #${D.COLORS.surface};
       color: #${D.COLORS.text};
-      font-size: ${ptToCqw(D.FONTS.cardBody.size)};
+      font-size: ${ptToCqw(D.FONTS.tableBody.size)};
       font-weight: 400;
       line-height: 1.6;
+    }
+    .slide-fmatrix-label {
+      position: relative;
+      overflow: hidden;
+    }
+    .slide-h-fmatrix-head {
+      position: relative;
+      overflow: hidden;
+    }
+    .slide-compare-left {
+      background: #${D.COLORS.bgBox};
+      color: #${D.COLORS.text};
+      font-size: ${ptToCqw(D.FONTS.tableBody.size)};
+      font-weight: 400;
+      line-height: 1.6;
+    }
+    .slide-compare-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: ${ptToCqw(D.FONTS.stepLabel.size)};
+      font-weight: 700;
+      color: #${D.COLORS.stepBorder};
     }
   `;
   document.head.appendChild(mdStyle);
@@ -856,7 +1204,7 @@ const D = (() => {
     slide.appendChild(el("div", {
       left: D.px(bx), top: D.py(by), width: D.px(bw), height: D.py(bh),
       background: "#" + bg,
-      borderWidth: opts.borderW || "1px", borderStyle: "solid", borderColor: "#" + border,
+      borderWidth: opts.borderW || pxToCqw(1), borderStyle: "solid", borderColor: "#" + border,
       ...(opts.radius   ? { borderRadius: opts.radius }  : {}),
       ...(opts.overflow ? { overflow:     opts.overflow } : {}),
     }));
@@ -897,7 +1245,7 @@ const D = (() => {
       bgImg.setAttribute("data-role", "element");
       Object.assign(bgImg.style, {
         position: "absolute", left: "0", top: "0",
-        width: "100%", height: "100%", objectFit: "cover",
+        width: D.px(D.slideW), height: D.px(D.slideH), objectFit: "cover",
       });
       slide.appendChild(bgImg);
 
@@ -919,7 +1267,7 @@ const D = (() => {
 
       slide.appendChild(el("div", {
         left: D.px(cx), top: D.py(divY),
-        width: D.px(divW), height: "1px",
+        width: D.px(divW), height: pxToCqw(1),
         background: "#" + D.COLORS.coverDivider,
       }));
 
@@ -988,37 +1336,52 @@ const D = (() => {
     slide.appendChild(headerEl);
 
     // ── グリッド計算 ──
-    const grid = sd.grid || [];
-    const numRows = grid.length;
-    const numCols = Math.max(...grid.map(row =>
-      row.reduce((sum, cell) => sum + (cell.span || 1), 0)
-    ));
-
     const mainX = D.mainPadX;
     const mainW = D.slideW - D.mainPadX * 2;
     const contentY = D.headerH + D.mainPadY;
     const contentH = D.footerY - D.headerH - D.mainPadY * 2;
     const gap = D.gridGap;
 
-    const ratios = sd.rowHeightRatios || Array(numRows).fill(1 / numRows);
-    const rowHeights = ratios.map(r => contentH * r);
+    function computePaperCells() {
+      const paper = sd.paperGrid || {};
+      const cols = Number(paper.cols || 24);
+      const rows = Number(paper.rows || 12);
+      const areas = Array.isArray(sd.areas) ? sd.areas : [];
+      const unitW = (mainW - gap * (cols + 1)) / cols;
+      const unitH = (contentH - gap * (rows + 1)) / rows;
+      const result = areas.map((cell, index) => {
+        const x = Number(cell.x || 0);
+        const y = Number(cell.y || 0);
+        const w = Number(cell.w || 1);
+        const h = Number(cell.h || 1);
+        const next = areas[index + 1] || null;
+        return {
+          cell,
+          cx: mainX + gap + x * (unitW + gap),
+          cy: contentY + gap + y * (unitH + gap),
+          cw: unitW * w + gap * Math.max(0, w - 1),
+          ch: unitH * h + gap * Math.max(0, h - 1),
+          col: x, span: w, numCols: cols,
+          nextCell: next && Number(next.y || 0) === y ? next : null,
+        };
+      });
+      return { cells: result, numCols: cols };
+    }
 
-    const unitW = (mainW - gap * (numCols + 1)) / numCols;
-    const cellX = (col) => mainX + gap + col * (unitW + gap);
-    const cellW = (span) => unitW * span + gap * (span - 1);
-    const rowTop = (row) => contentY + rowHeights.slice(0, row).reduce((a, b) => a + b, 0);
-    const cellY = (row) => rowTop(row) + (row === 0 ? gap : gap / 2);
-    const cellH = (row) => rowHeights[row] - (row === 0 ? gap : gap / 2) - (row === numRows - 1 ? gap : gap / 2);
+    const computed = computePaperCells();
+    const layoutCells = computed.cells;
+    const numCols = computed.numCols;
 
     // ── グリッド背景（plain セルのみの場合はスキップ） ──
-    const hasNonPlain = grid.some(row => row.some(cell => cell.type !== "plain"));
+    const hasNonPlain = layoutCells.some(({ cell }) => cell.type !== "plain");
     if (hasNonPlain) {
       const areaBgKeys = ["area1Bg", "area2Bg", "area3Bg"];
-      for (let col = 0; col < numCols; col++) {
+      const bgCols = sd.backgroundColumns || Math.min(4, new Set(layoutCells.map(({ col }) => col)).size || 1);
+      for (let col = 0; col < bgCols; col++) {
         slide.appendChild(el("div", {
-          left: D.px(mainX + col * (mainW / numCols)),
+          left: D.px(mainX + col * (mainW / bgCols)),
           top: D.py(contentY),
-          width: D.px(mainW / numCols),
+          width: D.px(mainW / bgCols),
           height: D.py(contentH),
           background: "#" + D.COLORS[areaBgKeys[col] || "area1Bg"],
         }));
@@ -1026,13 +1389,8 @@ const D = (() => {
     }
 
     // ── セルの描画 ──
-    for (let row = 0; row < numRows; row++) {
-      const cells = grid[row];
-      let col = 0;
-      for (const cell of cells) {
-        const span = cell.span || 1;
-        const cx = cellX(col), cy = cellY(row);
-        const cw = cellW(span), ch = cellH(row);
+    for (const layoutCell of layoutCells) {
+        const { cell, cx, cy, cw, ch, col, span, nextCell } = layoutCell;
         const padX = D.cardPadX, padY = D.cardPadY;
 
         if (cell.type === "section") {
@@ -1131,9 +1489,181 @@ const D = (() => {
           });
           slide.appendChild(wrap);
 
+        } else if (cell.type === "flow_matrix") {
+          const fmHead = Array.isArray(cell.head) && cell.head.length > 0 ? [cell.head] : [];
+          const fmDataRows = (cell.rows || []).filter(r => Array.isArray(r) && r.length > 0);
+          const allFmRows = [...fmHead, ...fmDataRows];
+          const numFmAllRows = allFmRows.length;
+          const numFmCols = Math.max(0, ...allFmRows.map(row => row.length));
+          if (numFmAllRows > 0 && numFmCols > 0) {
+            const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
+            wrap.className = "slide-matrix";
+            wrap.style.gridTemplateColumns = `repeat(${numFmCols}, minmax(0, 1fr))`;
+            wrap.style.gridTemplateRows = `repeat(${numFmAllRows}, minmax(0, 1fr))`;
+            const hasHead = fmHead.length > 0;
+            allFmRows.forEach((rowData, i) => {
+              const isHeadRow = hasHead && i === 0;
+              const clip = "polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%)";
+              for (let j = 0; j < numFmCols; j++) {
+                if (isHeadRow && j === 0) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-empty";
+                  wrap.appendChild(cellBox);
+                } else if (isHeadRow) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-colhead";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                } else if (j === 0) {
+                  const gridCell = document.createElement("div");
+                  gridCell.className = "slide-fmatrix-label";
+                  const borderDiv = document.createElement("div");
+                  Object.assign(borderDiv.style, { position: "absolute", inset: "0", background: "#" + D.COLORS.stepBorder, clipPath: clip });
+                  const fillDiv = document.createElement("div");
+                  Object.assign(fillDiv.style, { position: "absolute", inset: pxToCqw(2), background: "#" + D.COLORS.stepFill, clipPath: clip });
+                  const textDiv = document.createElement("div");
+                  Object.assign(textDiv.style, {
+                    position: "absolute", top: "0", left: "0", right: "0", height: "75%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
+                    color: "#" + D.COLORS.stepText,
+                    overflow: "hidden", textAlign: "center",
+                    padding: `0 ${pxToCqw(4)}`, boxSizing: "border-box",
+                  });
+                  textDiv.textContent = rowData[j] || "";
+                  gridCell.appendChild(borderDiv);
+                  gridCell.appendChild(fillDiv);
+                  gridCell.appendChild(textDiv);
+                  wrap.appendChild(gridCell);
+                } else {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-item";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                }
+              }
+            });
+            slide.appendChild(wrap);
+          }
+
+        } else if (cell.type === "h_flow_matrix") {
+          const hmHead = Array.isArray(cell.head) && cell.head.length > 0 ? [cell.head] : [];
+          const hmDataRows = (cell.rows || []).filter(r => Array.isArray(r) && r.length > 0);
+          const allHmRows = [...hmHead, ...hmDataRows];
+          const numHmAllRows = allHmRows.length;
+          const numHmCols = Math.max(0, ...allHmRows.map(row => row.length));
+          if (numHmAllRows > 0 && numHmCols > 0) {
+            const wrap = el("div", { left: D.px(cx), top: D.py(cy), width: D.px(cw), height: D.py(ch), overflow: "hidden" });
+            wrap.className = "slide-matrix";
+            wrap.style.gridTemplateColumns = `repeat(${numHmCols}, minmax(0, 1fr))`;
+            wrap.style.gridTemplateRows = `repeat(${numHmAllRows}, minmax(0, 1fr))`;
+            const hasHmHead = hmHead.length > 0;
+            const rClip = "polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%)";
+            allHmRows.forEach((rowData, i) => {
+              const isHeadRow = hasHmHead && i === 0;
+              for (let j = 0; j < numHmCols; j++) {
+                if (isHeadRow && j === 0) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-empty";
+                  wrap.appendChild(cellBox);
+                } else if (isHeadRow) {
+                  const gridCell = document.createElement("div");
+                  gridCell.className = "slide-h-fmatrix-head";
+                  const borderDiv = document.createElement("div");
+                  Object.assign(borderDiv.style, { position: "absolute", inset: "0", background: "#" + D.COLORS.stepBorder, clipPath: rClip });
+                  const fillDiv = document.createElement("div");
+                  Object.assign(fillDiv.style, { position: "absolute", inset: pxToCqw(2), background: "#" + D.COLORS.stepFill, clipPath: rClip });
+                  const textDiv = document.createElement("div");
+                  Object.assign(textDiv.style, {
+                    position: "absolute", top: "0", left: "0", width: "75%", height: "100%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: ptToCqw(D.FONTS.stepLabel.size), fontWeight: "700",
+                    color: "#" + D.COLORS.stepText,
+                    overflow: "hidden", textAlign: "center",
+                    padding: `0 ${pxToCqw(4)}`, boxSizing: "border-box",
+                  });
+                  textDiv.textContent = rowData[j] || "";
+                  gridCell.appendChild(borderDiv);
+                  gridCell.appendChild(fillDiv);
+                  gridCell.appendChild(textDiv);
+                  wrap.appendChild(gridCell);
+                } else if (j === 0) {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-label";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                } else {
+                  const cellBox = document.createElement("div");
+                  cellBox.className = "slide-matrix-cell slide-matrix-item";
+                  cellBox.innerHTML = marked.parseInline(rowData[j] || "");
+                  wrap.appendChild(cellBox);
+                }
+              }
+            });
+            slide.appendChild(wrap);
+          }
+
+        } else if (cell.type === "compare") {
+          const cmpHead = Array.isArray(cell.head) && cell.head.length > 0 ? cell.head : [];
+          const cmpRows = (cell.rows || []).filter(r => Array.isArray(r) && r.length > 0);
+          const numDataRows = cmpRows.length;
+          if (numDataRows > 0) {
+            const hasHead = cmpHead.length > 0;
+            const gap = D.gridGap;
+            const numGridRows = numDataRows + (hasHead ? 1 : 0);
+            const cellH = (ch - gap * (numGridRows - 1)) / numGridRows;
+            // 列幅: ラベル1 : 左1 : 矢印0.08 : 右1 (total=3.08)
+            const totalFr = 3.08;
+            const availW = cw - gap * 3;
+            const cellW  = availW / totalFr;
+            const arrowW = availW * 0.08 / totalFr;
+            const labelX = cx;
+            const leftX  = cx + cellW + gap;
+            const arrowX = leftX + cellW + gap;
+            const rightX = arrowX + arrowW + gap;
+            // ヘッダー行
+            if (hasHead) {
+              const hy = cy;
+              const lhBox = el("div", { left: D.px(leftX), top: D.py(hy), width: D.px(cellW), height: D.py(cellH) });
+              lhBox.className = "slide-matrix-cell slide-matrix-colhead";
+              lhBox.innerHTML = marked.parseInline(cmpHead[1] || "");
+              slide.appendChild(lhBox);
+              const rhBox = el("div", { left: D.px(rightX), top: D.py(hy), width: D.px(cellW), height: D.py(cellH) });
+              rhBox.className = "slide-matrix-cell slide-matrix-colhead";
+              rhBox.innerHTML = marked.parseInline(cmpHead[2] || "");
+              slide.appendChild(rhBox);
+            }
+            // データ行
+            const dataTop = hasHead ? cy + cellH + gap : cy;
+            cmpRows.forEach((row, i) => {
+              const rowY = dataTop + i * (cellH + gap);
+              const lbl = row[0] || "", lv = row[1] || "", rv = row[2] || "";
+              const lblBox = el("div", { left: D.px(labelX), top: D.py(rowY), width: D.px(cellW), height: D.py(cellH) });
+              lblBox.className = "slide-matrix-cell slide-matrix-label";
+              lblBox.innerHTML = marked.parseInline(lbl);
+              slide.appendChild(lblBox);
+              const lBox = el("div", { left: D.px(leftX), top: D.py(rowY), width: D.px(cellW), height: D.py(cellH) });
+              lBox.className = "slide-matrix-cell slide-matrix-item";
+              lBox.innerHTML = marked.parseInline(lv);
+              slide.appendChild(lBox);
+              const rBox = el("div", { left: D.px(rightX), top: D.py(rowY), width: D.px(cellW), height: D.py(cellH) });
+              rBox.className = "slide-matrix-cell slide-matrix-item";
+              rBox.innerHTML = marked.parseInline(rv);
+              slide.appendChild(rBox);
+            });
+            // 縦長両矢印（データ行全体にスパン、背景なし・clip-path形状）
+            const dataH = numDataRows * cellH + (numDataRows - 1) * gap;
+            const arrowEl = el("div", {
+              left: D.px(arrowX), top: D.py(dataTop), width: D.px(arrowW), height: D.py(dataH),
+              background: "#" + D.COLORS.stepBorder,
+              clipPath: "polygon(0% 50%, 35% 20%, 35% 40%, 65% 40%, 65% 20%, 100% 50%, 65% 80%, 65% 60%, 35% 60%, 35% 80%)",
+            });
+            slide.appendChild(arrowEl);
+          }
+
         } else if (cell.type === "conclusion") {
           const accentW = D.conclusionAccentW;
-          addBorderedBox(cx, cy, cw, ch, D.COLORS.conclusionBg, D.COLORS.conclusionBorder, { borderW: "1.5px", radius: "4px" });
+          addBorderedBox(cx, cy, cw, ch, D.COLORS.conclusionBg, D.COLORS.conclusionBorder, { borderW: pxToCqw(1.5), radius: "4px" });
           slide.appendChild(el("div", {
             left: D.px(cx), top: D.py(cy),
             width: D.px(accentW), height: D.py(ch),
@@ -1146,11 +1676,10 @@ const D = (() => {
           const pPadX = D.headerPadX, pPadY = D.mainPadY;
           addMdBox("md-plain", cx + pPadX, cy + pPadY, cw - pPadX * 2, ch - pPadY * 2, cell.markdown || "");
           // 隣接セル間の縦仕切り線（隣が image の場合はボーダーが既にあるので描かない）
-          const nextCell = cells[cells.indexOf(cell) + 1];
           if (col + span < numCols && !(nextCell && nextCell.type === "image")) {
             slide.appendChild(el("div", {
               left: D.px(cx + cw + gap / 2), top: D.py(cy),
-              width: "1px", height: D.py(ch),
+              width: pxToCqw(1), height: D.py(ch),
               background: "#" + D.COLORS.border,
             }));
           }
@@ -1203,8 +1732,6 @@ const D = (() => {
             addMdBox("md-card", cx + padX, bodyY, cw - padX * 2, bodyH, bodyMd);
           }
         }
-        col += span;
-      }
     }
 
     // ── フッター ──
@@ -1225,7 +1752,7 @@ const D = (() => {
     footerRow.appendChild(pageSpan);
     const logo = document.createElement("img");
     logo.src = sd.logo; logo.alt = "Logo";
-    logo.style.height = (D.logoH / D.slideW * 100) + "cqw";
+    logo.style.height = D.px(D.logoH);
     logo.style.width = "auto"; logo.style.objectFit = "contain";
     footerRow.appendChild(logo);
     slide.appendChild(footerRow);

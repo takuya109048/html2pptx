@@ -16,9 +16,11 @@ from md_to_json import (
     NANOBANANA_ICON_MARKER,
     build_cover_slide,
     invoke_to_pptx,
+    iter_template_cells,
     load_json,
     validate_agenda_slide,
     validate_nanobanana_icon_prompts,
+    validate_nanobanana_no_plain_1col,
 )
 
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
@@ -907,11 +909,8 @@ def validate_source(
             errors += validate_compact_blocks(index, title, layout, blocks)
         if nanobanana2:
             if index >= 3 and layout == "plain_1col":
-                warn(
-                    f"Slide #{index} uses plain_1col while nanobanana2 is enabled; "
-                    "allowed as a fit-review escape when image or icon structure would obscure the context."
-                    + (f" Title: {title}" if title else "")
-                )
+                warn(f"Slide #{index} uses plain_1col while nanobanana2 is enabled." + (f" Title: {title}" if title else ""))
+                errors += 1
             if layout == "plain_2col":
                 card_b = as_text(blocks.get("card-b"))
                 if not is_nanobanana_prompt_block(card_b):
@@ -975,8 +974,10 @@ def build_agenda_slide(source: dict[str, Any], templates: dict[str, Any]) -> dic
             parts.extend(f"- {title}" for title in titles)
         return "\n".join(parts)
 
-    agenda["grid"][0][0]["markdown"] = render_groups(left_groups, "### 本編")
-    agenda["grid"][0][1]["markdown"] = render_groups(right_groups, "")
+    agenda_cells = [cell for cell in iter_template_cells(agenda) if cell.get("type") == "plain"]
+    if len(agenda_cells) >= 2:
+        agenda_cells[0]["markdown"] = render_groups(left_groups, "### 本編")
+        agenda_cells[1]["markdown"] = render_groups(right_groups, "")
     return agenda
 
 
@@ -1008,35 +1009,30 @@ def build_content_slide(slide_def: dict[str, Any], templates: dict[str, Any], na
     card_cursor = 0
     step_cursor = 0
     plain_cursor = 0
-    for row in slide.get("grid", []):
-        if not isinstance(row, list):
-            continue
-        for cell in row:
-            if not isinstance(cell, dict):
-                continue
-            cell_type = cell.get("type")
-            if cell_type == "step_head":
-                tag = STEP_TAGS[step_cursor] if step_cursor < len(STEP_TAGS) else ""
-                cell["markdown"] = step_labels.get(tag) or as_text(blocks.get(tag))
-                step_cursor += 1
-            elif cell_type == "card":
-                if layout in {"flow_3step", "flow_4step"}:
-                    tag = STEP_TAGS[card_cursor] if card_cursor < len(STEP_TAGS) else ""
-                    cell["markdown"] = step_bodies.get(tag, "")
-                else:
-                    tag = CARD_TAGS[card_cursor] if card_cursor < len(CARD_TAGS) else ""
-                    cell["markdown"] = as_text(blocks.get(tag))
-                card_cursor += 1
-            elif cell_type == "plain":
-                tag = CARD_TAGS[plain_cursor] if plain_cursor < len(CARD_TAGS) else ""
+    for cell in iter_template_cells(slide):
+        cell_type = cell.get("type")
+        if cell_type == "step_head":
+            tag = STEP_TAGS[step_cursor] if step_cursor < len(STEP_TAGS) else ""
+            cell["markdown"] = step_labels.get(tag) or as_text(blocks.get(tag))
+            step_cursor += 1
+        elif cell_type == "card":
+            if layout in {"flow_3step", "flow_4step"}:
+                tag = STEP_TAGS[card_cursor] if card_cursor < len(STEP_TAGS) else ""
+                cell["markdown"] = step_bodies.get(tag, "")
+            else:
+                tag = CARD_TAGS[card_cursor] if card_cursor < len(CARD_TAGS) else ""
                 cell["markdown"] = as_text(blocks.get(tag))
-                plain_cursor += 1
-            elif cell_type in {"section", "conclusion"}:
-                cell["markdown"] = as_text(blocks.get(cell_type))
-            elif cell_type in {"table", "matrix", "flow_matrix", "h_flow_matrix", "compare"}:
-                head, rows = table_payload(blocks.get(cell_type))
-                cell["head"] = head
-                cell["rows"] = rows
+            card_cursor += 1
+        elif cell_type == "plain":
+            tag = CARD_TAGS[plain_cursor] if plain_cursor < len(CARD_TAGS) else ""
+            cell["markdown"] = as_text(blocks.get(tag))
+            plain_cursor += 1
+        elif cell_type in {"section", "conclusion"}:
+            cell["markdown"] = as_text(blocks.get(cell_type))
+        elif cell_type in {"table", "matrix", "flow_matrix", "h_flow_matrix", "compare"}:
+            head, rows = table_payload(blocks.get(cell_type))
+            cell["head"] = head
+            cell["rows"] = rows
     return slide
 
 
@@ -1091,6 +1087,8 @@ def main() -> int:
     if args.require_agenda and validate_agenda_slide(slides, agenda_slide_number=3, body_slide_number=4):
         return 1
     if args.nanobanana2:
+        if validate_nanobanana_no_plain_1col(slides):
+            return 1
         if validate_nanobanana_icon_prompts(slides):
             return 1
     output_json = args.output_json or args.input_json.with_suffix(".slides.json")
