@@ -217,7 +217,7 @@
         "layout_rules.001",
         "layout_rules.002"
       ],
-      "text": "## LAYOUT_RULES\n\n使用可能layoutと必須blocks:\n| layout | 用途 | 必須blocks |\n|-------|------|------------|\n| plain_1col | 単一説明。nanobanana2 Yesでは使用禁止 | card-a |\n| plain_2col | 2概念、または本文とnanobananaプロンプト | card-a, card-b |\n| list_3card | 並列3要素 | card-a, card-b, card-c |\n\n| flow_3step | 3工程 | step-a, step-b, step-c |\n| flow_4step | 4工程 | step-a, step-b, step-c, step-d |\n| diffuse_3card | 1から3展開 | section, card-a, card-b, card-c |\n| converge_3card | 3から1収束 | card-a, card-b, card-c, conclusion |\n| bg_3card | 背景と3点 | section, card-a, card-b, card-c |"
+      "text": "## LAYOUT_RULES\n\nlayoutは見た目で選ばず、原文の情報構造から選ぶ。先に各スライド候補を単一説明、2対象比較、同格3要素、3/4段階の時系列、背景+3論点、1起点から3方向、3根拠から1結論、表、表+示唆、2軸マトリックス、工程×観点に分類する。分類が決まるまでlayout名を書かない。\n\n使用可能layoutと必須blocks:\n| layout | 構造 | 必須blocks |\n|-------|------|------------|\n| plain_1col | 単一説明。nanobanana2 Yesでは本文使用禁止 | card-a |\n| plain_2col | 2概念、または本文とnanobananaプロンプト | card-a, card-b |\n| list_3card | 順序を入れ替えても壊れない同格3要素 | card-a, card-b, card-c |\n| flow_3step | 前後関係を持つ3工程 | step-a, step-b, step-c |\n| flow_4step | 前後関係を持つ4工程 | step-a, step-b, step-c, step-d |"
     },
     "turn_b_yes.packed.012": {
       "section": "LAYOUT_RULES",
@@ -225,7 +225,7 @@
         "layout_rules.003",
         "layout_rules.004"
       ],
-      "text": "| table | 表 | table |\n| table_conclusion | 表と示唆 | table, conclusion |\n| compare_2col_3row | 2対象3観点 | compare |\n| matrix_3x3 | 3×3 | matrix |\n| flow_matrix_3x3 | 縦3×3 | flow_matrix |\n| h_flow_matrix_3x2 | 横3×2 | h_flow_matrix |\n| h_flow_matrix_3x3 | 横3×3 | h_flow_matrix |\n\n| h_flow_matrix_4x2 | 横4×2 | h_flow_matrix |\n\nblocksの書き方:\n- card、step、plain用ブロックはMarkdown文字列で書く。先頭に###見出しを置き、箇条書きや強調を使ってよい。\n- section、conclusion用ブロックは小さな背景枠や結論枠である。###見出しを使わず、35字以上を目安に1から2文で書く。sectionは背景と含意、conclusionは結論と理由または次の行動を含め、太字をインラインで置く。"
+      "text": "| diffuse_3card | 1つの起点から3方向へ展開 | section, card-a, card-b, card-c |\n| converge_3card | 3根拠から1結論へ収束 | card-a, card-b, card-c, conclusion |\n| bg_3card | 背景や前提を示して3論点を並べる | section, card-a, card-b, card-c |\n| table | 表そのものを読む | table |\n| table_conclusion | 表から示唆や判断を出す | table, conclusion |\n| compare_2col_3row | 2対象を3観点で比較 | compare |\n| matrix_3x3 | 2軸で9セル分類 | matrix |\n| flow_matrix_3x3 | 縦3工程×3観点 | flow_matrix |\n| h_flow_matrix_3x2 | 横3工程×2観点 | h_flow_matrix |\n| h_flow_matrix_3x3 | 横3工程×3観点 | h_flow_matrix |\n| h_flow_matrix_4x2 | 横4工程×2観点 | h_flow_matrix |"
     },
     "turn_b_yes.packed.013": {
       "section": "LAYOUT_RULES",
@@ -233,7 +233,7 @@
         "layout_rules.005",
         "layout_rules.006"
       ],
-      "text": "- table、matrix、flow_matrix、h_flow_matrix、compareは {\"head\": [...], \"rows\": [[...], ...]} の形で書く。\n- 独自block keyを作らない。text、step、card、plain、bodyは禁止。\n- flow系のstep-aなどは先頭に### 見出しを置く。見出しがstepラベル、残りが本文になる。\n- card、step、plainカラムは文章だけで埋めない。先頭に###見出しを置き、本文には箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかを入れる。\n\n- card、step、plainカラムの本文には、読み手が最初に見るべき短い語句を1つ以上太字にする。太字は見出しや箇条書き先頭のラベルではなく、本文中の判断軸、制約、行動、結論へ自然に置く。\n\nレイアウト選択:\n1. 3段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_3step。\n2. 4段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_4step。\n3. フラットな3要素ならlist_3card。\n4. 1つの共通テーマから3方向へ広がるならdiffuse_3card。"
+      "text": "ハードゲート:\n- flow系は順序、前後関係、完了条件、次工程への接続のうち2つ以上がある時だけ使う。3/4項目が並ぶだけなら禁止。\n- list_3cardは3要素が同格で、順番を入れ替えても意味が壊れない時だけ使う。因果や手順なら禁止。\n- compare_2col_3rowは2対象×3観点が明確な時だけ使う。対象が3つ以上、観点が曖昧、単なる左右分割なら禁止。\n- converge_3cardは3カードが同じ結論を支える根拠で、conclusionに判断や次行動を書ける時だけ使う。単なる3ポイントまとめなら禁止。\n- diffuse_3cardはsectionが起点や共通テーマになり、3カードが別方向へ広がる時だけ使う。背景説明ならbg_3card、同格ならlist_3cardへ戻す。"
     },
     "turn_b_yes.packed.014": {
       "section": "LAYOUT_RULES",
@@ -241,7 +241,7 @@
         "layout_rules.007",
         "layout_rules.008"
       ],
-      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
+      "text": "優先順位と禁止:\n1. 表から示唆を言うならtable_conclusion、一覧だけならtable。表にできる情報をカードへ崩さない。\n2. 2対象3観点ならplain_2colよりcompare_2col_3rowを優先。\n3. 工程×観点ならmatrixではなくflow_matrix系。列方向に工程が進むならh_flow_matrixを使う。\n4. 3/4工程ならlistよりflowを優先するが、各stepに目的や完了条件を置けなければflowは禁止。\n5. 2概念かnanobananaプロンプト欄だけplain_2col。何となく2列に分ける逃げ道にしない。\n6. 単一説明はplain_2col優先。nanobanana2 Yesではplain_1col禁止。\n\nblocks: card/step/plainは###見出しから始め、箇条書きや強調を使う。section/conclusionは###なしで35字以上、背景と含意、結論と理由または次行動を含める。独自block keyは禁止。plain_image_row/plain_image_colは生成で選ばない。"
     },
     "turn_b_yes.packed.015": {
       "section": "NANOBANANA_RULES",
@@ -326,7 +326,7 @@
         "text_integrity.001",
         "text_integrity.002"
       ],
-      "text": "- 1つ目の箇条書きだけに太字ラベルを置き、以降は通常文にする。\n\n良い例:\n- 一文に論点を**一つだけ**置き、複数条件を詰め込みすぎない。\n- 何を**禁止**し、何を**必須**にするかを先頭で明示する。\n- 変更後は `pnpm test` を実行し、失敗を**修正完了まで戻す**。\n\n## SLIDE_STYLE\n\nスライド本文、表、結論はである調にする。titleは文体を持つ文章にせず、短い見出し語にする。noteも原則である調に寄せる。\n\n## TEXT_INTEGRITY\n\nDECK_SOURCE_JSON内の日本語が??????や�に置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。見た目の問題ではなく、JSON内の文字列が失われている状態として扱う。\n\n確認観点:\n- 6個以上の連続した?がtitle、message、section、blocks、note、icon_promptに出たら失敗である。\n- 20文字以上の文字列で?が多すぎる場合も失敗である。英語の疑問文に含まれる通常の?は問題ない。\n- Unicode replacement characterの�が1つでもあれば失敗である。\n\n- 失敗した場合は、PPTX変換を繰り返さず、元ソースの読み取り、resolve_uploads.pyの実行、JSON生成時のencoding=utf-8とensure_ascii=Falseを確認してからDECK_SOURCE_JSONを作り直す。"
+      "text": "- 1つ目の箇条書きだけに太字ラベルを置き、以降は通常文にする。\n\n良い例:\n- 一文に論点を**一つだけ**置き、複数条件を詰め込みすぎない。\n- 何を**禁止**し、何を**必須**にするかを先頭で明示する。\n- 変更後は `pnpm test` を実行し、失敗を**修正完了まで戻す**。\n\n## SLIDE_STYLE\n\nスライド本文、表、結論はである調にする。titleは文体を持つ文章にせず、短い見出し語にする。noteも原則である調に寄せる。\n\n## TEXT_INTEGRITY\n\nDECK_SOURCE_JSON内の日本語が??????やUnicode replacement characterに置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。見た目の問題ではなく、JSON内の文字列が失われている状態として扱う。\n\n確認観点:\n- 6個以上の連続した?がtitle、message、section、blocks、note、icon_promptに出たら失敗である。\n- 20文字以上の文字列で?が多すぎる場合も失敗である。英語の疑問文に含まれる通常の?は問題ない。\n- Unicode replacement characterが1つでもあれば失敗である。\n\n- 失敗した場合は、PPTX変換を繰り返さず、元ソースの読み取り、resolve_uploads.pyの実行、JSON生成時のencoding=utf-8とensure_ascii=Falseを確認してからDECK_SOURCE_JSONを作り直す。"
     },
     "turn_b_yes.packed.025": {
       "section": "SPEAKER_NOTES",
@@ -375,7 +375,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
     },
     "turn_b_yes.packed.031": {
       "section": "FINAL_SELF_CHECK",
@@ -474,7 +474,7 @@
         "layout_rules.001",
         "layout_rules.002"
       ],
-      "text": "## LAYOUT_RULES\n\n使用可能layoutと必須blocks:\n| layout | 用途 | 必須blocks |\n|-------|------|------------|\n| plain_1col | 単一説明。nanobanana2 Yesでは使用禁止 | card-a |\n| plain_2col | 2概念、または本文とnanobananaプロンプト | card-a, card-b |\n| list_3card | 並列3要素 | card-a, card-b, card-c |\n\n| flow_3step | 3工程 | step-a, step-b, step-c |\n| flow_4step | 4工程 | step-a, step-b, step-c, step-d |\n| diffuse_3card | 1から3展開 | section, card-a, card-b, card-c |\n| converge_3card | 3から1収束 | card-a, card-b, card-c, conclusion |\n| bg_3card | 背景と3点 | section, card-a, card-b, card-c |"
+      "text": "## LAYOUT_RULES\n\nlayoutは見た目で選ばず、原文の情報構造から選ぶ。先に各スライド候補を単一説明、2対象比較、同格3要素、3/4段階の時系列、背景+3論点、1起点から3方向、3根拠から1結論、表、表+示唆、2軸マトリックス、工程×観点に分類する。分類が決まるまでlayout名を書かない。\n\n使用可能layoutと必須blocks:\n| layout | 構造 | 必須blocks |\n|-------|------|------------|\n| plain_1col | 単一説明。nanobanana2 Yesでは本文使用禁止 | card-a |\n| plain_2col | 2概念、または本文とnanobananaプロンプト | card-a, card-b |\n| list_3card | 順序を入れ替えても壊れない同格3要素 | card-a, card-b, card-c |\n| flow_3step | 前後関係を持つ3工程 | step-a, step-b, step-c |\n| flow_4step | 前後関係を持つ4工程 | step-a, step-b, step-c, step-d |"
     },
     "turn_b_no.packed.012": {
       "section": "LAYOUT_RULES",
@@ -482,7 +482,7 @@
         "layout_rules.003",
         "layout_rules.004"
       ],
-      "text": "| table | 表 | table |\n| table_conclusion | 表と示唆 | table, conclusion |\n| compare_2col_3row | 2対象3観点 | compare |\n| matrix_3x3 | 3×3 | matrix |\n| flow_matrix_3x3 | 縦3×3 | flow_matrix |\n| h_flow_matrix_3x2 | 横3×2 | h_flow_matrix |\n| h_flow_matrix_3x3 | 横3×3 | h_flow_matrix |\n\n| h_flow_matrix_4x2 | 横4×2 | h_flow_matrix |\n\nblocksの書き方:\n- card、step、plain用ブロックはMarkdown文字列で書く。先頭に###見出しを置き、箇条書きや強調を使ってよい。\n- section、conclusion用ブロックは小さな背景枠や結論枠である。###見出しを使わず、35字以上を目安に1から2文で書く。sectionは背景と含意、conclusionは結論と理由または次の行動を含め、太字をインラインで置く。"
+      "text": "| diffuse_3card | 1つの起点から3方向へ展開 | section, card-a, card-b, card-c |\n| converge_3card | 3根拠から1結論へ収束 | card-a, card-b, card-c, conclusion |\n| bg_3card | 背景や前提を示して3論点を並べる | section, card-a, card-b, card-c |\n| table | 表そのものを読む | table |\n| table_conclusion | 表から示唆や判断を出す | table, conclusion |\n| compare_2col_3row | 2対象を3観点で比較 | compare |\n| matrix_3x3 | 2軸で9セル分類 | matrix |\n| flow_matrix_3x3 | 縦3工程×3観点 | flow_matrix |\n| h_flow_matrix_3x2 | 横3工程×2観点 | h_flow_matrix |\n| h_flow_matrix_3x3 | 横3工程×3観点 | h_flow_matrix |\n| h_flow_matrix_4x2 | 横4工程×2観点 | h_flow_matrix |"
     },
     "turn_b_no.packed.013": {
       "section": "LAYOUT_RULES",
@@ -490,7 +490,7 @@
         "layout_rules.005",
         "layout_rules.006"
       ],
-      "text": "- table、matrix、flow_matrix、h_flow_matrix、compareは {\"head\": [...], \"rows\": [[...], ...]} の形で書く。\n- 独自block keyを作らない。text、step、card、plain、bodyは禁止。\n- flow系のstep-aなどは先頭に### 見出しを置く。見出しがstepラベル、残りが本文になる。\n- card、step、plainカラムは文章だけで埋めない。先頭に###見出しを置き、本文には箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかを入れる。\n\n- card、step、plainカラムの本文には、読み手が最初に見るべき短い語句を1つ以上太字にする。太字は見出しや箇条書き先頭のラベルではなく、本文中の判断軸、制約、行動、結論へ自然に置く。\n\nレイアウト選択:\n1. 3段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_3step。\n2. 4段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_4step。\n3. フラットな3要素ならlist_3card。\n4. 1つの共通テーマから3方向へ広がるならdiffuse_3card。"
+      "text": "ハードゲート:\n- flow系は順序、前後関係、完了条件、次工程への接続のうち2つ以上がある時だけ使う。3/4項目が並ぶだけなら禁止。\n- list_3cardは3要素が同格で、順番を入れ替えても意味が壊れない時だけ使う。因果や手順なら禁止。\n- compare_2col_3rowは2対象×3観点が明確な時だけ使う。対象が3つ以上、観点が曖昧、単なる左右分割なら禁止。\n- converge_3cardは3カードが同じ結論を支える根拠で、conclusionに判断や次行動を書ける時だけ使う。単なる3ポイントまとめなら禁止。\n- diffuse_3cardはsectionが起点や共通テーマになり、3カードが別方向へ広がる時だけ使う。背景説明ならbg_3card、同格ならlist_3cardへ戻す。"
     },
     "turn_b_no.packed.014": {
       "section": "LAYOUT_RULES",
@@ -498,7 +498,7 @@
         "layout_rules.007",
         "layout_rules.008"
       ],
-      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
+      "text": "優先順位と禁止:\n1. 表から示唆を言うならtable_conclusion、一覧だけならtable。表にできる情報をカードへ崩さない。\n2. 2対象3観点ならplain_2colよりcompare_2col_3rowを優先。\n3. 工程×観点ならmatrixではなくflow_matrix系。列方向に工程が進むならh_flow_matrixを使う。\n4. 3/4工程ならlistよりflowを優先するが、各stepに目的や完了条件を置けなければflowは禁止。\n5. 2概念かnanobananaプロンプト欄だけplain_2col。何となく2列に分ける逃げ道にしない。\n6. 単一説明はplain_2col優先。nanobanana2 Yesではplain_1col禁止。\n\nblocks: card/step/plainは###見出しから始め、箇条書きや強調を使う。section/conclusionは###なしで35字以上、背景と含意、結論と理由または次行動を含める。独自block keyは禁止。plain_image_row/plain_image_colは生成で選ばない。"
     },
     "turn_b_no.packed.015": {
       "section": "CONTENT_LIMITS",
@@ -566,7 +566,7 @@
         "text_integrity.002",
         "speaker_notes.001"
       ],
-      "text": "## TEXT_INTEGRITY\n\nDECK_SOURCE_JSON内の日本語が??????や�に置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。見た目の問題ではなく、JSON内の文字列が失われている状態として扱う。\n\n確認観点:\n- 6個以上の連続した?がtitle、message、section、blocks、note、icon_promptに出たら失敗である。\n- 20文字以上の文字列で?が多すぎる場合も失敗である。英語の疑問文に含まれる通常の?は問題ない。\n- Unicode replacement characterの�が1つでもあれば失敗である。\n\n- 失敗した場合は、PPTX変換を繰り返さず、元ソースの読み取り、resolve_uploads.pyの実行、JSON生成時のencoding=utf-8とensure_ascii=Falseを確認してからDECK_SOURCE_JSONを作り直す。\n\n## SPEAKER_NOTES\n\nnoteはPPTX発表者ビューの読み上げ原稿である。スライド本文を見ていない人にも意味が通じる文章を書く。JSON文字列なので実改行を使ってよい。Markdown表セルではないため、brタグやバックスラッシュnで改行を表す必要はない。\n\n必須要素:\n- 1枚につき原則180から320字。coverのみ120字以上でよい。\n- 冒頭は毎回同じ固定句にしない。前スライドからの流れ、聴衆への問い、場面設定、結論の先出しを使い分ける。\n- カード、表、フローを順番に説明し、各要素の意味や関係を補う。"
+      "text": "## TEXT_INTEGRITY\n\nDECK_SOURCE_JSON内の日本語が??????やUnicode replacement characterに置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。見た目の問題ではなく、JSON内の文字列が失われている状態として扱う。\n\n確認観点:\n- 6個以上の連続した?がtitle、message、section、blocks、note、icon_promptに出たら失敗である。\n- 20文字以上の文字列で?が多すぎる場合も失敗である。英語の疑問文に含まれる通常の?は問題ない。\n- Unicode replacement characterが1つでもあれば失敗である。\n\n- 失敗した場合は、PPTX変換を繰り返さず、元ソースの読み取り、resolve_uploads.pyの実行、JSON生成時のencoding=utf-8とensure_ascii=Falseを確認してからDECK_SOURCE_JSONを作り直す。\n\n## SPEAKER_NOTES\n\nnoteはPPTX発表者ビューの読み上げ原稿である。スライド本文を見ていない人にも意味が通じる文章を書く。JSON文字列なので実改行を使ってよい。Markdown表セルではないため、brタグやバックスラッシュnで改行を表す必要はない。\n\n必須要素:\n- 1枚につき原則180から320字。coverのみ120字以上でよい。\n- 冒頭は毎回同じ固定句にしない。前スライドからの流れ、聴衆への問い、場面設定、結論の先出しを使い分ける。\n- カード、表、フローを順番に説明し、各要素の意味や関係を補う。"
     },
     "turn_b_no.packed.023": {
       "section": "SPEAKER_NOTES",
@@ -616,7 +616,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "repair_emphasis.packed.001": {
       "section": "HIGHLIGHT_PLANNING",
@@ -681,7 +681,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
     },
     "repair_emphasis.packed.009": {
       "section": "FINAL_SELF_CHECK",
@@ -763,7 +763,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
     },
     "repair_density.packed.010": {
       "section": "FINAL_SELF_CHECK",
@@ -812,7 +812,7 @@
         "json_schema.010",
         "layout_rules.001"
       ],
-      "text": "        \"section\": \"**ルールブックとして扱う。** CLAUDE.mdは作業開始時に読まれる常設の前提である。\",\n        \"card-a\": \"### 反復説明を減らす\\n毎回言う注意をルール化する。\\n- 禁止操作を先に共有する\\n- 必須コマンドを計画へ組み込ませる\",\n        \"card-b\": \"### 判断基準をそろえる\\n一般論ではなく案件基準で提案させる。\\n- 技術スタックを固定する\\n- 設計方針の優先順位を渡す\",\n\n        \"card-c\": \"### 書きすぎを防ぐ\\n常に守る内容だけを残す。\\n- 一時的な好みを混ぜない\\n- 古い前提を削る\"\n      },\n      \"icon_prompt\": \"3:1の横長アイコンストリップ。等幅の正方形アイコンを左、中央、右に配置する。\"\n    }\n  ]\n}\n\n## LAYOUT_RULES\n\n使用可能layoutと必須blocks:\n| layout | 用途 | 必須blocks |\n|-------|------|------------|\n| plain_1col | 単一説明。nanobanana2 Yesでは使用禁止 | card-a |\n| plain_2col | 2概念、または本文とnanobananaプロンプト | card-a, card-b |\n| list_3card | 並列3要素 | card-a, card-b, card-c |"
+      "text": "        \"section\": \"**ルールブックとして扱う。** CLAUDE.mdは作業開始時に読まれる常設の前提である。\",\n        \"card-a\": \"### 反復説明を減らす\\n毎回言う注意をルール化する。\\n- 禁止操作を先に共有する\\n- 必須コマンドを計画へ組み込ませる\",\n        \"card-b\": \"### 判断基準をそろえる\\n一般論ではなく案件基準で提案させる。\\n- 技術スタックを固定する\\n- 設計方針の優先順位を渡す\",\n        \"card-c\": \"### 書きすぎを防ぐ\\n常に守る内容だけを残す。\\n- 一時的な好みを混ぜない\\n- 古い前提を削る\"\n      },\n      \"icon_prompt\": \"3:1の横長アイコンストリップ。等幅の正方形アイコンを左、中央、右に配置する。\"\n    }\n  ]\n}\n\n## LAYOUT_RULES\n修復時も見た目でlayoutを選ばない。原文の情報構造で分類してから選ぶ。"
     },
     "repair_text.packed.006": {
       "section": "LAYOUT_RULES",
@@ -820,7 +820,7 @@
         "layout_rules.002",
         "layout_rules.003"
       ],
-      "text": "| flow_3step | 3工程 | step-a, step-b, step-c |\n| flow_4step | 4工程 | step-a, step-b, step-c, step-d |\n| diffuse_3card | 1から3展開 | section, card-a, card-b, card-c |\n| converge_3card | 3から1収束 | card-a, card-b, card-c, conclusion |\n| bg_3card | 背景と3点 | section, card-a, card-b, card-c |\n\n| table | 表 | table |\n| table_conclusion | 表と示唆 | table, conclusion |\n| compare_2col_3row | 2対象3観点 | compare |\n| matrix_3x3 | 3×3 | matrix |\n| flow_matrix_3x3 | 縦3×3 | flow_matrix |\n| h_flow_matrix_3x2 | 横3×2 | h_flow_matrix |\n| h_flow_matrix_3x3 | 横3×3 | h_flow_matrix |"
+      "text": "layoutは見た目で選ばず、原文の情報構造から選ぶ。先に各スライド候補を単一説明、2対象比較、同格3要素、3/4段階の時系列、背景+3論点、1起点から3方向、3根拠から1結論、表、表+示唆、2軸マトリックス、工程×観点に分類する。分類が決まるまでlayout名を書かない。\n\n使用可能layoutと必須blocks:\n| layout | 構造 | 必須blocks |\n|-------|------|------------|\n| plain_1col | 単一説明。nanobanana2 Yesでは本文使用禁止 | card-a |\n| plain_2col | 2概念、または本文とnanobananaプロンプト | card-a, card-b |\n| list_3card | 順序を入れ替えても壊れない同格3要素 | card-a, card-b, card-c |\n| flow_3step | 前後関係を持つ3工程 | step-a, step-b, step-c |\n| flow_4step | 前後関係を持つ4工程 | step-a, step-b, step-c, step-d |"
     },
     "repair_text.packed.007": {
       "section": "LAYOUT_RULES",
@@ -828,7 +828,7 @@
         "layout_rules.004",
         "layout_rules.005"
       ],
-      "text": "| h_flow_matrix_4x2 | 横4×2 | h_flow_matrix |\n\nblocksの書き方:\n- card、step、plain用ブロックはMarkdown文字列で書く。先頭に###見出しを置き、箇条書きや強調を使ってよい。\n- section、conclusion用ブロックは小さな背景枠や結論枠である。###見出しを使わず、35字以上を目安に1から2文で書く。sectionは背景と含意、conclusionは結論と理由または次の行動を含め、太字をインラインで置く。\n\n- table、matrix、flow_matrix、h_flow_matrix、compareは {\"head\": [...], \"rows\": [[...], ...]} の形で書く。\n- 独自block keyを作らない。text、step、card、plain、bodyは禁止。\n- flow系のstep-aなどは先頭に### 見出しを置く。見出しがstepラベル、残りが本文になる。\n- card、step、plainカラムは文章だけで埋めない。先頭に###見出しを置き、本文には箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかを入れる。"
+      "text": "| diffuse_3card | 1つの起点から3方向へ展開 | section, card-a, card-b, card-c |\n| converge_3card | 3根拠から1結論へ収束 | card-a, card-b, card-c, conclusion |\n| bg_3card | 背景や前提を示して3論点を並べる | section, card-a, card-b, card-c |\n| table | 表そのものを読む | table |\n| table_conclusion | 表から示唆や判断を出す | table, conclusion |\n| compare_2col_3row | 2対象を3観点で比較 | compare |\n| matrix_3x3 | 2軸で9セル分類 | matrix |\n| flow_matrix_3x3 | 縦3工程×3観点 | flow_matrix |\n| h_flow_matrix_3x2 | 横3工程×2観点 | h_flow_matrix |\n| h_flow_matrix_3x3 | 横3工程×3観点 | h_flow_matrix |\n| h_flow_matrix_4x2 | 横4工程×2観点 | h_flow_matrix |"
     },
     "repair_text.packed.008": {
       "section": "LAYOUT_RULES",
@@ -836,7 +836,7 @@
         "layout_rules.006",
         "layout_rules.007"
       ],
-      "text": "- card、step、plainカラムの本文には、読み手が最初に見るべき短い語句を1つ以上太字にする。太字は見出しや箇条書き先頭のラベルではなく、本文中の判断軸、制約、行動、結論へ自然に置く。\n\nレイアウト選択:\n1. 3段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_3step。\n2. 4段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_4step。\n3. フラットな3要素ならlist_3card。\n4. 1つの共通テーマから3方向へ広がるならdiffuse_3card。\n\n5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:"
+      "text": "ハードゲート:\n- flow系は順序、前後関係、完了条件、次工程への接続のうち2つ以上がある時だけ使う。3/4項目が並ぶだけなら禁止。\n- list_3cardは3要素が同格で、順番を入れ替えても意味が壊れない時だけ使う。因果や手順なら禁止。\n- compare_2col_3rowは2対象×3観点が明確な時だけ使う。対象が3つ以上、観点が曖昧、単なる左右分割なら禁止。\n- converge_3cardは3カードが同じ結論を支える根拠で、conclusionに判断や次行動を書ける時だけ使う。単なる3ポイントまとめなら禁止。\n- diffuse_3cardはsectionが起点や共通テーマになり、3カードが別方向へ広がる時だけ使う。背景説明ならbg_3card、同格ならlist_3cardへ戻す。"
     },
     "repair_text.packed.009": {
       "section": "LAYOUT_RULES+TEXT_INTEGRITY",
@@ -845,7 +845,7 @@
         "text_integrity.001",
         "text_integrity.002"
       ],
-      "text": "- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。\n\n## TEXT_INTEGRITY\n\nDECK_SOURCE_JSON内の日本語が??????や�に置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。見た目の問題ではなく、JSON内の文字列が失われている状態として扱う。\n\n確認観点:\n- 6個以上の連続した?がtitle、message、section、blocks、note、icon_promptに出たら失敗である。\n- 20文字以上の文字列で?が多すぎる場合も失敗である。英語の疑問文に含まれる通常の?は問題ない。\n- Unicode replacement characterの�が1つでもあれば失敗である。\n\n- 失敗した場合は、PPTX変換を繰り返さず、元ソースの読み取り、resolve_uploads.pyの実行、JSON生成時のencoding=utf-8とensure_ascii=Falseを確認してからDECK_SOURCE_JSONを作り直す。"
+      "text": "優先順位と禁止:\n1. 表から示唆を言うならtable_conclusion、一覧だけならtable。表にできる情報をカードへ崩さない。\n2. 2対象3観点ならplain_2colよりcompare_2col_3rowを優先。\n3. 工程×観点ならmatrixではなくflow_matrix系。列方向に工程が進むならh_flow_matrixを使う。\n4. 3/4工程ならlistよりflowを優先するが、各stepに目的や完了条件を置けなければflowは禁止。\n5. 2概念かnanobananaプロンプト欄だけplain_2col。何となく2列に分ける逃げ道にしない。\n6. 単一説明はplain_2col優先。nanobanana2 Yesではplain_1col禁止。\n\nblocks: card/step/plainは###見出しから始め、箇条書きや強調を使う。section/conclusionは###なしで35字以上、背景と含意、結論と理由または次行動を含める。独自block keyは禁止。plain_image_row/plain_image_colは生成で選ばない。\n\n## TEXT_INTEGRITY\nDECK_SOURCE_JSON内の日本語が??????やUnicode replacement characterに置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。"
     },
     "repair_text.packed.010": {
       "section": "FINAL_SELF_CHECK",
@@ -861,7 +861,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
     },
     "repair_text.packed.012": {
       "section": "FINAL_SELF_CHECK",
