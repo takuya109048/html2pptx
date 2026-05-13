@@ -2,72 +2,37 @@
   "version": "deck-from-source-context-v1",
   "max_chunk_chars": 800,
   "max_console_chars": 800,
-  "usage": "Run context_loader.py init yes|no, then advance <ACK>. Multiple code interpreter calls in the same turn are OK, but run only one context-emitting loader command inside each code block. If output ends with NEXT 002/006 ACK xxxxxxxx, stop that execution; in the next execution run advance xxxxxxxx. When output ends with DONE, do that phase work before phase-done <ACK>. Do not read all phases at the beginning.",
+  "usage": "Run context_loader.py start <phase>, then context_loader.py next until DONE. Chunks are packed close to the 800-char console limit to reduce code interpreter calls.",
   "phases": {
-    "yes_plan": {
-      "description": "Yes時。ソース分析、保存名、構成フレーム、密度方針の直前に読む。",
+    "turn_b_yes": {
+      "description": "nanobanana2 Yesでdeck_source.jsonとPPTXを生成する前に読む全詳細ルール。",
       "chunks": [
         "turn_b_yes.packed.001",
         "turn_b_yes.packed.002",
         "turn_b_yes.packed.003",
         "turn_b_yes.packed.004",
         "turn_b_yes.packed.005",
-        "turn_b_yes.packed.006"
-      ]
-    },
-    "yes_schema": {
-      "description": "Yes時。root、summary、slides、JSON骨格を書く直前に読む。",
-      "chunks": [
+        "turn_b_yes.packed.006",
         "turn_b_yes.packed.007",
         "turn_b_yes.packed.008",
         "turn_b_yes.packed.009",
-        "turn_b_yes.packed.010"
-      ]
-    },
-    "yes_layout": {
-      "description": "Yes時。layoutと必須blocksを選ぶ直前に読む。",
-      "chunks": [
+        "turn_b_yes.packed.010",
         "turn_b_yes.packed.011",
         "turn_b_yes.packed.012",
         "turn_b_yes.packed.013",
-        "turn_b_yes.packed.014"
-      ]
-    },
-    "yes_image": {
-      "description": "Yes時。nanobanana2のimage_promptとicon_promptを書く直前に読む。",
-      "chunks": [
+        "turn_b_yes.packed.014",
         "turn_b_yes.packed.015",
         "turn_b_yes.packed.016",
-        "turn_b_yes.packed.017"
-      ]
-    },
-    "yes_body": {
-      "description": "Yes時。blocks本文の密度と表現を作る直前に読む。",
-      "chunks": [
+        "turn_b_yes.packed.017",
         "turn_b_yes.packed.018",
         "turn_b_yes.packed.019",
-        "turn_b_yes.packed.020"
-      ]
-    },
-    "yes_emphasis": {
-      "description": "Yes時。太字スキムラインと強調表現を入れる直前に読む。",
-      "chunks": [
+        "turn_b_yes.packed.020",
         "turn_b_yes.packed.021",
         "turn_b_yes.packed.022",
         "turn_b_yes.packed.023",
-        "turn_b_yes.packed.024"
-      ]
-    },
-    "yes_notes": {
-      "description": "Yes時。speaker noteを書く直前に読む。",
-      "chunks": [
+        "turn_b_yes.packed.024",
         "turn_b_yes.packed.025",
-        "turn_b_yes.packed.026"
-      ]
-    },
-    "yes_check_convert": {
-      "description": "Yes時。FINAL_SELF_CHECKとPPTX変換の直前に読む。",
-      "chunks": [
+        "turn_b_yes.packed.026",
         "turn_b_yes.packed.027",
         "turn_b_yes.packed.028",
         "turn_b_yes.packed.029",
@@ -75,63 +40,33 @@
         "turn_b_yes.packed.031"
       ]
     },
-    "no_plan": {
-      "description": "No時。ソース分析、保存名、構成フレーム、密度方針の直前に読む。",
+    "turn_b_no": {
+      "description": "nanobanana2 Noでdeck_source.jsonとPPTXを生成する前に読む全詳細ルール。",
       "chunks": [
         "turn_b_no.packed.001",
         "turn_b_no.packed.002",
         "turn_b_no.packed.003",
         "turn_b_no.packed.004",
         "turn_b_no.packed.005",
-        "turn_b_no.packed.006"
-      ]
-    },
-    "no_schema": {
-      "description": "No時。root、summary、slides、JSON骨格を書く直前に読む。",
-      "chunks": [
+        "turn_b_no.packed.006",
         "turn_b_no.packed.007",
         "turn_b_no.packed.008",
         "turn_b_no.packed.009",
-        "turn_b_no.packed.010"
-      ]
-    },
-    "no_layout": {
-      "description": "No時。layoutと必須blocksを選ぶ直前に読む。",
-      "chunks": [
+        "turn_b_no.packed.010",
         "turn_b_no.packed.011",
         "turn_b_no.packed.012",
         "turn_b_no.packed.013",
-        "turn_b_no.packed.014"
-      ]
-    },
-    "no_body": {
-      "description": "No時。blocks本文の密度と表現を作る直前に読む。",
-      "chunks": [
+        "turn_b_no.packed.014",
         "turn_b_no.packed.015",
         "turn_b_no.packed.016",
-        "turn_b_no.packed.017"
-      ]
-    },
-    "no_emphasis": {
-      "description": "No時。太字スキムラインと強調表現を入れる直前に読む。",
-      "chunks": [
+        "turn_b_no.packed.017",
         "turn_b_no.packed.018",
         "turn_b_no.packed.019",
         "turn_b_no.packed.020",
-        "turn_b_no.packed.021"
-      ]
-    },
-    "no_notes": {
-      "description": "No時。文字化け確認とspeaker noteを書く直前に読む。",
-      "chunks": [
+        "turn_b_no.packed.021",
         "turn_b_no.packed.022",
         "turn_b_no.packed.023",
-        "turn_b_no.packed.024"
-      ]
-    },
-    "no_check_convert": {
-      "description": "No時。FINAL_SELF_CHECKとPPTX変換の直前に読む。",
-      "chunks": [
+        "turn_b_no.packed.024",
         "turn_b_no.packed.025",
         "turn_b_no.packed.026",
         "turn_b_no.packed.027",
@@ -199,7 +134,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONは詳細ルールを800文字以内の小片として保持する。AIはcontext_loader.py init yes/noで開始し、advance ACKで1チャンクずつ読み、DONEまで読んでからその作業だけを行う。同じターンで複数回code interpreterを呼ぶのはよいが、1つのコード本文内でローダーを複数回起動しない。context.mdだけでは構成を作らない。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n2. ターンBではplan、schema、layout、image、body、emphasis、notes、check_convertを順番に、直前読み込みと作業の組で進める。\n3. planフェーズDONE前に章立て、枚数、保存名、構成案を作らない。\n4. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。不明部分は自然な汎用値で補う。\n5. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n6. slides配列には本文スライドだけを書く。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名、続けてnextを1回ずつ実行し、DONEまで読んでから生成する。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは該当フェーズをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、ダウンロードリンク提示まで完了する。\n3. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。必要ならソースから推定し、不明部分は自然な汎用値で補う。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_yes.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -274,7 +209,7 @@
         "json_schema.009",
         "json_schema.010"
       ],
-      "text": "    \"image_prompt\": \"6:5資料向けフラット図解。ルール、判断分岐、再利用を矢印で接続。画像内文字は次の3語だけを使用する: ルール、判断、再利用。長文、追加ラベルは入れない。文字が崩れても形と配置で伝わる。\"\n  },\n  \"slides\": [\n    {\n      \"section\": \"背景と前提\",\n      \"layout\": \"bg_3card\",\n      \"title\": \"CLAUDE.mdはセッション開始時の行動基準である\",\n      \"message\": \"毎回の説明を標準動作へ変える\",\n      \"note\": \"読み上げ原稿を書く。\",\n      \"blocks\": {\n\n        \"section\": \"**ルールブックとして扱う。** 作業開始時の常設前提である。\",\n        \"card-a\": \"### 反復説明\\n毎回の注意をルール化する。\\n- 禁止操作を共有\\n- 必須手順を固定\",\n        \"card-b\": \"### 判断基準\\n案件基準で提案させる。\\n- スタックを固定\\n- 優先順位を渡す\",\n\n        \"card-c\": \"### 書きすぎ防止\\n守る内容だけを残す。\\n- 一時的な好みを外す\\n- 古い前提を削る\"\n      },\n      \"icon_prompt\": \"3:1横長アイコンストリップ。等幅アイコンを左、中、右に配置。画像内文字は次の3語だけを使用する: 反復、判断、削減。長文、追加ラベルは入れない。文字が崩れても配置で伝わる。\"\n    }\n  ]\n}"
+      "text": "    \"image_prompt\": \"6:5の資料向けフラット図解。白背景、ルールブック、判断分岐、再利用ワークフローの3要素を配置し、外周余白は小さくする。文字は入れない。\"\n  },\n  \"slides\": [\n    {\n      \"section\": \"背景と前提\",\n      \"layout\": \"bg_3card\",\n      \"title\": \"CLAUDE.mdはセッション開始時の行動基準である\",\n      \"message\": \"毎回の説明を標準動作へ変える\",\n      \"note\": \"読み上げ原稿を書く。\",\n      \"blocks\": {\n\n        \"section\": \"**ルールブックとして扱う。** CLAUDE.mdは作業開始時に読まれる常設の前提である。\",\n        \"card-a\": \"### 反復説明を減らす\\n毎回言う注意をルール化する。\\n- 禁止操作を先に共有する\\n- 必須コマンドを計画へ組み込ませる\",\n        \"card-b\": \"### 判断基準をそろえる\\n一般論ではなく案件基準で提案させる。\\n- 技術スタックを固定する\\n- 設計方針の優先順位を渡す\",\n\n        \"card-c\": \"### 書きすぎを防ぐ\\n常に守る内容だけを残す。\\n- 一時的な好みを混ぜない\\n- 古い前提を削る\"\n      },\n      \"icon_prompt\": \"3:1の横長アイコンストリップ。等幅の正方形アイコンを左、中央、右に配置する。\"\n    }\n  ]\n}"
     },
     "turn_b_yes.packed.011": {
       "section": "LAYOUT_RULES",
@@ -314,7 +249,7 @@
         "nanobanana_rules.001",
         "nanobanana_rules.002"
       ],
-      "text": "## NANOBANANA_RULES\n\nnanobanana2がYesの場合:\n- slides配列の各スライドは画像生成導線を持つ。Aはplain_2colでblocks.card-bにnanobananaプロンプトを置く。Bはcard系またはflow系でicon_promptを置く。\n- 3枚目以降にplain_1colを使わない。\n- plain_image_col、image_label_1、画像プレースホルダーは使わない。\n\nplain_2colのプロンプト欄:\n- blocks.card-aへ表示本文を書く。\n- blocks.card-bへ「### nanobananaプロンプト」に続けてプロンプトを書く。JSON文字列なのでフェンスは不要。\n- プロンプト本文は日本語で書き、CreateやGenerateなどの英語文で始めない。\n- summary.image_promptもこのplain_2col説明図ルールに従う。\n- プロンプトには6:5、白背景、資料向けフラット図解、外周3から5%の安全余白だけ、キャンバス全体を密に使う、上下左右の大きな空白やレターボックスを作らない、を含める。"
+      "text": "## NANOBANANA_RULES\n\nnanobanana2がYesの場合:\n- slides配列の各スライドは画像生成導線を持つ。Aはplain_2colでblocks.card-bにnanobananaプロンプトを置く。Bはcard系またはflow系でicon_promptを置く。\n- 3枚目以降にplain_1colを使わない。\n- plain_image_col、image_label_1、画像プレースホルダーは使わない。\n\nplain_2colのプロンプト欄:\n- blocks.card-aへ表示本文を書く。\n\n- blocks.card-bへ「### nanobananaプロンプト」に続けてインデント式コードブロック相当のプロンプトを書く。JSON文字列なのでフェンスは不要。\n- プロンプト本文は日本語で書き、CreateやGenerateなどの英語文で始めない。画像内文字も短い日本語ラベルにする。\n- summary.image_promptもこのplain_2col説明図ルールに従う。\n- プロンプトには6:5、白背景、資料向けフラット図解、外周3から5%の安全余白だけ、キャンバス全体を密に使う、上下左右の大きな空白やレターボックスを作らない、を含める。"
     },
     "turn_b_yes.packed.016": {
       "section": "NANOBANANA_RULES",
@@ -322,7 +257,7 @@
         "nanobanana_rules.003",
         "nanobanana_rules.004"
       ],
-      "text": "- 抽象語だけにせず、人物、画面、書類、矢印、付箋、表、グラフなど具体的な構成要素を3から6個指定する。\n- 画像は補助ではなく主図である。title、message、blocks、noteから主張、要素、関係、流れ、判断基準、注意点、結論を抽出し、単純なアイコン集合ではない1枚の説明図にする。\n- 画像内文字は許可する。ただし指定した短い補助ラベルだけに限定し、最大3から5個、各2から6文字程度にする。\n- プロンプト内に「画像内文字は次の語だけを使用する: ...」と明記し、長文、文章、数値表、細かい注釈、固有名詞の羅列、追加ラベルを入れないと書く。\n- 文字が多少崩れても意味が伝わるよう、形、矢印、配置、色分けで主張、関係、流れを表現する。\n\ncard系とflow系のicon_prompt:\n\n- 対象はlist_3card、flow_3step、flow_4step、diffuse_3card、converge_3card、bg_3card。\n- icon_promptは日本語で独立フィールドに書く。noteに埋め込まない。deck_source_to_json.pyがnote末尾へ機械的に結合する。\n- 3要素は3:1、flow_4stepは4:1の横長キャンバスに等幅アイコンを左から並べる。\n- icon_promptに6:5を入れない。"
+      "text": "- 抽象語だけにせず、人物、画面、書類、矢印、付箋、表、グラフなど具体的な構成要素を3から6個指定する。\n- 画像は補助ではなく主図である。title、message、blocks、noteから主張、要素、関係、流れ、判断基準、注意点、結論を抽出し、単純なアイコン集合ではない1枚の説明図にする。\n- 日本語の短いタグ、ラベル、名前、1行説明を少量入れてよい。例は「入力」「判断」「注意」「完了」「ルール」「メモ」などである。\n\ncard系とflow系のicon_prompt:\n\n- 対象はlist_3card、flow_3step、flow_4step、diffuse_3card、converge_3card、bg_3card。\n- icon_promptは日本語で独立フィールドに書く。noteに埋め込まない。deck_source_to_json.pyがnote末尾へ機械的に結合する。\n- 3要素は3:1の横長キャンバスに、等幅の正方形アイコン3個を左から順に並べる。\n- flow_4stepは4:1の横長キャンバスに、等幅の正方形アイコン4個を左から順に並べる。\n- icon_promptに6:5を入れない。"
     },
     "turn_b_yes.packed.017": {
       "section": "NANOBANANA_RULES+CONTENT_LIMITS",
@@ -331,7 +266,7 @@
         "nanobanana_rules.006",
         "content_limits.001"
       ],
-      "text": "- 各アイコンは同じサイズ、同じ余白、同じ色調、同じ視点にする。各アイコンの中心を各区画の中央に置く。\n- 背景は白系にし、区画間には薄いガイド余白を置く。外周余白は小さくし、上下に大きな余白を作らない。\n- アイコンラベルを使う場合は各アイコン下に2から4文字の日本語タグを置く。使うラベルを左から順に明記し、それ以外の文字を増やさない。\n- 生成後に水平等分でトリミングされる前提で、左、中央、右の順番を明記する。4個の場合は1番目から4番目までを明記する。\n\n品質:\n1. 具体性。会議、チェックリスト、グラフ、端末、書類、付箋、画面など見えるものに落とす。\n\n2. スタイル統一。plain_2col用は資料向けフラット図解、card/step用は横長アイコンストリップとして一貫させる。\n3. 画像内文字は指定した短い日本語ラベルだけにする。card/step用は2から4文字タグに留め、ラベルなしでも意味が通るアイコンにする。\n4. 図解に向かない抽象概念は、tableやflowなど画像不要レイアウトへ逃がす。\n\n## CONTENT_LIMITS\n\nカードは件数、視覚行数、本文文字量を同時に見る。収めるために内容を薄くしない。薄くなる場合はレイアウトを変えるか分割する。PPTX変換では--strict-densityを使うため、下表の文字量目安を下回る表示本文はエラーになり、変換前にDECK_SOURCE_JSONを直す必要がある。\n\n| layout | 通常目標 | 文字量目安 |\n|-------|----------|-----------|\n| list_3card | リード1文と3から4項目 | 各カード100字以上 |"
+      "text": "- 各アイコンは同じサイズ、同じ余白、同じ色調、同じ視点にする。各アイコンの中心を各区画の中央に置く。\n- 背景は白または透明感のある白にし、区画間には薄いガイド余白を置く。外周余白は小さくし、上下に大きな余白を作らない。\n- 日本語ラベルは原則入れない。必要時のみ各アイコンの下に2から4文字の短い日本語タグを置く。\n- 生成後に水平等分でトリミングされる前提で、左、中央、右の順番を明記する。4個の場合は1番目から4番目までを明記する。\n\n品質:\n1. 具体性。会議、チェックリスト、グラフ、端末、書類、付箋、画面など見えるものに落とす。\n\n2. スタイル統一。plain_2col用は資料向けフラット図解、card/step用は横長アイコンストリップとして一貫させる。\n3. plain_2col用の画像内文字は短い日本語だけにする。card/step用は原則文字なし、必要時のみ2から4文字タグに留める。\n4. 図解に向かない抽象概念は、tableやflowなど画像不要レイアウトへ逃がす。\n\n## CONTENT_LIMITS\n\nカードは件数、視覚行数、本文文字量を同時に見る。収めるために内容を薄くしない。薄くなる場合はレイアウトを変えるか分割する。PPTX変換では--strict-densityを使うため、下表の文字量目安を下回る表示本文はエラーになり、変換前にDECK_SOURCE_JSONを直す必要がある。\n\n| layout | 通常目標 | 文字量目安 |\n|-------|----------|-----------|\n| list_3card | リード1文と3から4項目 | 各カード100字以上 |"
     },
     "turn_b_yes.packed.018": {
       "section": "CONTENT_LIMITS",
@@ -448,7 +383,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換は--require-context-doneとstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "turn_b_no.packed.001": {
       "section": "OVERVIEW",
@@ -456,7 +391,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONは詳細ルールを800文字以内の小片として保持する。AIはcontext_loader.py init yes/noで開始し、advance ACKで1チャンクずつ読み、DONEまで読んでからその作業だけを行う。同じターンで複数回code interpreterを呼ぶのはよいが、1つのコード本文内でローダーを複数回起動しない。context.mdだけでは構成を作らない。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n2. ターンBではplan、schema、layout、image、body、emphasis、notes、check_convertを順番に、直前読み込みと作業の組で進める。\n3. planフェーズDONE前に章立て、枚数、保存名、構成案を作らない。\n4. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。不明部分は自然な汎用値で補う。\n5. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n6. slides配列には本文スライドだけを書く。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名、続けてnextを1回ずつ実行し、DONEまで読んでから生成する。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは該当フェーズをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、ダウンロードリンク提示まで完了する。\n3. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。必要ならソースから推定し、不明部分は自然な汎用値で補う。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_no.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -531,7 +466,7 @@
         "json_schema.009",
         "json_schema.010"
       ],
-      "text": "    \"image_prompt\": \"6:5資料向けフラット図解。ルール、判断分岐、再利用を矢印で接続。画像内文字は次の3語だけを使用する: ルール、判断、再利用。長文、追加ラベルは入れない。文字が崩れても形と配置で伝わる。\"\n  },\n  \"slides\": [\n    {\n      \"section\": \"背景と前提\",\n      \"layout\": \"bg_3card\",\n      \"title\": \"CLAUDE.mdはセッション開始時の行動基準である\",\n      \"message\": \"毎回の説明を標準動作へ変える\",\n      \"note\": \"読み上げ原稿を書く。\",\n      \"blocks\": {\n\n        \"section\": \"**ルールブックとして扱う。** 作業開始時の常設前提である。\",\n        \"card-a\": \"### 反復説明\\n毎回の注意をルール化する。\\n- 禁止操作を共有\\n- 必須手順を固定\",\n        \"card-b\": \"### 判断基準\\n案件基準で提案させる。\\n- スタックを固定\\n- 優先順位を渡す\",\n\n        \"card-c\": \"### 書きすぎ防止\\n守る内容だけを残す。\\n- 一時的な好みを外す\\n- 古い前提を削る\"\n      },\n      \"icon_prompt\": \"3:1横長アイコンストリップ。等幅アイコンを左、中、右に配置。画像内文字は次の3語だけを使用する: 反復、判断、削減。長文、追加ラベルは入れない。文字が崩れても配置で伝わる。\"\n    }\n  ]\n}"
+      "text": "    \"image_prompt\": \"6:5の資料向けフラット図解。白背景、ルールブック、判断分岐、再利用ワークフローの3要素を配置し、外周余白は小さくする。文字は入れない。\"\n  },\n  \"slides\": [\n    {\n      \"section\": \"背景と前提\",\n      \"layout\": \"bg_3card\",\n      \"title\": \"CLAUDE.mdはセッション開始時の行動基準である\",\n      \"message\": \"毎回の説明を標準動作へ変える\",\n      \"note\": \"読み上げ原稿を書く。\",\n      \"blocks\": {\n\n        \"section\": \"**ルールブックとして扱う。** CLAUDE.mdは作業開始時に読まれる常設の前提である。\",\n        \"card-a\": \"### 反復説明を減らす\\n毎回言う注意をルール化する。\\n- 禁止操作を先に共有する\\n- 必須コマンドを計画へ組み込ませる\",\n        \"card-b\": \"### 判断基準をそろえる\\n一般論ではなく案件基準で提案させる。\\n- 技術スタックを固定する\\n- 設計方針の優先順位を渡す\",\n\n        \"card-c\": \"### 書きすぎを防ぐ\\n常に守る内容だけを残す。\\n- 一時的な好みを混ぜない\\n- 古い前提を削る\"\n      },\n      \"icon_prompt\": \"3:1の横長アイコンストリップ。等幅の正方形アイコンを左、中央、右に配置する。\"\n    }\n  ]\n}"
     },
     "turn_b_no.packed.011": {
       "section": "LAYOUT_RULES",
@@ -681,7 +616,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換は--require-context-doneとstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "repair_emphasis.packed.001": {
       "section": "HIGHLIGHT_PLANNING",
@@ -754,7 +689,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換は--require-context-doneとstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "repair_density.packed.001": {
       "section": "SOURCE_ENRICHMENT",
@@ -836,7 +771,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換は--require-context-doneとstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "repair_text.packed.001": {
       "section": "JSON_SCHEMA",
@@ -868,7 +803,7 @@
         "json_schema.007",
         "json_schema.008"
       ],
-      "text": "      \"card-a\": \"### 結論\\nCLAUDE.mdは **毎回守る行動基準** を固定し、AIの出力を案件の前提へ寄せるためのルールブックである。\\n- **残す内容** は禁止操作、必須手順、品質基準のように毎回効くものへ絞る\\n- *一時的な好み* や古い前提は混ぜず、必要なら `context.md` 側へ逃がす\\n- ~~長い説明を全部入れる~~ のではなく、判断が変わる条件だけを残す\\n- 以降は設計、配置、運用の順に、どう書けば再利用しやすいかを見る\"\n    },\n\n    \"image_prompt\": \"6:5資料向けフラット図解。ルール、判断分岐、再利用を矢印で接続。画像内文字は次の3語だけを使用する: ルール、判断、再利用。長文、追加ラベルは入れない。文字が崩れても形と配置で伝わる。\"\n  },\n  \"slides\": [\n    {\n      \"section\": \"背景と前提\",\n      \"layout\": \"bg_3card\",\n      \"title\": \"CLAUDE.mdはセッション開始時の行動基準である\",\n      \"message\": \"毎回の説明を標準動作へ変える\",\n      \"note\": \"読み上げ原稿を書く。\",\n      \"blocks\": {"
+      "text": "      \"card-a\": \"### 結論\\nCLAUDE.mdは **毎回守る行動基準** を固定し、AIの出力を案件の前提へ寄せるためのルールブックである。\\n- **残す内容** は禁止操作、必須手順、品質基準のように毎回効くものへ絞る\\n- *一時的な好み* や古い前提は混ぜず、必要なら `context.md` 側へ逃がす\\n- ~~長い説明を全部入れる~~ のではなく、判断が変わる条件だけを残す\\n- 以降は設計、配置、運用の順に、どう書けば再利用しやすいかを見る\"\n    },\n\n    \"image_prompt\": \"6:5の資料向けフラット図解。白背景、ルールブック、判断分岐、再利用ワークフローの3要素を配置し、外周余白は小さくする。文字は入れない。\"\n  },\n  \"slides\": [\n    {\n      \"section\": \"背景と前提\",\n      \"layout\": \"bg_3card\",\n      \"title\": \"CLAUDE.mdはセッション開始時の行動基準である\",\n      \"message\": \"毎回の説明を標準動作へ変える\",\n      \"note\": \"読み上げ原稿を書く。\",\n      \"blocks\": {"
     },
     "repair_text.packed.005": {
       "section": "JSON_SCHEMA+LAYOUT_RULES",
@@ -934,7 +869,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換は--require-context-doneとstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "setup.packed.001": {
       "section": "SETUP_SCRIPT",

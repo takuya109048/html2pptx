@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import copy
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -48,20 +47,6 @@ TITLE_MAX_COMPACT_LENGTH = 28
 TITLE_STATEMENT_ENDING_RE = re.compile(
     r"(である|となる|になる|する|している|していく|できる|される|必要がある|"
     r"求められる|変える|避ける|置く|使う|示す|見る|読む|作る|守る|分ける|補う)$"
-)
-NANOBANANA_TEXT_LABEL_RE = re.compile(
-    r"(画像内文字|画像内の文字|画像内テキスト|日本語ラベル|短いラベル|タグ)"
-)
-NANOBANANA_TEXT_LIMIT_RE = re.compile(
-    r"((次の|以下|指定した|指定する).{0,40}(だけ|のみ|限定)|"
-    r"(だけ|のみ|限定).{0,40}(使用|使う|入れる))"
-)
-NANOBANANA_TEXT_AVOID_RE = re.compile(
-    r"(長文|文章|数値表|細かい注釈|追加ラベル|固有名詞)"
-)
-NANOBANANA_TEXT_FALLBACK_RE = re.compile(
-    r"((文字|ラベル).{0,16}(崩れても|読めなくても)|"
-    r"(形|矢印|配置|色分け|構図).{0,24}(意味|伝わる|表現))"
 )
 WEAK_TITLE_TERMS = {
     "全体像",
@@ -181,11 +166,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Reject replacement characters and suspicious runs of question marks.",
     )
-    parser.add_argument(
-        "--require-context-done",
-        action="store_true",
-        help="Require deck_context_state.json to show check_convert context was read to DONE.",
-    )
     return parser.parse_args()
 
 
@@ -210,51 +190,6 @@ def load_source(path: Path, assets_dir: Path | None) -> dict[str, Any]:
                 raise ValueError("deck_source.json root must be an object.")
             return data
     raise FileNotFoundError(path)
-
-
-def context_state_candidates(input_json: Path, assets_dir: Path | None) -> list[Path]:
-    candidates: list[Path] = []
-    for env_name in ("DECK_FROM_SOURCE_OUTPUT_DIR", "DECK_OUTPUT_DIR"):
-        env_dir = os.environ.get(env_name)
-        if env_dir:
-            candidates.append(Path(env_dir) / "deck_context_state.json")
-    candidates.append(input_json.parent / "deck_context_state.json")
-    if assets_dir is not None:
-        candidates.append(assets_dir / "deck_context_state.json")
-    mnt = Path("/mnt/data")
-    if mnt.exists():
-        candidates.append(mnt / "deck_context_state.json")
-    candidates.append(Path.cwd() / "deck_context_state.json")
-    seen: set[Path] = set()
-    unique: list[Path] = []
-    for candidate in candidates:
-        resolved = candidate.resolve() if candidate.exists() else candidate
-        if resolved not in seen:
-            seen.add(resolved)
-            unique.append(candidate)
-    return unique
-
-
-def require_context_done(input_json: Path, assets_dir: Path | None) -> bool:
-    for candidate in context_state_candidates(input_json, assets_dir):
-        if not candidate.exists():
-            continue
-        try:
-            state = json.loads(candidate.read_text(encoding="utf-8"))
-        except Exception as exc:
-            warn(f"Failed to read deck context state: {exc}")
-            return False
-        done_phases = set(state.get("completed_phases") or [])
-        current_phase = str(state.get("phase", ""))
-        check_phases = {"yes_check_convert", "no_check_convert"}
-        if done_phases & check_phases:
-            return True
-        if current_phase in check_phases and state.get("phase_done"):
-            return True
-        warn("check_convert context is not DONE. Read it with context_loader.py before converting.")
-        return False
-    warn("deck_context_state.json not found. Run context_loader.py through check_convert before converting.")
-    return False
 
 
 def as_text(value: Any) -> str:
@@ -542,37 +477,6 @@ def validate_japanese_nanobanana_prompt(label: str, prompt: str) -> int:
         warn(f"{label} language failed: {problem}. Write nanobanana prompts in Japanese.")
         return 1
     return 0
-
-
-def validate_nanobanana_text_guidance(label: str, prompt: str) -> int:
-    body = nanobanana_prompt_body(prompt).strip()
-    errors = 0
-    if not NANOBANANA_TEXT_LABEL_RE.search(body):
-        warn(
-            f"{label} text guidance failed: define image text as short labels "
-            "instead of free-form generated text."
-        )
-        errors += 1
-    if not NANOBANANA_TEXT_LIMIT_RE.search(body):
-        warn(
-            f"{label} text guidance failed: limit image text to specified "
-            "labels only, such as '画像内文字は次の語だけを使用する: ...'."
-        )
-        errors += 1
-    if not NANOBANANA_TEXT_AVOID_RE.search(body):
-        warn(
-            f"{label} text guidance failed: explicitly avoid long sentences, "
-            "numeric tables, fine annotations, proper-noun lists, and extra labels."
-        )
-        errors += 1
-    if not NANOBANANA_TEXT_FALLBACK_RE.search(body):
-        warn(
-            f"{label} text guidance failed: make the diagram understandable "
-            "through shapes, arrows, placement, color, or composition even if "
-            "the text degrades."
-        )
-        errors += 1
-    return errors
 
 
 def note_with_icon(slide_def: dict[str, Any], nanobanana2: bool) -> str:
@@ -885,7 +789,6 @@ def validate_summary(
             errors += 1
         else:
             errors += validate_japanese_nanobanana_prompt("summary image prompt", card_b)
-            errors += validate_nanobanana_text_guidance("summary image prompt", card_b)
     if not card_a:
         return errors
     if strict_density:
@@ -1020,10 +923,6 @@ def validate_source(
                         f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt",
                         card_b,
                     )
-                    errors += validate_nanobanana_text_guidance(
-                        f"Slide #{index} layout 'plain_2col' card-b nanobanana prompt",
-                        card_b,
-                    )
             if layout in NANOBANANA_ICON_LAYOUTS:
                 prompt = as_text(slide.get("icon_prompt")).strip()
                 if not prompt:
@@ -1034,10 +933,6 @@ def validate_source(
                     errors += 1
                 else:
                     errors += validate_japanese_nanobanana_prompt(
-                        f"Slide #{index} layout '{layout}' icon_prompt",
-                        prompt,
-                    )
-                    errors += validate_nanobanana_text_guidance(
                         f"Slide #{index} layout '{layout}' icon_prompt",
                         prompt,
                     )
@@ -1165,8 +1060,6 @@ def convert_source_to_slides(source: dict[str, Any], templates: dict[str, Any], 
 def main() -> int:
     args = parse_args()
     assets_dir = args.assets_dir
-    if args.require_context_done and not require_context_done(args.input_json, assets_dir):
-        return 1
     if assets_dir is not None and args.templates == Path(__file__).resolve().parent / "templates.json":
         args.templates = _find_prefixed(assets_dir, "templates.json")
     templates = load_json(args.templates)
