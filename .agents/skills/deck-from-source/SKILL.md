@@ -23,14 +23,12 @@ file searchが使える環境では次だけを実行し、取得したcontext.m
 
 Codexではローカルのcontext.mdを毎ターン読み直す。context.mdを読まずに分析、生成、変換、検証へ進まない。context.mdだけを読んだ状態では、スライド構成、章立て、枚数、保存名、JSON骨格を作らない。
 
-Custom GPTsではチャット冒頭でresolve_uploads.pyをcode interpreterで1回実行し、アップロード済みファイル名を安定化する。code本文の先頭には、何を実行するかが分かる短い日本語コメントを書く。code_interpreter_log.mdは日本時間のタイムスタンプ付き自然文一文で追記する。すべてのcode interpreter呼び出しで、開始、正常完了、例外発生をappend_logまたはcontext_loader.py log-eventで記録する。
+Custom GPTsではチャット冒頭でresolve_uploads.pyをcode interpreterで1回実行し、アップロード済みファイル名を安定化する。code本文の先頭には、何を実行するかが分かる短い日本語コメントを書く。code_interpreter_log.mdは日本時間のタイムスタンプ付き自然文一文で追記する。
 
 ## 実行原則
 
 新しい原文ソースを受け取り、nanobanana2方針が未確定なら、context.mdのターンAに従う。
 
 Yes/No方針を受け取ったら、context.mdのターンBに従う。必要な外部JSONコンテキストはcontext_loader.py init yes、init no、advance <ACK>、phase-done <ACK>で1チャンクずつ読む。read、start、next、get、フェーズ名の直接指定は旧APIなので使わない。同じターンでcode interpreterを複数回呼び、1チャンクずつ読むのはよい。1つのcode interpreterコード本文内で、ループや複数subprocessなどによりローダーを2回以上起動しない。plan相当フェーズのDONE前にスライド構成を作らない。
-
-PPTX化前にcontext.mdの指定どおり、deck_source_to_json.py --preflight --strict-allでJSON骨格を検証する。PREFLIGHT_OKが出るまでPPTX変換へ進まず、schema系エラーはrepair schemaで修復する。
 
 最終出力はcontext.mdの指定どおり、deck_source.json、PPTX、code_interpreter_log.mdのリンクを提示する。

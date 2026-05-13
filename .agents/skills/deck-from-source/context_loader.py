@@ -45,7 +45,6 @@ FLOW_PHASES: dict[str, list[str]] = {
     ],
     "repair_emphasis": ["repair_emphasis"],
     "repair_density": ["repair_density"],
-    "repair_schema": ["repair_schema"],
     "repair_text": ["repair_text"],
     "setup": ["setup"],
 }
@@ -53,7 +52,6 @@ FLOW_PHASES: dict[str, list[str]] = {
 FLOW_ALIASES = {
     "emphasis": "repair_emphasis",
     "density": "repair_density",
-    "schema": "repair_schema",
     "text": "repair_text",
 }
 
@@ -131,7 +129,6 @@ def human_phase(phase: str) -> str:
         repair_topic = {
             "emphasis": "強調表現の修復",
             "density": "情報密度の修復",
-            "schema": "JSON骨格の修復",
             "text": "文字化けの修復",
         }.get(phase.split("_", 1)[1], phase)
         return f"{repair_topic}フェーズ"
@@ -140,13 +137,6 @@ def human_phase(phase: str) -> str:
         "status": "進捗確認",
         "validate": "設定検証",
         "context_loader": "コンテキスト読み込み",
-        "activity": "作業活動",
-        "manual": "手動判断",
-        "file_search": "file search",
-        "resolve_uploads": "アップロード初期化",
-        "conversion": "変換処理",
-        "verification": "検証処理",
-        "download_links": "リンク提示",
     }
     return labels.get(phase, f"{phase}フェーズ")
 
@@ -160,11 +150,6 @@ def human_action(purpose: str) -> str:
         "context_loader status": "現在位置の確認",
         "context_loader validate": "設定の検証",
         "context_loader error": "エラー内容の記録",
-        "manual event": "活動ログの追記",
-        "gpt decision": "判断内容の記録",
-        "code interpreter start": "code interpreter実行開始の記録",
-        "code interpreter done": "code interpreter実行完了の記録",
-        "code interpreter error": "code interpreter失敗の記録",
     }
     return actions.get(purpose, compact_text(purpose))
 
@@ -220,11 +205,8 @@ def append_log(
     outputs: list[str] | None = None,
 ) -> None:
     try:
-        result_text = human_result(result)
-        if purpose in {"manual event", "gpt decision"} and not compact_text(result).startswith("ERROR "):
-            result_text = f"内容として「{compact_text(result)}」を残しました"
         fragments = [
-            f"{jst_timestamp()}（日本時間）に{human_phase(phase)}で{human_action(purpose)}を行い、{result_text}"
+            f"{jst_timestamp()}（日本時間）に{human_phase(phase)}で{human_action(purpose)}を行い、{human_result(result)}"
         ]
         io_text = human_io(inputs, outputs)
         if io_text:
@@ -458,39 +440,24 @@ def validate(data: dict[str, Any]) -> str:
 
 def legacy_error() -> None:
     raise SystemExit(
-        "ERROR legacy chunk API disabled. Use: init yes|no, advance <ACK>, phase-done <ACK>, repeat, status, validate, log-event <phase> <message>."
+        "ERROR legacy chunk API disabled. Use: init yes|no, advance <ACK>, phase-done <ACK>, repeat, status, validate."
     )
 
 
-def log_event(argv: list[str]) -> None:
-    if len(argv) < 4:
-        raise SystemExit("ERROR usage: log-event <phase> <message>")
-    phase = argv[2]
-    message = compact_text(" ".join(argv[3:]))
-    if not message:
-        raise SystemExit("ERROR usage: log-event <phase> <message>")
-    append_log(phase, "manual event", message)
-    emit("LOGGED")
-
-
 def main(argv: list[str]) -> None:
+    data = load_data()
     if len(argv) < 2:
-        emit("USAGE init yes|no|repair_emphasis|repair_density|repair_schema|repair_text|setup | advance <ACK> | phase-done <ACK> | repeat | status | validate | log-event <phase> <message>")
+        emit("USAGE init yes|no|repair_emphasis|repair_density|repair_text|setup | advance <ACK> | phase-done <ACK> | repeat | status | validate")
         return
 
     cmd = argv[1]
-    if cmd in {"log-event", "log"}:
-        log_event(argv)
-        return
-
-    data = load_data()
     if cmd == "init":
         if len(argv) != 3:
-            raise SystemExit("ERROR usage: init yes|no|repair_emphasis|repair_density|repair_schema|repair_text|setup")
+            raise SystemExit("ERROR usage: init yes|no|repair_emphasis|repair_density|repair_text|setup")
         init_flow(data, argv[2])
     elif cmd == "repair":
         if len(argv) != 3:
-            raise SystemExit("ERROR usage: repair emphasis|density|schema|text")
+            raise SystemExit("ERROR usage: repair emphasis|density|text")
         init_flow(data, normalize_flow(argv[2]))
     elif cmd == "setup":
         if len(argv) != 2:

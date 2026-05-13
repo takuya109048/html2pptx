@@ -167,14 +167,6 @@
         "repair_density.packed.010"
       ]
     },
-    "repair_schema": {
-      "description": "preflight、strict-blocks、JSON骨格エラーを修復するルール。",
-      "chunks": [
-        "repair_schema.packed.001",
-        "repair_schema.packed.002",
-        "repair_schema.packed.003"
-      ]
-    },
     "repair_text": {
       "description": "文字化け、markup、title、section、block系エラーを修復するルール。",
       "chunks": [
@@ -943,33 +935,6 @@
         "final_self_check.006"
       ],
       "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換は--require-context-doneとstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
-    },
-    "repair_schema.packed.001": {
-      "section": "REPAIR_SCHEMA",
-      "source_chunks": [
-        "json_schema.001",
-        "json_schema.002",
-        "layout_rules.001"
-      ],
-      "text": "## REPAIR_SCHEMA\n\npreflight、strict-blocks、deck_source preflight failed、unknown layout、missing block、root missing、summary missing、slides must be arrayが出たらrepair schemaを開始する。これは文章品質ではなくJSON契約の修復である。\n\n手順:\n1. エラーログを読み、root、summary、slides、layout、blocksのどこで落ちたかだけを見る。\n2. deck_source.json全体を書き直さず、該当オブジェクトだけ直す。\n3. rootにはtitle、subtitle、affiliation、presenter、date、note、summary、slidesだけを置く。\n4. slides配列には本文スライドだけを置き、表紙、サマリー、目次を入れない。\n5. 修復後は必ずpreflightを再実行し、OKまでPPTX化しない。"
-    },
-    "repair_schema.packed.002": {
-      "section": "REPAIR_SCHEMA",
-      "source_chunks": [
-        "layout_rules.001",
-        "layout_rules.002",
-        "layout_rules.003"
-      ],
-      "text": "layoutとblocksの対応を厳守する。\n\n必須blocks:\nplain_1col card-a。plain_2col card-a,card-b。list_3card card-a,card-b,card-c。flow_3step step-a,step-b,step-c。flow_4step step-a,step-b,step-c,step-d。diffuse_3card section,card-a,card-b,card-c。converge_3card card-a,card-b,card-c,conclusion。bg_3card section,card-a,card-b,card-c。table table。table_conclusion table,conclusion。compare_2col_3row compare。matrix_3x3 matrix。flow_matrix_3x3 flow_matrix。h_flow_matrix系 h_flow_matrix。\n\ntext、body、card、step、plain、matrixをcompareの代わりに置くことは禁止。"
-    },
-    "repair_schema.packed.003": {
-      "section": "REPAIR_SCHEMA",
-      "source_chunks": [
-        "layout_rules.004",
-        "layout_rules.005",
-        "final_self_check.005"
-      ],
-      "text": "blocksの型を直す。\n\n- card、step、plain、section、conclusionはMarkdown文字列にする。オブジェクトや配列の入れ子にしない。\n- table、matrix、flow_matrix、h_flow_matrix、compareは {\"head\": [...], \"rows\": [[...], ...]} にする。rowsを文字列、辞書、空配列にしない。\n- sectionとconclusionは小さな背景枠と結論枠なので、###見出しを使わない。\n- nanobanana2 Yesならplain_1colを使わず、plain_2colのcard-bに6:5プロンプト、card/flow系にicon_promptを置く。\n- schema修復後、deck_source_to_json.py --preflight --strict-allを実行し、PREFLIGHT_OKを確認する。"
     },
     "setup.packed.001": {
       "section": "SETUP_SCRIPT",

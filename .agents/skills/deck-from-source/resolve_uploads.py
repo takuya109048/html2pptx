@@ -21,43 +21,15 @@ glob を使うのは、本スクリプト自体もカスタムGPTs環境では
 
 from __future__ import annotations
 
-import datetime
-import os
 import re
 import shutil
 from pathlib import Path
 
 DATA_DIR = Path("/mnt/data")
-JST = datetime.timezone(datetime.timedelta(hours=9), "JST")
 
 # assistant- の直後のユニークIDは英数字のみを想定。
 # 元のファイル名にハイフンが含まれても正しく残すため、IDの範囲を明示する。
 PREFIX_RE = re.compile(r"^assistant-[A-Za-z0-9]+-(.+)$")
-
-
-def runtime_dir() -> Path:
-    env_dir = os.environ.get("DECK_FROM_SOURCE_OUTPUT_DIR") or os.environ.get("DECK_OUTPUT_DIR")
-    if env_dir:
-        path = Path(env_dir)
-    elif DATA_DIR.exists():
-        path = DATA_DIR
-    else:
-        path = Path.cwd()
-    path.mkdir(parents=True, exist_ok=True)
-    return path
-
-
-def jst_timestamp() -> str:
-    return datetime.datetime.now(datetime.timezone.utc).astimezone(JST).isoformat(timespec="seconds")
-
-
-def append_upload_log(message: str) -> None:
-    try:
-        sentence = f"{jst_timestamp()}（日本時間）にアップロード初期化でresolve_uploads.pyの活動を記録し、内容として「{message}」を残しました。"
-        with (runtime_dir() / "code_interpreter_log.md").open("a", encoding="utf-8") as f:
-            f.write("- " + sentence + "\n")
-    except Exception:
-        pass
 
 
 def resolve_uploads(data_dir: Path = DATA_DIR) -> list[tuple[str, str]]:
@@ -91,21 +63,14 @@ def resolve_uploads(data_dir: Path = DATA_DIR) -> list[tuple[str, str]]:
 
 
 def main() -> None:
-    append_upload_log("アップロード済みファイル名の安定化を開始しました")
-    try:
-        results = resolve_uploads()
-        if not results:
-            append_upload_log("コピー対象は0件で、既存ファイル名のまま処理を続行できる状態です")
-            print("[resolve_uploads] copied=0")
-            return
-        shown = ", ".join(dst_name for _, dst_name in results[:5])
-        more = "" if len(results) <= 5 else f", ... +{len(results) - 5}"
-        append_upload_log(f"{len(results)}件のアップロードファイルを安定名へコピーしました")
-        message = f"[resolve_uploads] copied={len(results)} files: {shown}{more}"
-        print(message[:380])
-    except Exception as exc:
-        append_upload_log(f"ERROR {type(exc).__name__}: {exc}")
-        raise
+    results = resolve_uploads()
+    if not results:
+        print("[resolve_uploads] copied=0")
+        return
+    shown = ", ".join(dst_name for _, dst_name in results[:5])
+    more = "" if len(results) <= 5 else f", ... +{len(results) - 5}"
+    message = f"[resolve_uploads] copied={len(results)} files: {shown}{more}"
+    print(message[:380])
 
 
 if __name__ == "__main__":
