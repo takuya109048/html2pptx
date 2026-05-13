@@ -11,6 +11,7 @@
         "turn_b_yes.packed.002",
         "turn_b_yes.packed.003",
         "turn_b_yes.packed.004",
+        "fit_review.001",
         "turn_b_yes.packed.005",
         "turn_b_yes.packed.006",
         "turn_b_yes.packed.007",
@@ -47,6 +48,7 @@
         "turn_b_no.packed.002",
         "turn_b_no.packed.003",
         "turn_b_no.packed.004",
+        "fit_review.001",
         "turn_b_no.packed.005",
         "turn_b_no.packed.006",
         "turn_b_no.packed.007",
@@ -241,7 +243,7 @@
         "layout_rules.007",
         "layout_rules.008"
       ],
-      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
+      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明や背景共有はplain_1colまたはplain_2col。nanobanana2 Yesでも画像やアイコンが理解を助けないならplain_1colを使う。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。背景が消えるなら直前に背景スライドを足す。"
     },
     "turn_b_yes.packed.015": {
       "section": "NANOBANANA_RULES",
@@ -249,7 +251,7 @@
         "nanobanana_rules.001",
         "nanobanana_rules.002"
       ],
-      "text": "## NANOBANANA_RULES\n\nnanobanana2がYesの場合:\n- slides配列の各スライドは画像生成導線を持つ。Aはplain_2colでblocks.card-bにnanobananaプロンプトを置く。Bはcard系またはflow系でicon_promptを置く。\n- 3枚目以降にplain_1colを使わない。\n- plain_image_col、image_label_1、画像プレースホルダーは使わない。\n\nplain_2colのプロンプト欄:\n- blocks.card-aへ表示本文を書く。\n\n- blocks.card-bへ「### nanobananaプロンプト」に続けてインデント式コードブロック相当のプロンプトを書く。JSON文字列なのでフェンスは不要。\n- プロンプト本文は日本語で書き、CreateやGenerateなどの英語文で始めない。画像内文字も短い日本語ラベルにする。\n- summary.image_promptもこのplain_2col説明図ルールに従う。\n- プロンプトには6:5、白背景、資料向けフラット図解、外周3から5%の安全余白だけ、キャンバス全体を密に使う、上下左右の大きな空白やレターボックスを作らない、を含める。"
+      "text": "## NANOBANANA_RULES\n\nnanobanana2がYesの場合:\n- 原則、各スライドは画像生成導線を持つ。Aはplain_2colでblocks.card-bにnanobananaプロンプトを置く。Bはcard系またはflow系でicon_promptを置く。\n- ただしFIT_REVIEWで構造化や画像化が理解を邪魔すると判断したらplain_1colを使ってよい。画像なしの説明スライドとして背景、理由、判断軸を表示本文へ厚く書く。\n- plain_image_col、image_label_1、画像プレースホルダーは使わない。\n\nplain_2colのプロンプト欄:\n- blocks.card-aへ表示本文を書く。\n\n- blocks.card-bへ「### nanobananaプロンプト」に続けてインデント式コードブロック相当のプロンプトを書く。JSON文字列なのでフェンスは不要。\n- プロンプト本文は日本語で書き、CreateやGenerateなどの英語文で始めない。画像内文字も短い日本語ラベルにする。\n- summary.image_promptもこのplain_2col説明図ルールに従う。\n- プロンプトには6:5、白背景、資料向けフラット図解、外周3から5%の安全余白だけ、キャンバス全体を密に使う、上下左右の大きな空白やレターボックスを作らない、を含める。"
     },
     "turn_b_yes.packed.016": {
       "section": "NANOBANANA_RULES",
@@ -383,7 +385,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesでplain_1colを使う場合は、FIT_REVIEW上の逃がし判断であり、背景、理由、判断軸が表示本文に戻っているかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "turn_b_no.packed.001": {
       "section": "OVERVIEW",
@@ -498,7 +500,7 @@
         "layout_rules.007",
         "layout_rules.008"
       ],
-      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
+      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明や背景共有はplain_1colまたはplain_2col。nanobanana2 Yesでも画像やアイコンが理解を助けないならplain_1colを使う。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。背景が消えるなら直前に背景スライドを足す。"
     },
     "turn_b_no.packed.015": {
       "section": "CONTENT_LIMITS",
@@ -616,7 +618,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesでplain_1colを使う場合は、FIT_REVIEW上の逃がし判断であり、背景、理由、判断軸が表示本文に戻っているかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "repair_emphasis.packed.001": {
       "section": "HIGHLIGHT_PLANNING",
@@ -689,7 +691,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesでplain_1colを使う場合は、FIT_REVIEW上の逃がし判断であり、背景、理由、判断軸が表示本文に戻っているかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "repair_density.packed.001": {
       "section": "SOURCE_ENRICHMENT",
@@ -771,7 +773,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesでplain_1colを使う場合は、FIT_REVIEW上の逃がし判断であり、背景、理由、判断軸が表示本文に戻っているかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "repair_text.packed.001": {
       "section": "JSON_SCHEMA",
@@ -836,7 +838,7 @@
         "layout_rules.006",
         "layout_rules.007"
       ],
-      "text": "- card、step、plainカラムの本文には、読み手が最初に見るべき短い語句を1つ以上太字にする。太字は見出しや箇条書き先頭のラベルではなく、本文中の判断軸、制約、行動、結論へ自然に置く。\n\nレイアウト選択:\n1. 3段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_3step。\n2. 4段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_4step。\n3. フラットな3要素ならlist_3card。\n4. 1つの共通テーマから3方向へ広がるならdiffuse_3card。\n\n5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:"
+      "text": "- card、step、plainカラムの本文には、読み手が最初に見るべき短い語句を1つ以上太字にする。太字は見出しや箇条書き先頭のラベルではなく、本文中の判断軸、制約、行動、結論へ自然に置く。\n\nレイアウト選択:\n1. 3段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_3step。\n2. 4段階の時系列、工程、変化で、各stepに目的や完了条件を置けるならflow_4step。\n3. フラットな3要素ならlist_3card。\n4. 1つの共通テーマから3方向へ広がるならdiffuse_3card。\n\n5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明や背景共有はplain_1colまたはplain_2col。nanobanana2 Yesでも画像やアイコンが理解を助けないならplain_1colを使う。\n\n重要:"
     },
     "repair_text.packed.009": {
       "section": "LAYOUT_RULES+TEXT_INTEGRITY",
@@ -869,7 +871,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesでplain_1colを使う場合は、FIT_REVIEW上の逃がし判断であり、背景、理由、判断軸が表示本文に戻っているかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
     },
     "setup.packed.001": {
       "section": "SETUP_SCRIPT",
@@ -887,6 +889,13 @@
         "setup_script.005"
       ],
       "text": "    \"to_pptx.py\",\n    \"template_engine_area.html\",\n    \"templates.json\",\n    \"design.json\",\n    \"logo.png\",\n    \"background.png\",\n]\n\ndef main() -> None:\n    missing = [f for f in FILES if not (SKILL_DIR / f).exists()]\n    if missing:\n\n        print(f\"[error] missing={len(missing)} first={missing[0]}\", file=sys.stderr)\n        sys.exit(1)\n    DEST_DIR.mkdir(parents=True, exist_ok=True)\n    for name in FILES:\n        shutil.copy2(SKILL_DIR / name, DEST_DIR / name)\n    print(f\"[setup_deck] copied={len(FILES)} dest={DEST_DIR}\")\n\nif __name__ == \"__main__\":\n    main()"
+    },
+    "fit_review.001": {
+      "section": "FIT_REVIEW",
+      "source_chunks": [
+        "fit_review.001"
+      ],
+      "text": "## FIT_REVIEW\n\nテンプレートは理解を速くする時だけ使う。layoutを決める前に、この構造が突然出ても前スライドまたは同スライド本文だけで背景、理由、判断軸が分かるかを確認する。\n\n無理がある兆候:\n- 原文の項目名や順序を、型に合わせるために言い換えている。\n- matrixの軸、flowの順序、3cardの分類が原文から自然に出ていない。\n- 背景や前提がnoteだけにあり、表示本文ではなぜその構造なのか分からない。\n- カード見出しが抽象語だけで、読者が関係性を推測する必要がある。\n\n少しでも該当したら、plain_1col、plain_2col、画像説明用plain_2colへ逃がす。背景が不足する時は、直前にbg_3cardまたはplain_2colの背景スライドを1枚追加する。"
     }
   }
 }

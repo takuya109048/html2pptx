@@ -523,8 +523,7 @@ def validate_no_deprecated_nanobanana_image_col(
 
 
 def validate_nanobanana_no_plain_1col(slides: list[dict[str, Any]]) -> int:
-    """Reject text-only plain_1col slides when nanobanana2 is enabled."""
-    error_count = 0
+    """Warn when text-only plain_1col slides are used with nanobanana2."""
     for index, slide in enumerate(slides, start=1):
         if index < 3:
             continue
@@ -537,11 +536,10 @@ def validate_nanobanana_no_plain_1col(slides: list[dict[str, Any]]) -> int:
             title = str(header.get("title", "")).strip()
         warn(
             f"Slide #{index} uses plain_1col while nanobanana2 is enabled. "
-            "Use plain_2col with a prompt, or redesign as table/list/flow."
+            "This is allowed when a fit-review escape is clearer than forcing image or icon structure."
             + (f" Title: {title}" if title else "")
         )
-        error_count += 1
-    return error_count
+    return 0
 
 
 def validate_agenda_slide(

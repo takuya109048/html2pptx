@@ -19,7 +19,6 @@ from md_to_json import (
     load_json,
     validate_agenda_slide,
     validate_nanobanana_icon_prompts,
-    validate_nanobanana_no_plain_1col,
 )
 
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
@@ -908,8 +907,11 @@ def validate_source(
             errors += validate_compact_blocks(index, title, layout, blocks)
         if nanobanana2:
             if index >= 3 and layout == "plain_1col":
-                warn(f"Slide #{index} uses plain_1col while nanobanana2 is enabled." + (f" Title: {title}" if title else ""))
-                errors += 1
+                warn(
+                    f"Slide #{index} uses plain_1col while nanobanana2 is enabled; "
+                    "allowed as a fit-review escape when image or icon structure would obscure the context."
+                    + (f" Title: {title}" if title else "")
+                )
             if layout == "plain_2col":
                 card_b = as_text(blocks.get("card-b"))
                 if not is_nanobanana_prompt_block(card_b):
@@ -1089,8 +1091,6 @@ def main() -> int:
     if args.require_agenda and validate_agenda_slide(slides, agenda_slide_number=3, body_slide_number=4):
         return 1
     if args.nanobanana2:
-        if validate_nanobanana_no_plain_1col(slides):
-            return 1
         if validate_nanobanana_icon_prompts(slides):
             return 1
     output_json = args.output_json or args.input_json.with_suffix(".slides.json")
