@@ -2,7 +2,7 @@
   "version": "deck-from-source-context-v1",
   "max_chunk_chars": 800,
   "max_console_chars": 800,
-  "usage": "Run context_loader.py start <phase>, then context_loader.py next until DONE. Chunks are packed close to the 800-char console limit to reduce code interpreter calls.",
+  "usage": "Run context_loader.py init <route>, then context_loader.py advance <ACK> until DONE. Chunks are packed close to the 800-char console limit to reduce code interpreter calls.",
   "phases": {
     "turn_b_yes": {
       "description": "nanobanana2 Yesでdeck_source.jsonとPPTXを生成する前に読む全詳細ルール。",
@@ -134,7 +134,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名、続けてnextを1回ずつ実行し、DONEまで読んでから生成する。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは該当フェーズをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、ダウンロードリンク提示まで完了する。\n3. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。必要ならソースから推定し、不明部分は自然な汎用値で補う。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでルートを選び、context_loader.py init ルート名、続けてadvance ACKを1回ずつ実行し、DONEまで読んでから生成する。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは該当フェーズをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、ダウンロードリンク提示まで完了する。\n3. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。必要ならソースから推定し、不明部分は自然な汎用値で補う。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_yes.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -391,7 +391,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名、続けてnextを1回ずつ実行し、DONEまで読んでから生成する。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは該当フェーズをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、ダウンロードリンク提示まで完了する。\n3. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。必要ならソースから推定し、不明部分は自然な汎用値で補う。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでルートを選び、context_loader.py init ルート名、続けてadvance ACKを1回ずつ実行し、DONEまで読んでから生成する。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは該当フェーズをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、ダウンロードリンク提示まで完了する。\n3. ユーザーにスライド枚数、発表者名、対象者を追加質問しない。必要ならソースから推定し、不明部分は自然な汎用値で補う。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_no.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",

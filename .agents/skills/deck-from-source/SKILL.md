@@ -31,7 +31,7 @@ if _m:
     exec(open(_m[0], encoding="utf-8").read())
 ```
 
-code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx 現在/総数 chunk_id]`、末尾に`NEXT 次/総数`または`DONE 総数/総数`を出して進捗を見せる。複数チャンクをループ出力しない。続きの取得では、直前の`NEXT 004/031`を次のcode冒頭コメントにも写し、GUIアクティビティ上でも進捗が変わるようにする。
+code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx フェーズ 現在/総数 chunk_id]`、末尾に`NEXT 次/総数 ACK xxxxxxxx`または`DONE 総数/総数 ACK xxxxxxxx`を出す。複数チャンクをループ出力しない。続きの取得では、直前のNEXT値とACKを次のcode冒頭コメントにも写す。
 
 ## 詳細コンテキスト取得
 
@@ -45,20 +45,21 @@ import glob, subprocess, sys
 _m = glob.glob("/mnt/data/*resolve_uploads.py")
 if _m:
     exec(open(_m[0], encoding="utf-8").read())
-subprocess.run([sys.executable, "/mnt/data/context_loader.py", "start", "turn_b_yes"], check=True)
+subprocess.run([sys.executable, "/mnt/data/context_loader.py", "init", "turn_b_yes"], check=True)
 ```
 
 Noの場合は最後の引数をturn_b_noにする。続きは1回のcode interpreter実行ごとに次だけを実行する。
 
 ```python
-# 前回表示されたNEXT 002/031に従い、詳細コンテキスト002/031を読み込んで次のNEXT/DONE状態を確認します。
+# 前回表示されたNEXT 002/031 ACK abc12345に従い、詳細コンテキスト002/031を読み込んで次のNEXT/DONE状態を確認します。
 import subprocess, sys
-subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next"], check=True)
+ACK = "abc12345"
+subprocess.run([sys.executable, "/mnt/data/context_loader.py", "advance", ACK], check=True)
 ```
 
-上の`002/031`は例であり、固定文のまま使い回さない。前回出力末尾が`NEXT 004/031`なら、次のcodeコメントも`004/031`に書き換える。出力先頭の`[ctx 現在/総数 chunk_id]`で読み込み進捗を確認し、末尾がDONEになるまで生成へ進まない。途中でエラーが出たら、欠けたファイルやフェーズを直してから再取得する。
+上の`002/031`とACKは例であり、固定文のまま使い回さない。前回出力末尾が`NEXT 004/031 ACK xxxxxxxx`なら、次のcodeコメントとACK変数も書き換える。出力先頭の`[ctx フェーズ 現在/総数 chunk_id]`で読み込み進捗を確認し、末尾がDONEになるまで生成へ進まない。ACKを見失ったら`repeat`で再発行する。
 
-strict-emphasis失敗時はrepair_emphasis、strict-densityや本文不足はrepair_density、文字化け、markup、title、section、block系はrepair_text、実行ファイル配置が必要な時はsetupを同じstart/next方式で読む。
+strict-emphasis失敗時は`repair emphasis`、strict-densityや本文不足は`repair density`、文字化け、markup、title、section、block系は`repair text`、実行ファイル配置が必要な時は`repair setup`で開始し、以降は`advance <ACK>`で読む。
 
 ## ターン判定
 
@@ -121,6 +122,8 @@ cmd = [
     "--strict-compact-blocks",
     "--strict-title-style",
     "--strict-text-integrity",
+    "--require-context-done",
+    "turn_b_yes" if USE_NANOBANANA2 else "turn_b_no",
 ]
 if USE_NANOBANANA2:
     cmd.append("--nanobanana2")
