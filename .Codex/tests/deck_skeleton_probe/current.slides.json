@@ -1,0 +1,95 @@
+[
+  {
+    "layout": "cover",
+    "title": "骨格確認デッキ\n変換出力の比較",
+    "affiliation": "Codex Working Deck",
+    "presenter": "Takuya",
+    "date": "2026-05-13",
+    "bg": "background.png",
+    "note": "表紙ノート。"
+  },
+  {
+    "header": {
+      "title": "サマリー（結論）",
+      "message": "先に結論を押さえる"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 結論\n- **現行版** はサマリーを自動生成スライドとして挿入する\n- 目次は本文スライドのsectionとtitleから作る\n- 本文はslides配列から順に入る\n- 差分はスライド番号に出る"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_1col",
+    "note": "サマリーノート。"
+  },
+  {
+    "header": {
+      "title": "目次",
+      "message": "構成を章ごとにたどる"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 背景\n- 変換器の出力順序\n- 本文スライドの配置"
+        },
+        {
+          "type": "plain",
+          "markdown": ""
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_2col",
+    "note": "本資料の流れを確認する。目次の小見出しは各スライドタイトルから自動生成しているため、本文スライドとの不一致を避けられる。"
+  },
+  {
+    "header": {
+      "title": "変換器の出力順序",
+      "message": "同じdeck_sourceから出力骨格を比較する"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 観点\n- **表紙** と目次と本文の順序を見る\n- 追加スライドの有無を確認する\n- headerとgridの入り方を見る\n- スライド番号のずれを記録する"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_1col",
+    "note": "本文1ノート。"
+  },
+  {
+    "header": {
+      "title": "本文スライドの配置",
+      "message": "本文の開始位置を確認する"
+    },
+    "rowHeightRatios": [
+      1.0
+    ],
+    "grid": [
+      [
+        {
+          "type": "plain",
+          "markdown": "### 配置\n- **本文開始** が3枚目か4枚目かを見る\n- 目次検証の前提番号を確認する\n- summaryが含まれるかを確認する\n- 出力配列の大枠を比較する"
+        }
+      ]
+    ],
+    "logo": "logo.png",
+    "layout": "plain_1col",
+    "note": "本文2ノート。"
+  }
+]
