@@ -21,7 +21,7 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
-MAX_OUTPUT_CHARS = 800
+MAX_OUTPUT_CHARS = 650
 STATE_NAME = "deck_context_state.json"
 
 ROUTES: dict[str, list[str]] = {
@@ -253,7 +253,7 @@ def command_status(data: dict[str, Any]) -> None:
 
 
 def validate(data: dict[str, Any]) -> str:
-    max_chunk = int(data.get("max_chunk_chars", 800))
+    max_chunk = int(data.get("max_chunk_chars", 560))
     errors: list[str] = []
     chunks = data.get("chunks", {})
     phases = data.get("phases", {})
@@ -275,7 +275,7 @@ def validate(data: dict[str, Any]) -> str:
                 continue
             rendered = format_chunk(data, phase, index, "deadbeef")
             if len(rendered) > MAX_OUTPUT_CHARS:
-                errors.append(f"output>800:{phase}:{chunk_id}:{len(rendered)}")
+                errors.append(f"output>{MAX_OUTPUT_CHARS}:{phase}:{chunk_id}:{len(rendered)}")
 
     for route, route_phases in ROUTES.items():
         for phase in route_phases:

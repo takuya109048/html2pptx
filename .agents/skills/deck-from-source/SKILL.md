@@ -31,7 +31,7 @@ if _m:
     exec(open(_m[0], encoding="utf-8").read())
 ```
 
-code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx フェーズ 現在/総数 chunk_id]`、末尾に`NEXT 次/総数 ACK xxxxxxxx`または`DONE 総数/総数 ACK xxxxxxxx`を出す。複数チャンクをループ出力しない。続きの取得では、直前のNEXT値とACKを次のcode冒頭コメントにも写す。
+code interpreterのログは800文字超で中間省略される前提で扱う。欠けを避けるため、context_loader.pyの実出力は650文字以内、本文チャンクは560文字以内にする。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx フェーズ 現在/総数 chunk_id]`、末尾に`NEXT 次/総数 ACK xxxxxxxx`または`DONE 総数/総数 ACK xxxxxxxx`を出す。複数チャンクをループ出力しない。続きの取得では、直前のNEXT値とACKを次のcode冒頭コメントにも写す。
 
 ## 詳細コンテキスト取得
 
