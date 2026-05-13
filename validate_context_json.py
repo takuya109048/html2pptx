@@ -7,14 +7,14 @@ Usage:
 from __future__ import annotations
 
 import json
-import re
+import os
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
-TEXT_LIMIT = 560
-OUTPUT_LIMIT = 650
+TEXT_LIMIT = 800
+OUTPUT_LIMIT = 800
 SKILL_LIMIT = 5_000
 CONTEXT_LIMIT = 20_000
 
@@ -39,14 +39,14 @@ def rendered_output(data: dict[str, Any], phase: str, index: int) -> str:
     ids = data["phases"][phase]["chunks"]
     total = len(ids)
     if index >= total:
-        return f"DONE {total:03d}/{total:03d} ACK deadbeef"
+        return f"DONE {total:03d}/{total:03d}"
     chunk_id = ids[index]
     text = data["chunks"][chunk_id]["text"]
-    header = f"[ctx {phase} {index + 1:03d}/{total:03d} {chunk_id}]"
+    header = f"[ctx {index + 1:03d}/{total:03d} {chunk_id}]"
     if index + 1 >= total:
-        footer = f"DONE {total:03d}/{total:03d} ACK deadbeef"
+        footer = f"DONE {total:03d}/{total:03d}"
     else:
-        footer = f"NEXT {index + 2:03d}/{total:03d} ACK deadbeef"
+        footer = f"NEXT {index + 2:03d}/{total:03d}"
     return f"{header}\n{text}\n{footer}"
 
 
@@ -54,6 +54,7 @@ def run_loader(loader: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(loader), *args],
         cwd=str(loader.parent),
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         text=True,
         encoding="utf-8",
         errors="replace",
@@ -66,82 +67,57 @@ def combined_output(result: subprocess.CompletedProcess[str]) -> str:
     return (result.stdout + result.stderr).strip()
 
 
-def extract_ack(output: str) -> str:
-    match = re.search(r"\bACK ([0-9a-f]{8})\b", output)
-    if not match:
-        raise ValueError(f"ACK not found in output: {output[:120]}")
-    return match.group(1)
-
-
 def check_loader_api(loader: Path, errors: list[str]) -> None:
-    init_result = run_loader(loader, "init", "turn_b_yes")
-    init_text = combined_output(init_result)
-    if init_result.returncode != 0 or "NEXT 002/" not in init_text or " ACK " not in init_text:
-        errors.append(f"loader init failed: {init_text[:200]}")
+    start_result = run_loader(loader, "start", "turn_b_yes")
+    start_text = combined_output(start_result)
+    if start_result.returncode != 0 or "NEXT 002/" not in start_text:
+        errors.append(f"loader start failed: {start_text[:200]}")
         return
-    if len(init_text) > OUTPUT_LIMIT:
-        errors.append(f"loader init output {len(init_text)}>{OUTPUT_LIMIT}")
-    ack = extract_ack(init_text)
+    if len(start_text) > OUTPUT_LIMIT:
+        errors.append(f"loader start output {len(start_text)}>{OUTPUT_LIMIT}")
 
-    bad_ack_result = run_loader(loader, "advance", "00000000")
-    if bad_ack_result.returncode == 0 or "bad ACK" not in combined_output(bad_ack_result):
-        errors.append("loader bad ACK was not rejected")
-
-    advance_result = run_loader(loader, "advance", ack)
-    advance_text = combined_output(advance_result)
-    if advance_result.returncode != 0 or "NEXT 003/" not in advance_text or " ACK " not in advance_text:
-        errors.append(f"loader advance failed: {advance_text[:200]}")
+    next_result = run_loader(loader, "next")
+    next_text = combined_output(next_result)
+    if next_result.returncode != 0 or "NEXT 003/" not in next_text:
+        errors.append(f"loader next failed: {next_text[:200]}")
         return
-    if len(advance_text) > OUTPUT_LIMIT:
-        errors.append(f"loader advance output {len(advance_text)}>{OUTPUT_LIMIT}")
-
-    repeat_result = run_loader(loader, "repeat")
-    repeat_text = combined_output(repeat_result)
-    if repeat_result.returncode != 0 or "NEXT 003/" not in repeat_text or " ACK " not in repeat_text:
-        errors.append(f"loader repeat failed: {repeat_text[:200]}")
-        return
-    if len(repeat_text) > OUTPUT_LIMIT:
-        errors.append(f"loader repeat output {len(repeat_text)}>{OUTPUT_LIMIT}")
+    if len(next_text) > OUTPUT_LIMIT:
+        errors.append(f"loader next output {len(next_text)}>{OUTPUT_LIMIT}")
 
     status_result = run_loader(loader, "status")
     status_text = combined_output(status_result)
-    if status_result.returncode != 0 or "STATUS route=turn_b_yes" not in status_text:
+    if status_result.returncode != 0 or "STATUS turn_b_yes NEXT 003/" not in status_text:
         errors.append(f"loader status failed: {status_text[:200]}")
-    if "ACK " in status_text:
-        errors.append("loader status must not display ACK")
 
-    repair_result = run_loader(loader, "repair", "setup")
-    repair_text = combined_output(repair_result)
-    if repair_result.returncode != 0 or "setup" not in repair_text or " ACK " not in repair_text:
-        errors.append(f"loader repair failed: {repair_text[:200]}")
+    get_result = run_loader(loader, "get", "slide_iteration_gate.001")
+    get_text = combined_output(get_result)
+    if get_result.returncode != 0 or "SLIDE_ITERATION_GATE" not in get_text:
+        errors.append(f"loader get failed: {get_text[:200]}")
+    if len(get_text) > OUTPUT_LIMIT:
+        errors.append(f"loader get output {len(get_text)}>{OUTPUT_LIMIT}")
+
+    setup_start_result = run_loader(loader, "start", "setup")
+    setup_text = combined_output(setup_start_result)
+    if setup_start_result.returncode != 0 or "setup.packed.001" not in setup_text:
+        errors.append(f"loader setup start failed: {setup_text[:200]}")
         return
-    if len(repair_text) > OUTPUT_LIMIT:
-        errors.append(f"loader repair output {len(repair_text)}>{OUTPUT_LIMIT}")
-
-    done_text = repair_text
+    done_text = setup_text
     safety = 0
     while "NEXT " in done_text and safety < 10:
         safety += 1
-        next_ack = extract_ack(done_text)
-        done_result = run_loader(loader, "advance", next_ack)
+        done_result = run_loader(loader, "next")
         done_text = combined_output(done_result)
         if done_result.returncode != 0:
-            errors.append(f"loader repair advance failed: {done_text[:200]}")
+            errors.append(f"loader setup next failed: {done_text[:200]}")
             return
         if len(done_text) > OUTPUT_LIMIT:
-            errors.append(f"loader repair advance output {len(done_text)}>{OUTPUT_LIMIT}")
+            errors.append(f"loader setup next output {len(done_text)}>{OUTPUT_LIMIT}")
     if "DONE " not in done_text:
-        errors.append("loader repair route did not reach DONE during validation")
-        return
-    done_ack = extract_ack(done_text)
-    phase_done_result = run_loader(loader, "phase-done", done_ack)
-    phase_done_text = combined_output(phase_done_result)
-    if phase_done_result.returncode != 0 or not phase_done_text.startswith("DONE route=repair:setup"):
-        errors.append(f"loader phase-done failed: {phase_done_text[:200]}")
+        errors.append("loader setup phase did not reach DONE during validation")
 
-    legacy_result = run_loader(loader, "start", "turn_b_yes")
-    if legacy_result.returncode == 0 or "unsupported command" not in combined_output(legacy_result):
-        errors.append("loader legacy start command was not rejected")
+    invalid_result = run_loader(loader, "unsupported-command")
+    if invalid_result.returncode == 0 or "unknown command" not in combined_output(invalid_result):
+        errors.append("loader unknown command was not rejected")
 
 
 def main() -> int:

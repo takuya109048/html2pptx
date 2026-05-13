@@ -13,6 +13,7 @@
         "turn_b_yes.packed.004",
         "turn_b_yes.packed.005",
         "turn_b_yes.packed.006",
+        "slide_iteration_gate.001",
         "turn_b_yes.packed.007",
         "turn_b_yes.packed.008",
         "turn_b_yes.packed.009",
@@ -49,6 +50,7 @@
         "turn_b_no.packed.004",
         "turn_b_no.packed.005",
         "turn_b_no.packed.006",
+        "slide_iteration_gate.001",
         "turn_b_no.packed.007",
         "turn_b_no.packed.008",
         "turn_b_no.packed.009",
@@ -617,6 +619,13 @@
         "final_self_check.006"
       ],
       "text": "- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????や�が混じっていないかを見る。混じっていたら文字化けとして作り直す。\n\n- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+    },
+    "slide_iteration_gate.001": {
+      "section": "SLIDE_ITERATION_GATE",
+      "source_chunks": [
+        "slide_iteration.001"
+      ],
+      "text": "## SLIDE_ITERATION_GATE\n\nDECK_SOURCE_JSONの本文slidesは一括で書き切らない。root、summary、全体sectionだけを先に決め、その後slides配列を空から1枚ずつ増やす。\n\n各本文スライドごとの順序:\n1. その1枚の役割、前後接続、layout、必須blocks、note、画像またはアイコン方針を決める。\n2. その1枚のblocks、note、必要なicon_promptを書く。\n3. 次へ進む前に、その1枚だけを検証する。titleが体言止めか、messageが示唆か、blocks key、本文密度、太字スキムライン、文字化け、nanobanana2制約、前後重複を見る。\n4. 不合格なら同じ1枚を直し、合格してからslidesへ確定する。\n\n全枚数を書いてからまとめて直す流れは禁止。検証メモは出力せず、最終JSONだけを渡す。"
     },
     "repair_emphasis.packed.001": {
       "section": "HIGHLIGHT_PLANNING",
