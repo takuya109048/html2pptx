@@ -31,6 +31,7 @@ advance <ACK>
 phase-done <ACK>
 repair emphasis
 repair density
+repair schema
 repair text
 setup
 repeat
@@ -64,10 +65,10 @@ ACKはstateファイルに平文保存されない。出力を見失った場合
 2. plan相当フェーズの作業として、ソース分析、保存名、全体構成、密度方針を決める。
 3. phase-doneで次フェーズへ進み、schema、layout、Yes時のimage、body、emphasis、notes、check_convert相当の各フェーズを、DONEまで読む、作業する、phase-doneする、の順で進める。
 4. check_convert相当フェーズをDONEまで読んでから、FINAL_SELF_CHECK後にstrict変換する。
-5. strictエラーが出たら、repair emphasis、repair density、repair textのうち該当するものを開始し、DONEまで読んでからJSONを修復して再実行する。
+5. preflightまたはstrictエラーが出たら、schema、emphasis、density、textのうち該当するrepairを開始し、DONEまで読んでからJSONを修復して再preflightする。
 
 変換出力:
-check_convert相当フェーズをDONEまで読んでから、deck_source_to_json.pyを--require-context-doneとstrict系オプション付きで実行する。ユーザーへ提示するのはdeck_source.json、pptx、code_interpreter_log.mdである。slides.jsonは中間生成物として扱い、ダウンロードリンクを出さない。
+check_convert相当フェーズをDONEまで読んでから、deck_source_to_json.pyを--require-context-done --preflight --strict-allと方針に応じた--nanobanana2付きで実行する。PREFLIGHT_OKが出るまでPPTX変換へ進まない。schema、layout、blocks、summary、slidesの骨格エラーが出たらrepair schemaをDONEまで読み、deck_source.jsonを修復して再preflightする。PREFLIGHT_OK後にdeck_source_to_json.pyを--require-context-done --strict-allと方針に応じた--nanobanana2付きで実行してPPTX化する。ユーザーへ提示するのはdeck_source.json、pptx、code_interpreter_log.mdである。slides.jsonは中間生成物として扱い、ダウンロードリンクを出さない。
 
 スキル修正依頼:
 ユーザーがこのスキル自体の修正、リファクタリング、検証を求めた場合は、デッキ生成フローへ入らない。nanobanana2のYes/No質問も出さない。対象ファイルを編集し、count_chars.pyとcontext_loader.py validateで検証する。

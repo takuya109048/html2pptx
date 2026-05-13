@@ -45,6 +45,7 @@ FLOW_PHASES: dict[str, list[str]] = {
     ],
     "repair_emphasis": ["repair_emphasis"],
     "repair_density": ["repair_density"],
+    "repair_schema": ["repair_schema"],
     "repair_text": ["repair_text"],
     "setup": ["setup"],
 }
@@ -52,6 +53,7 @@ FLOW_PHASES: dict[str, list[str]] = {
 FLOW_ALIASES = {
     "emphasis": "repair_emphasis",
     "density": "repair_density",
+    "schema": "repair_schema",
     "text": "repair_text",
 }
 
@@ -129,6 +131,7 @@ def human_phase(phase: str) -> str:
         repair_topic = {
             "emphasis": "強調表現の修復",
             "density": "情報密度の修復",
+            "schema": "JSON骨格の修復",
             "text": "文字化けの修復",
         }.get(phase.split("_", 1)[1], phase)
         return f"{repair_topic}フェーズ"
@@ -472,7 +475,7 @@ def log_event(argv: list[str]) -> None:
 
 def main(argv: list[str]) -> None:
     if len(argv) < 2:
-        emit("USAGE init yes|no|repair_emphasis|repair_density|repair_text|setup | advance <ACK> | phase-done <ACK> | repeat | status | validate | log-event <phase> <message>")
+        emit("USAGE init yes|no|repair_emphasis|repair_density|repair_schema|repair_text|setup | advance <ACK> | phase-done <ACK> | repeat | status | validate | log-event <phase> <message>")
         return
 
     cmd = argv[1]
@@ -483,11 +486,11 @@ def main(argv: list[str]) -> None:
     data = load_data()
     if cmd == "init":
         if len(argv) != 3:
-            raise SystemExit("ERROR usage: init yes|no|repair_emphasis|repair_density|repair_text|setup")
+            raise SystemExit("ERROR usage: init yes|no|repair_emphasis|repair_density|repair_schema|repair_text|setup")
         init_flow(data, argv[2])
     elif cmd == "repair":
         if len(argv) != 3:
-            raise SystemExit("ERROR usage: repair emphasis|density|text")
+            raise SystemExit("ERROR usage: repair emphasis|density|schema|text")
         init_flow(data, normalize_flow(argv[2]))
     elif cmd == "setup":
         if len(argv) != 2:

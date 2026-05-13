@@ -143,8 +143,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--templates", type=Path, default=Path(__file__).resolve().parent / "templates.json")
     parser.add_argument("--assets-dir", type=Path, default=None)
     parser.add_argument("--no-pptx", action="store_true")
+    parser.add_argument(
+        "--preflight",
+        "--validate-only",
+        dest="preflight",
+        action="store_true",
+        help="Validate deck_source.json and template compatibility without writing slides JSON or PPTX.",
+    )
     parser.add_argument("--nanobanana2", action="store_true")
     parser.add_argument("--require-agenda", action="store_true")
+    parser.add_argument(
+        "--strict-all",
+        action="store_true",
+        help="Enable every strict validation option used by the production deck-from-source flow.",
+    )
     parser.add_argument("--strict-blocks", action="store_true")
     parser.add_argument(
         "--strict-density",
@@ -286,6 +298,61 @@ def table_payload(value: Any) -> tuple[list[str], list[list[str]]]:
     else:
         head, rows = [], []
     return [str(c) for c in head], [[str(c) for c in row] for row in rows]
+
+
+TEXT_BLOCK_TAGS = set(CARD_TAGS + STEP_TAGS + ["section", "conclusion"])
+TABLE_BLOCK_TAGS = {"table", "matrix", "flow_matrix", "h_flow_matrix", "compare"}
+KNOWN_BLOCK_TAGS = TEXT_BLOCK_TAGS | TABLE_BLOCK_TAGS
+
+
+def validate_text_block_payload(index: int, title: str, tag: str, value: Any) -> int:
+    if isinstance(value, str):
+        return 0
+    if isinstance(value, list) and all(isinstance(item, (str, int, float, bool)) for item in value):
+        return 0
+    warn(
+        f"Slide #{index} block '{tag}' must be a markdown string, not {type(value).__name__}."
+        + (f" Title: {title}" if title else "")
+    )
+    return 1
+
+
+def validate_table_block_payload(index: int, title: str, tag: str, value: Any) -> int:
+    if not isinstance(value, dict):
+        warn(
+            f"Slide #{index} block '{tag}' must be an object with head and rows arrays."
+            + (f" Title: {title}" if title else "")
+        )
+        return 1
+    head = value.get("head")
+    rows = value.get("rows")
+    errors = 0
+    if not isinstance(head, list) or not head:
+        warn(f"Slide #{index} block '{tag}.head' must be a non-empty array." + (f" Title: {title}" if title else ""))
+        errors += 1
+    if not isinstance(rows, list) or not rows or not all(isinstance(row, list) and row for row in rows):
+        warn(f"Slide #{index} block '{tag}.rows' must be a non-empty array of row arrays." + (f" Title: {title}" if title else ""))
+        errors += 1
+    return errors
+
+
+def validate_root_structure(source: dict[str, Any]) -> int:
+    errors = 0
+    for key in ("title", "date", "summary", "slides"):
+        if key not in source:
+            warn(f"deck_source.json root is missing '{key}'.")
+            errors += 1
+    for key in ("title", "subtitle", "affiliation", "presenter", "date", "note"):
+        if key in source and not isinstance(source.get(key), str):
+            warn(f"deck_source.json root field '{key}' must be a string.")
+            errors += 1
+    if "summary" in source and not isinstance(source.get("summary"), dict):
+        warn("deck_source.json root field 'summary' must be an object.")
+        errors += 1
+    if "slides" in source and not isinstance(source.get("slides"), list):
+        warn("deck_source.json root field 'slides' must be an array.")
+        errors += 1
+    return errors
 
 
 def visible_density_text(markdown: str) -> str:
@@ -960,6 +1027,7 @@ def validate_source(
     strict_text_integrity: bool,
 ) -> int:
     errors = 0
+    errors += validate_root_structure(source)
     errors += validate_cover_title_language(source)
     if strict_text_integrity:
         errors += validate_text_integrity(source)
@@ -977,6 +1045,14 @@ def validate_source(
             continue
         layout = str(slide.get("layout", "")).strip()
         title = str(slide.get("title", "")).strip()
+        for key in ("section", "layout", "title", "blocks"):
+            if key not in slide:
+                warn(f"Slide #{index} is missing '{key}'." + (f" Title: {title}" if title else ""))
+                errors += 1
+        for key in ("section", "layout", "title", "message", "note", "icon_prompt"):
+            if key in slide and slide.get(key) is not None and not isinstance(slide.get(key), str):
+                warn(f"Slide #{index} field '{key}' must be a string." + (f" Title: {title}" if title else ""))
+                errors += 1
         if strict_title_style:
             errors += validate_title_style(index, title)
         blocks = slide.get("blocks", {})
@@ -990,10 +1066,19 @@ def validate_source(
             errors += 1
             continue
         if strict_blocks:
+            for tag in blocks:
+                if tag not in KNOWN_BLOCK_TAGS:
+                    warn(f"Slide #{index} has unknown block '{tag}'." + (f" Title: {title}" if title else ""))
+                    errors += 1
             for tag in required:
                 if tag not in blocks:
                     warn(f"Slide #{index} layout '{layout}' is missing block '{tag}'." + (f" Title: {title}" if title else ""))
                     errors += 1
+                    continue
+                if tag in TEXT_BLOCK_TAGS:
+                    errors += validate_text_block_payload(index, title, tag, blocks.get(tag))
+                elif tag in TABLE_BLOCK_TAGS:
+                    errors += validate_table_block_payload(index, title, tag, blocks.get(tag))
         if strict_density:
             errors += validate_density(index, title, layout, blocks, nanobanana2)
             errors += validate_compact_density(index, title, layout, blocks)
@@ -1164,6 +1249,16 @@ def convert_source_to_slides(source: dict[str, Any], templates: dict[str, Any], 
 
 def main() -> int:
     args = parse_args()
+    if args.strict_all:
+        args.require_agenda = True
+        args.strict_blocks = True
+        args.strict_density = True
+        args.strict_agenda_grouping = True
+        args.strict_markup = True
+        args.strict_emphasis = True
+        args.strict_compact_blocks = True
+        args.strict_title_style = True
+        args.strict_text_integrity = True
     assets_dir = args.assets_dir
     if args.require_context_done and not require_context_done(args.input_json, assets_dir):
         return 1
@@ -1192,7 +1287,11 @@ def main() -> int:
     if errors:
         warn(f"deck_source validation failed: {errors} error(s).")
         return 1
-    slides = convert_source_to_slides(source, templates, args.nanobanana2)
+    try:
+        slides = convert_source_to_slides(source, templates, args.nanobanana2)
+    except Exception as exc:
+        warn(f"deck_source preflight failed while building slide JSON: {type(exc).__name__}: {exc}")
+        return 1
     if args.require_agenda and validate_agenda_slide(slides, agenda_slide_number=3, body_slide_number=4):
         return 1
     if args.nanobanana2:
@@ -1200,6 +1299,9 @@ def main() -> int:
             return 1
         if validate_nanobanana_icon_prompts(slides):
             return 1
+    if args.preflight:
+        print("PREFLIGHT_OK")
+        return 0
     output_json = args.output_json or args.input_json.with_suffix(".slides.json")
     output_json.write_text(json.dumps(slides, ensure_ascii=False, indent=2), encoding="utf-8")
     if args.no_pptx:
