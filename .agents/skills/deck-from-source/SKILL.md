@@ -72,11 +72,11 @@ strict-emphasis失敗時はrepair_emphasis、strict-densityや本文不足はrep
 ターンB:
 直近のユーザー返答でYes/No方針を受け取ったら、前ターンのソースを使う。該当フェーズの詳細コンテキストをDONEまで読み、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、リンク提示まで1ターンで完了する。
 
-本文スライドは一括で書き切らない。root、summary、全体構成を決めた後、slides配列を1枚ずつ作成し、その1枚だけをlayout、必須blocks、本文密度、太字スキムライン、文字化け、nanobanana2制約、前後接続の観点で検証する。合格したスライドだけを確定し、次のスライドへ進む。思考過程、分析メモ、構成案、逐次検証メモはユーザーに出さない。
+本文スライドは統合JSONへ直接書き込まない。本文1枚につき1つの独立slide JSONを作成し、そのJSONだけをlayout、必須blocks、密度、太字、文字化け、nanobanana2制約、前後接続で検証する。合格したslide JSONだけを保存し、全枚数がそろってから統合してPPTXへ変換する。思考過程、分析メモ、構成案、逐次検証メモは出さない。
 
 ## 生成の不変条件
 
-root.summaryを必ず書く。slides配列には本文スライドだけを書く。表紙、サマリー、目次はdeck_source_to_json.pyが自動生成する。
+root.summaryを必ず書く。各slide JSONは本文スライド1件だけを書き、slides配列や表紙、サマリー、目次を入れない。統合後のslides配列にも本文だけを入れる。表紙、サマリー、目次はdeck_source_to_json.pyが自動生成する。
 
 slides[].titleは目次小見出しなので名詞句か体言止めにし、主張や示唆はmessageへ移す。layoutごとの必須blocks名を守り、独自keyを作らない。nanobanana2がYesなら本文slidesにplain_1colを使わない。
 
@@ -84,10 +84,10 @@ slides[].titleは目次小見出しなので名詞句か体言止めにし、主
 
 ## PPTX変換コード
 
-DECK_SOURCE_JSONを確定したら、code interpreterで次の型を使う。TITLE_SLUGはファイル名専用であり、表紙に出るroot.titleは日本語のままにする。
+root JSONとslide JSONを確定したら、code interpreterで次の型を使う。TITLE_SLUGはファイル名専用であり、表紙に出るroot.titleは日本語のままにする。
 
 ```python
-# 確定済みDECK_SOURCE_JSONをJSONに保存してstrict検証付きでPPTXへ変換し、deck_source.jsonとPPTXのリンクを表示します。
+# root JSONと1枚ごとのslide JSONを保存して統合し、strict検証付きでPPTXへ変換します。
 import glob, json, os, subprocess, sys
 MNT = "/mnt/data"
 _m = glob.glob(f"{MNT}/*resolve_uploads.py")
@@ -96,34 +96,29 @@ if _m:
 
 TITLE_SLUG = "short_english_title"
 USE_NANOBANANA2 = True
-DECK_SOURCE_JSON = {}
+DECK_ROOT_JSON = {}
+SLIDE_SOURCE_JSONS = []
 
 source_path = os.path.join(MNT, f"{TITLE_SLUG}.json")
 slides_json_path = os.path.join(MNT, f"{TITLE_SLUG}.slides.json")
 pptx_path = os.path.join(MNT, f"{TITLE_SLUG}.pptx")
 
+slide_paths = []
+for i, slide in enumerate(SLIDE_SOURCE_JSONS, 1):
+    if not isinstance(slide, dict) or "slides" in slide:
+        raise ValueError(f"slide_{i:03d} must be one slide object")
+    p = os.path.join(MNT, f"{TITLE_SLUG}.slide_{i:03d}.json")
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(slide, f, ensure_ascii=False, indent=2)
+    slide_paths.append(p)
+
+DECK_SOURCE_JSON = dict(DECK_ROOT_JSON)
+DECK_SOURCE_JSON["slides"] = [json.load(open(p, encoding="utf-8")) for p in slide_paths]
 with open(source_path, "w", encoding="utf-8") as f:
     json.dump(DECK_SOURCE_JSON, f, ensure_ascii=False, indent=2)
 
-cmd = [
-    sys.executable,
-    os.path.join(MNT, "deck_source_to_json.py"),
-    source_path,
-    pptx_path,
-    "--json",
-    slides_json_path,
-    "--assets-dir",
-    MNT,
-    "--require-agenda",
-    "--strict-blocks",
-    "--strict-density",
-    "--strict-agenda-grouping",
-    "--strict-markup",
-    "--strict-emphasis",
-    "--strict-compact-blocks",
-    "--strict-title-style",
-    "--strict-text-integrity",
-]
+strict = "--require-agenda --strict-blocks --strict-density --strict-agenda-grouping --strict-markup --strict-emphasis --strict-compact-blocks --strict-title-style --strict-text-integrity".split()
+cmd = [sys.executable, os.path.join(MNT, "deck_source_to_json.py"), source_path, pptx_path, "--json", slides_json_path, "--assets-dir", MNT, *strict]
 if USE_NANOBANANA2:
     cmd.append("--nanobanana2")
 
