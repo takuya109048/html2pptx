@@ -7,7 +7,6 @@ import copy
 import json
 import re
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -25,15 +24,6 @@ from md_to_json import (
 
 CARD_TAGS = ["card-a", "card-b", "card-c", "card-d"]
 STEP_TAGS = ["step-a", "step-b", "step-c", "step-d"]
-CONTEXT_STATE_NAME = "deck_context_state.json"
-CONTEXT_PHASES = (
-    "turn_b_yes",
-    "turn_b_no",
-    "repair_emphasis",
-    "repair_density",
-    "repair_text",
-    "setup",
-)
 
 DENSITY_LIMITS: dict[str, tuple[list[str], int]] = {
     "plain_1col": (["card-a"], 140),
@@ -176,12 +166,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Reject replacement characters and suspicious runs of question marks.",
     )
-    parser.add_argument(
-        "--require-context-done",
-        choices=CONTEXT_PHASES,
-        default=None,
-        help="Reject conversion unless the named context_loader phase is DONE.",
-    )
     return parser.parse_args()
 
 
@@ -206,56 +190,6 @@ def load_source(path: Path, assets_dir: Path | None) -> dict[str, Any]:
                 raise ValueError("deck_source.json root must be an object.")
             return data
     raise FileNotFoundError(path)
-
-
-def context_state_candidates(input_json: Path, assets_dir: Path | None) -> list[Path]:
-    candidates: list[Path] = []
-    if assets_dir is not None:
-        candidates.append(assets_dir / CONTEXT_STATE_NAME)
-    candidates.append(input_json.parent / CONTEXT_STATE_NAME)
-    mnt = Path("/mnt/data")
-    if mnt.exists():
-        candidates.append(mnt / CONTEXT_STATE_NAME)
-    candidates.append(Path(tempfile.gettempdir()) / "deck_from_source_context" / CONTEXT_STATE_NAME)
-
-    unique: list[Path] = []
-    seen: set[Path] = set()
-    for path in candidates:
-        resolved = path.resolve()
-        if resolved not in seen:
-            seen.add(resolved)
-            unique.append(path)
-    return unique
-
-
-def context_phase_done(state: dict[str, Any], required_phase: str) -> bool:
-    completed = state.get("completed_phases", [])
-    if isinstance(completed, list) and required_phase in completed:
-        return True
-    if state.get("phase") != required_phase:
-        return False
-    return bool(state.get("phase_done") or state.get("route_done"))
-
-
-def require_context_done(required_phase: str, input_json: Path, assets_dir: Path | None) -> bool:
-    found: list[Path] = []
-    for path in context_state_candidates(input_json, assets_dir):
-        if not path.exists():
-            continue
-        found.append(path)
-        try:
-            state = json.loads(path.read_text(encoding="utf-8"))
-        except Exception:
-            continue
-        if isinstance(state, dict) and context_phase_done(state, required_phase):
-            return True
-
-    locations = ", ".join(str(path) for path in found) if found else "state file not found"
-    warn(
-        f"context phase is not DONE: {required_phase}. "
-        f"Run context_loader.py init/advance until DONE before conversion. {locations}"
-    )
-    return False
 
 
 def as_text(value: Any) -> str:
@@ -1135,10 +1069,6 @@ def main() -> int:
         source = load_source(args.input_json, assets_dir)
     except Exception as exc:
         warn(f"Failed to read deck_source.json: {exc}")
-        return 1
-    if args.require_context_done and not require_context_done(
-        args.require_context_done, args.input_json, assets_dir
-    ):
         return 1
     errors = validate_source(
         source,
