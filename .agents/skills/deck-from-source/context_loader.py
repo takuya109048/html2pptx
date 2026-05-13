@@ -8,7 +8,6 @@ run before moving on.
 
 from __future__ import annotations
 
-import datetime
 import glob
 import hashlib
 import json
@@ -21,7 +20,6 @@ from typing import Any
 MAX_OUTPUT_CHARS = 800
 STATE_NAME = "deck_context_state.json"
 LEGACY_COMMANDS = {"read", "start", "next", "get"}
-JST = datetime.timezone(datetime.timedelta(hours=9), "JST")
 
 FLOW_PHASES: dict[str, list[str]] = {
     "yes": [
@@ -96,126 +94,6 @@ def find_data_path() -> Path:
 
 def state_path() -> Path:
     return runtime_dir() / STATE_NAME
-
-
-def log_path() -> Path:
-    return runtime_dir() / "code_interpreter_log.md"
-
-
-def jst_timestamp() -> str:
-    return datetime.datetime.now(datetime.timezone.utc).astimezone(JST).isoformat(timespec="seconds")
-
-
-def compact_text(value: str) -> str:
-    return " ".join(str(value).split())
-
-
-def human_phase(phase: str) -> str:
-    phase_topics = {
-        "plan": "計画",
-        "schema": "JSON骨格",
-        "layout": "レイアウト",
-        "image": "画像設計",
-        "body": "本文作成",
-        "emphasis": "強調表現",
-        "notes": "発表者ノート",
-        "check_convert": "変換前確認",
-    }
-    if phase.startswith("yes_") or phase.startswith("no_"):
-        route = "画像あり方針" if phase.startswith("yes_") else "画像なし方針"
-        topic = phase_topics.get(phase.split("_", 1)[1], phase)
-        return f"{route}の{topic}フェーズ"
-    if phase.startswith("repair_"):
-        repair_topic = {
-            "emphasis": "強調表現の修復",
-            "density": "情報密度の修復",
-            "text": "文字化けの修復",
-        }.get(phase.split("_", 1)[1], phase)
-        return f"{repair_topic}フェーズ"
-    labels = {
-        "setup": "初期設定フェーズ",
-        "status": "進捗確認",
-        "validate": "設定検証",
-        "context_loader": "コンテキスト読み込み",
-    }
-    return labels.get(phase, f"{phase}フェーズ")
-
-
-def human_action(purpose: str) -> str:
-    actions = {
-        "context_loader init": "最初のコンテキスト取得",
-        "context_loader advance": "次のコンテキスト取得",
-        "context_loader phase-done": "フェーズ完了の記録",
-        "context_loader repeat": "直前コンテキストの再表示",
-        "context_loader status": "現在位置の確認",
-        "context_loader validate": "設定の検証",
-        "context_loader error": "エラー内容の記録",
-    }
-    return actions.get(purpose, compact_text(purpose))
-
-
-def human_result(result: str) -> str:
-    text = compact_text(result)
-    parts = text.split()
-    if parts and parts[0] in {"NEXT", "DONE"}:
-        status = parts[0]
-        progress = parts[1] if len(parts) > 1 and "/" in parts[1] else ""
-        if progress:
-            current, total = progress.split("/", 1)
-            current_num = int(current)
-            total_num = int(total)
-            if status == "NEXT":
-                return f"全{total_num}件中{current_num}件目を読み取り、次の読み取りが必要な状態にしました"
-            return f"全{total_num}件の読み取りを終え、このフェーズを作業可能な状態にしました"
-        if status == "NEXT":
-            return "次の読み取りが必要な状態にしました"
-        return "このフェーズを作業可能な状態にしました"
-    if text == "ROUTE_DONE":
-        return "すべてのフェーズの読み取りを完了しました"
-    if text.startswith("ROUTE_DONE "):
-        return "すべてのフェーズの読み取りを完了しました"
-    if text.startswith("STATUS "):
-        return "現在の読み取り位置を確認しました"
-    if text.startswith("OK "):
-        return "検証は成功しました"
-    if text.startswith("ERROR "):
-        return f"エラーとして「{text}」を記録しました"
-    return f"結果は「{text}」でした"
-
-
-def human_io(inputs: list[str] | None, outputs: list[str] | None) -> str:
-    input_items = [compact_text(item) for item in inputs or [] if compact_text(item)]
-    output_items = [compact_text(item) for item in outputs or [] if compact_text(item)]
-    input_text = "、".join(input_items)
-    output_text = "、".join(output_items)
-    if input_text and output_text:
-        return f"入力として{input_text}を使い、出力として{output_text}を更新しました"
-    if input_text:
-        return f"入力として{input_text}を使いました"
-    if output_text:
-        return f"出力として{output_text}を更新しました"
-    return ""
-
-
-def append_log(
-    phase: str,
-    purpose: str,
-    result: str,
-    inputs: list[str] | None = None,
-    outputs: list[str] | None = None,
-) -> None:
-    try:
-        fragments = [
-            f"{jst_timestamp()}（日本時間）に{human_phase(phase)}で{human_action(purpose)}を行い、{human_result(result)}"
-        ]
-        io_text = human_io(inputs, outputs)
-        if io_text:
-            fragments.append(io_text)
-        sentence = "、".join(fragments) + "。"
-        with log_path().open("a", encoding="utf-8") as f:
-            f.write("- " + sentence + "\n")
-    except Exception:
-        pass
 
 
 def load_data() -> dict[str, Any]:
@@ -294,7 +172,7 @@ def format_chunk(data: dict[str, Any], phase: str, index: int, ack: str) -> tupl
     return f"{header}\n{chunk}\n{footer}", status, chunk_id
 
 
-def emit_next_chunk(data: dict[str, Any], state: dict[str, Any], command: str) -> None:
+def emit_next_chunk(data: dict[str, Any], state: dict[str, Any]) -> None:
     phase = current_phase(state)
     ids = data["phases"][phase]["chunks"]
     index = int(state.get("next_index", 0))
@@ -313,13 +191,6 @@ def emit_next_chunk(data: dict[str, Any], state: dict[str, Any], command: str) -
     state["route_done"] = False
     state["last_chunk"] = {"phase": phase, "index": index, "status": status, "chunk_id": chunk_id}
     save_state(state)
-    append_log(
-        phase,
-        f"context_loader {command}",
-        f"{status} {index + 1:03d}/{len(ids):03d} chunk={chunk_id}",
-        inputs=["context_data.json"],
-        outputs=[STATE_NAME],
-    )
     emit(text)
 
 
@@ -338,7 +209,7 @@ def init_flow(data: dict[str, Any], flow_raw: str) -> None:
         "route_done": False,
         "completed_phases": [],
     }
-    emit_next_chunk(data, state, "init")
+    emit_next_chunk(data, state)
 
 
 def advance(data: dict[str, Any], raw_ack: str | None) -> None:
@@ -348,7 +219,7 @@ def advance(data: dict[str, Any], raw_ack: str | None) -> None:
         raise SystemExit("ERROR route already DONE.")
     if state.get("phase_done"):
         raise SystemExit("ERROR phase is DONE. Do the phase work, then run: context_loader.py phase-done <ACK>")
-    emit_next_chunk(data, state, "advance")
+    emit_next_chunk(data, state)
 
 
 def finish_phase(data: dict[str, Any], raw_ack: str | None) -> None:
@@ -370,10 +241,9 @@ def finish_phase(data: dict[str, Any], raw_ack: str | None) -> None:
         state.pop("ack", None)
         state.pop("ack_hash", None)
         save_state(state)
-        append_log(phase, "context_loader phase-done", "ROUTE_DONE", outputs=[STATE_NAME])
         emit(f"ROUTE_DONE flow={state.get('flow')} phases={len(completed):03d}/{len(completed):03d}")
         return
-    emit_next_chunk(data, state, "phase-done")
+    emit_next_chunk(data, state)
 
 
 def repeat_last(data: dict[str, Any]) -> None:
@@ -388,7 +258,6 @@ def repeat_last(data: dict[str, Any]) -> None:
     phase = str(last["phase"])
     index = int(last["index"])
     text, status, chunk_id = format_chunk(data, phase, index, ack)
-    append_log(phase, "context_loader repeat", f"{status} chunk={chunk_id}")
     emit(text)
 
 
@@ -405,7 +274,6 @@ def status(data: dict[str, Any]) -> None:
         phase_status = "DONE" if state.get("phase_done") else "NEXT"
         shown = idx if state.get("phase_done") else idx + 1
         text = f"STATUS {state.get('flow')} {phase} {phase_status} {shown:03d}/{total:03d} ACK_REQUIRED"
-    append_log("status", "context_loader status", text)
     emit(text)
 
 
@@ -477,7 +345,6 @@ def main(argv: list[str]) -> None:
         status(data)
     elif cmd == "validate":
         result = validate(data)
-        append_log("validate", "context_loader validate", result)
         emit(result)
     elif cmd in LEGACY_COMMANDS or cmd in data.get("phases", {}):
         legacy_error()
@@ -486,12 +353,4 @@ def main(argv: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    try:
-        main(sys.argv)
-    except SystemExit as exc:
-        if exc.code:
-            append_log("context_loader", "context_loader error", f"ERROR {exc}")
-        raise
-    except Exception as exc:
-        append_log("context_loader", "context_loader error", f"ERROR {type(exc).__name__}: {exc}")
-        raise
+    main(sys.argv)

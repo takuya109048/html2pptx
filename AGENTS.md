@@ -109,20 +109,6 @@ if matches:
 * 各作業フェーズの直前に、そのフェーズに必要なコンテキストだけを1件ずつ取得し、`DONE` が出てから作業へ進む。
 * コンテキストローダーは、現在位置、フェーズ、NEXT/DONE状態、次回用ACKを短く出力する。
 
-#### code interpreter 実行ログ
-
-カスタムGPTsで code interpreter を使うSKILLでは、すべての code interpreter 呼び出しを1つのログファイルに記録する。
-
-* ログファイルは `/mnt/data` 直下に作成する。ファイル名は原則として `code_interpreter_log.md` とする。
-* 各 code interpreter 実行ごとに、タイムスタンプ、作業フェーズ、実行目的、実行した処理の要約、入力ファイル、出力ファイル、結果、NEXT/DONE状態を追記する。
-* タイムスタンプはISO形式など、後から順序を追える形式にする。
-* 外部JSONローダーを呼び出す場合は、読み込んだコンテキストID、何件中何件目か、NEXT/DONE状態を必ずログに残す。
-* 生成・変換・検証を行う場合は、対象ファイル、生成物、検証結果の要約をログに残す。
-* エラーが発生した場合も、失敗したフェーズ、エラー概要、次に必要な対応をログに残す。
-* 秘密情報、APIキー、個人情報、不要な内部パスの詳細はログに書かない。
-* ログ追記のための処理も code interpreter の実行コード内に含める。共通ヘルパーを使う場合は、そのSKILLフォルダ直下に置き、実行時は `/mnt/data` 直下へコピー配置して使う。
-* 最終回答前には、生成物のダウンロードリンクと一緒に、このログファイルのダウンロードリンクも必ず提示する。
-
 #### 外部JSONコンテキストの利用方針
 
 `context.md` だけで詳細ルールを保持できない場合は、SKILLフォルダ直下に外部JSONとローダーを置く。
@@ -201,12 +187,11 @@ print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
 * 複数ファイルをまとめて提示する場合はループで出力する:
 
 ```python
-for filename in ["deck.md", "deck.json", "deck.pptx", "code_interpreter_log.md"]:
+for filename in ["deck.md", "deck.json", "deck.pptx"]:
     print(f"- [Download {filename}](sandbox:/mnt/data/{filename})")
 ```
 
 * `sandbox:/mnt/data/` プレフィックスがカスタムGPTsのダウンロードリンクとして機能する。このプレフィックスなしでは通常のリンクとして扱われダウンロードできない。
-* code interpreter を使ったSKILLでは、最終的なダウンロードリンク一覧に `code_interpreter_log.md` を必ず含める。
 
 ### SKILL のディレクトリ構成ルール
 
@@ -284,15 +269,12 @@ python count_chars.py .Codex/skills/<skill-name>/SKILL.md .Codex/skills/<skill-n
 16. 外部JSONコンテキストはターン冒頭で一括読み込みせず、各作業フェーズの直前に必要分だけ読む。
 17. 各作業フェーズでは、そのフェーズの必要コンテキストをDONEまで読み切ってから作業へ進む。
 18. 後続フェーズへ移る前には、現在フェーズの作業を終えてから `phase-done <ACK>` などで後続フェーズ用の最初のコンテキストだけを読み込む。
-19. `code interpreter` 呼び出しごとに、`/mnt/data/code_interpreter_log.md` へタイムスタンプ付きで実行ログを追記する。
-20. 実行ログには、作業フェーズ、実行目的、入力、出力、結果、NEXT/DONE状態、エラー概要を必要に応じて記録する。
-21. 最終回答前には、生成物と一緒に `code_interpreter_log.md` のダウンロードリンクも必ず提示する。
-22. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
-23. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
-24. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
-25. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
-26. 外部JSONローダーは状態機械型にし、`init <route>`、`advance <ACK>`、`phase-done <ACK>`、`repeat`、`status`、`validate` のような少数の公開コマンドに絞る。
-27. `read <phase> <number>`、`get <chunk_id>`、フェーズ名直接指定など、AIが番号を回して一括取得しやすいAPIは作らない。互換用に残す場合も通常利用では拒否する。
-28. 同じターン内でcode interpreterを複数回呼び、1チャンクずつ読むのは許可する。1つのcode interpreterコード本文内で、ループや複数subprocessなどによりローダーを2回以上起動することは禁止する。
-29. ACKはstateファイルへ平文保存せず、ハッシュなど照合用の形で保存する。`status` ではACKを再表示せず、出力を見失った場合だけ `repeat` で新しいACKを再発行する。
-30. 重要な生成・変換スクリプトには、必要フェーズがDONEであることを確認する任意ゲート（例: `--require-context-done`）を用意し、SKILLの本番手順ではそれを使わせる。
+19. `code interpreter` で使う `.py` および関連ファイルは `/mnt/data` 直下に置く。
+20. SKILL フォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
+21. 各 SKILL フォルダ直下には `resolve_uploads.py` を必ずコピー配置する。
+22. SKILL.md には「チャット冒頭で `resolve_uploads.py` を code interpreter で実行する」指示を必ず記載する。
+23. 外部JSONローダーは状態機械型にし、`init <route>`、`advance <ACK>`、`phase-done <ACK>`、`repeat`、`status`、`validate` のような少数の公開コマンドに絞る。
+24. `read <phase> <number>`、`get <chunk_id>`、フェーズ名直接指定など、AIが番号を回して一括取得しやすいAPIは作らない。互換用に残す場合も通常利用では拒否する。
+25. 同じターン内でcode interpreterを複数回呼び、1チャンクずつ読むのは許可する。1つのcode interpreterコード本文内で、ループや複数subprocessなどによりローダーを2回以上起動することは禁止する。
+26. ACKはstateファイルへ平文保存せず、ハッシュなど照合用の形で保存する。`status` ではACKを再表示せず、出力を見失った場合だけ `repeat` で新しいACKを再発行する。
+27. 重要な生成・変換スクリプトには、必要フェーズがDONEであることを確認する任意ゲート（例: `--require-context-done`）を用意し、SKILLの本番手順ではそれを使わせる。
