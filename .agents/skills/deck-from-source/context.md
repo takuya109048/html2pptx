@@ -33,7 +33,7 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 code interpreterでresolve_uploads.pyを実行したうえで、context_loader.py start フェーズ名をsubprocessで実行する。
 
 続きの取得:
-context_loader.py nextを1回のcode interpreter実行につき1回だけ実行する。ループでまとめて実行しない。出力先頭の[ctx 現在/総数 chunk_id]で進捗を確認する。出力末尾がNEXTなら次を読む。次回codeコメントにはそのNEXT値を写す。出力末尾がDONEならそのフェーズは読み切り完了である。
+context_loader.py next NEXT値を1回のcode interpreter実行につき1回だけ実行する。例: 前回末尾がNEXT 002/031なら context_loader.py next 002/031 とする。ループでまとめて実行しない。next引数がloader内部状態と一致しない場合は、同じ番号の再読込や一つ飛ばしを防ぐため、loaderがエラーで停止する。表示が空だった時や直前チャンクを確認したい時はcontext_loader.py lastを使い、状態を進めずに直前出力を再表示する。エラー時はstatusで現在位置を確認し、勝手に次へ進まない。出力先頭の[ctx 現在/総数 chunk_id]で進捗を確認する。出力末尾がNEXTなら次を読む。次回codeコメントとnext引数にはそのNEXT値を写す。出力末尾がDONEならそのフェーズは読み切り完了である。
 
 停止条件:
 必要フェーズがDONEになるまで、ソース分析、構成決定、DECK_SOURCE_JSON生成、PPTX変換へ進まない。読み取り途中でユーザーへ分析メモや構成案を出さない。
