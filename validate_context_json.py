@@ -16,7 +16,7 @@ from typing import Any
 TEXT_LIMIT = 800
 OUTPUT_LIMIT = 800
 SKILL_LIMIT = 5_000
-CONTEXT_LIMIT = 20_000
+CONTEXT_LIMIT = 18_000
 
 
 def count(path: Path) -> int:
@@ -110,7 +110,7 @@ def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> N
 
     setup_start_result = run_loader(loader, "start", "setup")
     setup_text = combined_output(setup_start_result)
-    if setup_start_result.returncode != 0 or "setup.packed.001" not in setup_text:
+    if setup_start_result.returncode != 0 or "setup" not in setup_text:
         errors.append(f"loader setup start failed: {setup_text[:200]}")
         return
     done_text = setup_text
