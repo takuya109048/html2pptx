@@ -176,7 +176,7 @@
         "source_enrichment.005",
         "json_schema.001"
       ],
-      "text": "| 表形式の整理 | 表から読むべき示唆、判断の結論 | table_conclusion |\n\n密度:\n- 1カードには、リード文、2から3項目、必要なら短い補足を置く。\n- 箇条書きの各項目は、名詞だけで終えず、行動、理由、効果のどれかを含める。\n- 1スライド内に、背景、判断基準、注意点、次の行動のうち少なくとも2つを含める。\n- noteだけが厚く、表示本文が短い見出し語と名詞句だけの場合は未完成として扱い、blocks本文を書き足す。\n- noteは本文不足を補う場所ではなく、本文を話すための補助である。先にblocks本文へ判断材料を置き、その後でnoteを書く。\n\n禁止:\n\n- 原文にない具体的な数値、会社名、製品名、成果を作らない。\n- 原文をそのまま短い箇条書きへ移すだけで終わらない。\n- 重要、効果的だけの抽象語で水増ししない。重要なら何に効くかまで書く。\n- すべてをplain_2colに逃がさない。カード、比較、表、フローへ再設計する。\n\n## JSON_SCHEMA\n\nAIが作るのはdeck_source.jsonだけである。Markdownデッキ、メタテーブル、フェンスは作らない。\n\nroot:\n- title: 表紙タイトル。日本語で書き、英語は固有名詞や略語だけにする。\n- subtitle: 表紙サブタイトル。不要なら空文字。\n- affiliation: 所属。推定できなければCodex Working Deck。\n- presenter: 発表者。推定できなければTakuya。\n- date: YYYY-MM-DD。\n- note: 表紙の発表者ノート。"
+      "text": "| 表形式の整理 | 表から読むべき示唆、判断の結論 | table_conclusion |\n\n密度と主語:\n- 各スライドは対象アンカーを内部で1つ決め、title、message、blocks、noteへ自然に入れる。独自keyは作らない。\n- blocksは「これ」「この方法」だけで始めない。各card、step、plainの冒頭または2文目までに、説明対象の具体名を置く。\n- 1カードにはリード文、2から3項目、必要なら短い補足を置き、背景、判断基準、注意点、次の行動のうち2つ以上を含める。\n- noteだけが厚くblocksが短い場合は未完成である。noteは本文不足を補う場所ではなく、最終blocksを話す補助である。\n- noteは詳細原稿や構成メモから直接作らず、確定したtitle、message、blocks、section、conclusionを正本にして最後に作る。\n\n禁止:\n- 原文にない具体的な数値、会社名、製品名、成果を作らない。\n- 原文をそのまま短い箇条書きへ移すだけで終わらない。\n- 重要、効果的だけの抽象語で水増ししない。\n\n## JSON_SCHEMA\nAIが作るのはdeck_source.jsonだけである。rootにはtitle、subtitle、affiliation、presenter、date、noteを書く。"
     },
     "turn_b_yes.packed.007": {
       "section": "JSON_SCHEMA",
@@ -274,7 +274,7 @@
         "content_limits.002",
         "content_limits.003"
       ],
-      "text": "| diffuse_3card、bg_3card、flow_3step | リード1文と2から3項目 | 各カード58字以上 |\n| converge_3card | リード1文と2項目、結論短め | 各カード58字以上 |\n| flow_4step | 短いリードと1から2項目 | 各ステップ40字以上 |\n| plain_1col | リード1文と4から5項目 | 本文140字以上 |\n| plain_2col | リード1文と3から4項目 | 各列115字以上 |\n| table、matrix、compare | 単語だけにしない | 各セルは意味のある句 |\n\n制約:\n\n- 箇条書きは原則20から38字程度。\n- flow_4stepやconvergeの結論は短めにし、長文説明を避ける。\n- flow系は手順名を並べる装置ではない。目的、完了条件、注意点のいずれかを置けない場合は、本文量に合う別layoutへ変える。\n- converge_3cardはカード本文と結論が競合しやすいため、カード内の小見出しや長い補足段落を避ける。\n- section、conclusionは枠自体が背景や結論の役割を示すため、###見出しを入れない。見出しで1行使うと本文枠が足りなくなる。"
+      "text": "| diffuse_3card、bg_3card、flow_3step | リード1文と2から3項目 | 各カード58字以上 |\n| converge_3card | リード1文と2項目 | 各カード58字以上 |\n| flow_4step | 短いリードと1から2項目 | 各ステップ40字以上 |\n| plain_1col | リード1文と4から5項目 | 本文140字以上 |\n| plain_2col | リード1文と3から4項目 | 各列115字以上 |\n| table、matrix、compare | 単語だけにしない | 各セルは意味のある句 |\n\n制約:\n- 箇条書きは原則20から38字程度。\n- flow系は目的、完了条件、注意点のいずれかを置けない場合は使わない。\n- section、conclusionは発表中の視線アンカーであり、ラベルではない。###見出しを使わず、原則80から140字程度にする。\n- sectionは対象、状況、なぜ今見るかを含める。conclusionは判断、理由、次の行動のうち2つ以上を含める。\n- section、conclusionには太字を1から2語句だけ入れ、そこを追えばnoteを見なくても説明しやすい厚みにする。"
     },
     "turn_b_yes.packed.019": {
       "section": "CONTENT_LIMITS+CONTENT_VARIATION",
@@ -334,7 +334,7 @@
         "speaker_notes.001",
         "speaker_notes.002"
       ],
-      "text": "## SPEAKER_NOTES\n\nnoteはPPTX発表者ビューの読み上げ原稿である。スライド本文を見ていない人にも意味が通じる文章を書く。JSON文字列なので実改行を使ってよい。Markdown表セルではないため、brタグやバックスラッシュnで改行を表す必要はない。\n\n必須要素:\n- 1枚につき原則180から320字。coverのみ120字以上でよい。\n- 冒頭は毎回同じ固定句にしない。前スライドからの流れ、聴衆への問い、場面設定、結論の先出しを使い分ける。\n- カード、表、フローを順番に説明し、各要素の意味や関係を補う。\n\n- 最後に、聴衆が何を理解すべきか、次のスライドとどうつながるかを示す。\n- スライド上の短い箇条書きをそのまま読み上げるだけにしない。\n\n冒頭固定句の禁止:\n- 全スライドで「このスライドで伝えたいことは」から始めない。\n- 連続する3枚のnoteで同じ冒頭構文を使わない。\n- 冒頭にスライドタイトルをそのまま読み上げない。タイトルを受けて、なぜ今その話に進むのかを述べる。\n\nnoteの作り方:\n1. 前スライドの結論を受け、次に見るべき論点を示す。\n2. 聴衆が抱きそうな疑問を1つ置き、その答えとして本文を説明する。"
+      "text": "## SPEAKER_NOTES\n\nnoteはPPTX発表者ビューの読み上げ原稿である。ただし正本は詳細原稿ではなく、最終確定したtitle、message、blocks、section、conclusionである。noteは最後に同期生成し、本文にない新しい主張や対象を増やさない。増やす必要があるなら先にblocksへ戻す。\n\n必須要素:\n- 1枚につき原則180から320字。coverのみ120字以上でよい。\n- 冒頭で、そのスライドが扱う対象アンカーを名指しする。\n- sectionまたはconclusionがある場合は、その厚い文を入口にして話し始める。\n- 続けてcard、step、tableを表示順に説明し、最後にmessageまたはconclusionへ戻る。\n- noteだけに出る重要な主張、判断軸、対象を作らない。\n\n冒頭固定句の禁止:\n- 全スライドで「このスライドで伝えたいことは」から始めない。\n- 冒頭にスライドタイトルをそのまま読み上げない。タイトルを受けて、なぜ今その話に進むのかを述べる。"
     },
     "turn_b_yes.packed.026": {
       "section": "SPEAKER_NOTES",
@@ -343,7 +343,7 @@
         "speaker_notes.004",
         "speaker_notes.005"
       ],
-      "text": "3. 表やカードの項目を読み上げるだけでなく、項目間の関係、判断基準、実務上の意味を補う。\n4. 最後の一文で、次のスライドへの橋渡し、または聴衆が持ち帰る判断を示す。\n\n冒頭バリエーション:\n| 場面 | 冒頭の方向 |\n|-----|------------|\n| 導入直後 | まず押さえるべき前提は、の形で入口を作る |\n| 比較スライド | ここで混同しやすいのは、の形で注意を引く |\n| 手順スライド | 実際に進める時は、の形で行動場面へ移る |\n| 表スライド | この表は数値や項目の羅列ではなく、の形で読み方を示す |\n\n| まとめ前 | ここまでの話を判断に変えると、の形で結論へ寄せる |\n\n聞き手を引き込むtip:\n- いきなり説明せず、聴衆が困る場面や迷う判断から入る。\n- 「なぜなら」「その結果」「一方で」「ここで注意したいのは」など、因果と対比の接続語を使う。\n- 1枚のnote内で、前提、理由、例、注意点、次の行動のうち少なくとも2つを入れる。\n- 抽象論だけで終えず、実務でどう判断が変わるかを一文入れる。\n- note全体を独立した短いナレーションにし、スライド本文がなくても意味が通るようにする。\n\nnanobanana2使用時:\n- icon_promptは読み上げ原稿の字数に含めない。\n\n- card系やflow系では、note本文だけで180字以上を確保する。\n- icon_promptをnoteやblocks内に重複して貼らない。独立フィールドだけに置く。\n- note本文にbrタグが出ていたら未完成として扱い、JSON文字列の実改行へ直す。"
+      "text": "noteの作り方:\n1. titleとmessageから、説明対象とこのスライドの役割を確認する。\n2. sectionがある場合は、対象、状況、なぜ見るかを1文で受ける。conclusionがある場合は、最後に判断と次の行動へ戻る。\n3. blocksの見出し順に、項目間の関係、判断基準、実務上の意味を補う。\n4. 最後の一文で、聴衆が持ち帰る判断または次スライドへの橋渡しを示す。\n\n同期チェック:\n- note冒頭で説明対象が分かるか。\n- noteがblocksの主要要素を順番に説明しているか。\n- blocksにない対象へ話が飛んでいないか。\n- 「これ」「それ」「この仕組み」だけで対象が曖昧になっていないか。\n\nnanobanana2使用時:\n- icon_promptは読み上げ原稿の字数に含めない。\n- card系やflow系では、note本文だけで180字以上を確保する。\n- icon_promptをnoteやblocks内に重複して貼らない。"
     },
     "turn_b_yes.packed.027": {
       "section": "DENSITY_REVIEW",
@@ -351,7 +351,7 @@
         "density_review.001",
         "density_review.002"
       ],
-      "text": "## DENSITY_REVIEW\n\nDECK_SOURCE_JSONを書いた直後に目視で自己点検し、問題があればblocks本文を直接直してからPPTX変換へ進む。これは文字数を機械的に測る工程ではなく、スライドを見た人がその場で判断できる情報量を本文に戻す編集工程である。\n\n確認観点:\n| layout | 自己点検 |\n|-------|----------|\n| list_3card | 各カードにリード1文と3項目。文量差を小さくする |\n\n| diffuse_3card、bg_3card、flow_3step | sectionは背景と含意を1から2文で置き、各カードはリードと2項目程度 |\n| converge_3card | 各カードはリードと2項目まで。結論は理由や次の行動まで含める |\n| flow_4step | 1ステップは短いリードと1から2項目。長文を避ける |\n| plain_2col | 各カラムにリードと3項目程度。左右密度を揃える |\n\n修正チェック:\n- noteに理由、背景、注意点が入っているのに本文が薄い場合は、noteから判断材料を抜き出してblocksへ戻す。"
+      "text": "## DENSITY_REVIEW\n\nDECK_SOURCE_JSONを書いた直後に目視で自己点検し、問題があればblocks本文を直接直してからPPTX変換へ進む。これは文字数を機械的に測る工程ではなく、スライドを見た人と発表者がその場で説明対象と判断を追える情報量を本文に戻す編集工程である。\n\n確認観点:\n| layout | 自己点検 |\n|-------|----------|\n| list_3card | 各カードに対象名、リード1文、3項目。文量差を小さくする |\n| diffuse_3card、bg_3card、flow_3step | sectionは80から140字の視線アンカー。各カードはリードと2項目程度 |\n| converge_3card | 各カードはリードと2項目まで。conclusionは判断、理由、次行動を含める |\n| flow_4step | 1ステップは短いリードと1から2項目。対象名を省かない |\n| plain_2col | 各カラムに対象名、リード、3項目程度。左右密度を揃える |\n\n修正チェック:\n- noteに理由、背景、注意点が入っているのに本文が薄い場合は、noteから判断材料を抜き出してblocksへ戻す。"
     },
     "turn_b_yes.packed.028": {
       "section": "DENSITY_REVIEW",
@@ -359,7 +359,7 @@
         "density_review.003",
         "density_review.004"
       ],
-      "text": "- 各カード、各step、各カラムには、背景、理由、判断基準、具体例、注意点、影響、次の行動のうち少なくとも2種類を表示本文として含める。\n- section、conclusionが短い名詞句や一文だけなら、背景と含意、結論と理由または次の行動を足す。\n- flow系でstepが短いラベルだけになった場合は、flowを維持しない。list_3card、bg_3card、table_conclusion、plain_2colへ変更して本文を載せる。\n- 余白が目立つカードには、判断基準、注意点、影響を1項目追加する。\n\n- はみ出しそうなカードは例示や修飾語を削り、必要ならplain_2colやtableへ変更する。\n- 装飾、番号、小見出しが少ないスライドは、重要語を強調して視線の入口を作る。\n- noteは読み上げ原稿だけで意味が通るよう、主張、各要素の意味、結論を含める。\n- nanobanana2使用時でも、プロンプト貼り付け用途のplain_2colは使ってよい。plain_image_colとimage_label_1は完全に消す。"
+      "text": "- 各カード、各step、各カラムには、対象名、背景、理由、判断基準、具体例、注意点、影響、次の行動のうち少なくとも2種類を表示本文として含める。\n- section、conclusionが短い名詞句や一文だけなら、発表者がそこを追って話せる80から140字程度の短い原稿ブロックへ直す。\n- flow系でstepが短いラベルだけになった場合は、flowを維持しない。list_3card、bg_3card、table_conclusion、plain_2colへ変更して本文を載せる。\n- noteとblocksがずれている場合はnoteを直す前に、必要な主張がblocksにあるか確認する。\n- はみ出しそうなカードは例示や修飾語を削り、必要ならplain_2colやtableへ変更する。\n- 装飾、番号、小見出しが少ないスライドは、重要語を強調して視線の入口を作る。\n- nanobanana2使用時でも、プロンプト貼り付け用途のplain_2colは使ってよい。plain_image_colとimage_label_1は完全に消す。"
     },
     "turn_b_yes.packed.029": {
       "section": "FINAL_SELF_CHECK",
@@ -367,7 +367,7 @@
         "final_self_check.001",
         "final_self_check.002"
       ],
-      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。そうなったらsectionを2から4個の章へ統合する。\n- layoutごとの必須blocksがそろっているかを見る。\n- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。"
+      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n- 各slideに対象アンカーがあり、title、message、blocks、noteで説明対象がずれていないかを見る。\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。\n- layoutごとの必須blocksがそろっているかを見る。"
     },
     "turn_b_yes.packed.030": {
       "section": "FINAL_SELF_CHECK",
@@ -375,7 +375,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。\n- card、step、plainカラムの冒頭または2文目までに説明対象があるかを見る。\n- section、conclusionがある場合は、80から140字程度の視線アンカーになり、対象、状況、判断理由、次の行動のうち2つ以上を含むかを見る。\n- noteは最終blocksを正本にしており、詳細原稿や構成メモだけにある論点へ飛んでいないかを見る。\n- note冒頭で説明対象を名指しし、blocksの主要要素を表示順に説明しているかを見る。\n- noteだけに出る重要な主張がある場合は、先にblocksへ戻すかnoteから削る。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。"
     },
     "turn_b_yes.packed.031": {
       "section": "FINAL_SELF_CHECK",
@@ -433,7 +433,7 @@
         "source_enrichment.005",
         "json_schema.001"
       ],
-      "text": "| 表形式の整理 | 表から読むべき示唆、判断の結論 | table_conclusion |\n\n密度:\n- 1カードには、リード文、2から3項目、必要なら短い補足を置く。\n- 箇条書きの各項目は、名詞だけで終えず、行動、理由、効果のどれかを含める。\n- 1スライド内に、背景、判断基準、注意点、次の行動のうち少なくとも2つを含める。\n- noteだけが厚く、表示本文が短い見出し語と名詞句だけの場合は未完成として扱い、blocks本文を書き足す。\n- noteは本文不足を補う場所ではなく、本文を話すための補助である。先にblocks本文へ判断材料を置き、その後でnoteを書く。\n\n禁止:\n\n- 原文にない具体的な数値、会社名、製品名、成果を作らない。\n- 原文をそのまま短い箇条書きへ移すだけで終わらない。\n- 重要、効果的だけの抽象語で水増ししない。重要なら何に効くかまで書く。\n- すべてをplain_2colに逃がさない。カード、比較、表、フローへ再設計する。\n\n## JSON_SCHEMA\n\nAIが作るのはdeck_source.jsonだけである。Markdownデッキ、メタテーブル、フェンスは作らない。\n\nroot:\n- title: 表紙タイトル。日本語で書き、英語は固有名詞や略語だけにする。\n- subtitle: 表紙サブタイトル。不要なら空文字。\n- affiliation: 所属。推定できなければCodex Working Deck。\n- presenter: 発表者。推定できなければTakuya。\n- date: YYYY-MM-DD。\n- note: 表紙の発表者ノート。"
+      "text": "| 表形式の整理 | 表から読むべき示唆、判断の結論 | table_conclusion |\n\n密度と主語:\n- 各スライドは対象アンカーを内部で1つ決め、title、message、blocks、noteへ自然に入れる。独自keyは作らない。\n- blocksは「これ」「この方法」だけで始めない。各card、step、plainの冒頭または2文目までに、説明対象の具体名を置く。\n- 1カードにはリード文、2から3項目、必要なら短い補足を置き、背景、判断基準、注意点、次の行動のうち2つ以上を含める。\n- noteだけが厚くblocksが短い場合は未完成である。noteは本文不足を補う場所ではなく、最終blocksを話す補助である。\n- noteは詳細原稿や構成メモから直接作らず、確定したtitle、message、blocks、section、conclusionを正本にして最後に作る。\n\n禁止:\n- 原文にない具体的な数値、会社名、製品名、成果を作らない。\n- 原文をそのまま短い箇条書きへ移すだけで終わらない。\n- 重要、効果的だけの抽象語で水増ししない。\n\n## JSON_SCHEMA\nAIが作るのはdeck_source.jsonだけである。rootにはtitle、subtitle、affiliation、presenter、date、noteを書く。"
     },
     "turn_b_no.packed.007": {
       "section": "JSON_SCHEMA",
@@ -515,7 +515,7 @@
         "content_limits.004",
         "content_limits.005"
       ],
-      "text": "- 箇条書きは原則20から38字程度。\n- flow_4stepやconvergeの結論は短めにし、長文説明を避ける。\n- flow系は手順名を並べる装置ではない。目的、完了条件、注意点のいずれかを置けない場合は、本文量に合う別layoutへ変える。\n- converge_3cardはカード本文と結論が競合しやすいため、カード内の小見出しや長い補足段落を避ける。\n- section、conclusionは枠自体が背景や結論の役割を示すため、###見出しを入れない。見出しで1行使うと本文枠が足りなくなる。\n\n- section、conclusionで強い言葉が必要な場合は、冒頭の短い語句だけを太字にして同じ行に本文を続ける。\n- nanobanana2使用時は図解設置スペースとして約2行分を残す。\n- noteに理由、背景、注意点が入っているのにblocks本文が薄い場合は、noteから判断材料を戻す。\n- スライド表示文はである調に統一する。\n- density判定はnoteや見出しではなく、各card、step、plainカラムの表示本文で行う。見出しだけを長くしても合格にしない。\n\n- nanobanana2のplain_2colではcard-bがプロンプト欄になるためdensity判定から外す。ただしcard-aは115字以上を満たす。"
+      "text": "| diffuse_3card、bg_3card、flow_3step | リード1文と2から3項目 | 各カード58字以上 |\n| converge_3card | リード1文と2項目 | 各カード58字以上 |\n| flow_4step | 短いリードと1から2項目 | 各ステップ40字以上 |\n| plain_1col | リード1文と4から5項目 | 本文140字以上 |\n| plain_2col | リード1文と3から4項目 | 各列115字以上 |\n| table、matrix、compare | 単語だけにしない | 各セルは意味のある句 |\n\n制約:\n- 箇条書きは原則20から38字程度。\n- flow系は目的、完了条件、注意点のいずれかを置けない場合は使わない。\n- section、conclusionは発表中の視線アンカーであり、ラベルではない。###見出しを使わず、原則80から140字程度にする。\n- sectionは対象、状況、なぜ今見るかを含める。conclusionは判断、理由、次の行動のうち2つ以上を含める。\n- section、conclusionには太字を1から2語句だけ入れ、そこを追えばnoteを見なくても説明しやすい厚みにする。"
     },
     "turn_b_no.packed.017": {
       "section": "CONTENT_VARIATION",
@@ -566,7 +566,7 @@
         "text_integrity.002",
         "speaker_notes.001"
       ],
-      "text": "## TEXT_INTEGRITY\n\nDECK_SOURCE_JSON内の日本語が??????やUnicode replacement characterに置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。見た目の問題ではなく、JSON内の文字列が失われている状態として扱う。\n\n確認観点:\n- 6個以上の連続した?がtitle、message、section、blocks、note、icon_promptに出たら失敗である。\n- 20文字以上の文字列で?が多すぎる場合も失敗である。英語の疑問文に含まれる通常の?は問題ない。\n- Unicode replacement characterが1つでもあれば失敗である。\n\n- 失敗した場合は、PPTX変換を繰り返さず、元ソースの読み取り、resolve_uploads.pyの実行、JSON生成時のencoding=utf-8とensure_ascii=Falseを確認してからDECK_SOURCE_JSONを作り直す。\n\n## SPEAKER_NOTES\n\nnoteはPPTX発表者ビューの読み上げ原稿である。スライド本文を見ていない人にも意味が通じる文章を書く。JSON文字列なので実改行を使ってよい。Markdown表セルではないため、brタグやバックスラッシュnで改行を表す必要はない。\n\n必須要素:\n- 1枚につき原則180から320字。coverのみ120字以上でよい。\n- 冒頭は毎回同じ固定句にしない。前スライドからの流れ、聴衆への問い、場面設定、結論の先出しを使い分ける。\n- カード、表、フローを順番に説明し、各要素の意味や関係を補う。"
+      "text": "## TEXT_INTEGRITY\n\nDECK_SOURCE_JSON内の日本語が??????やUnicode replacement characterに置き換わっている場合は、文字化けした生成物であり、PPTXへ進めてはいけない。\n\n確認観点:\n- 6個以上の連続した?がtitle、message、section、blocks、note、icon_promptに出たら失敗である。\n- Unicode replacement characterが1つでもあれば失敗である。\n\n## SPEAKER_NOTES\n\nnoteはPPTX発表者ビューの読み上げ原稿である。ただし正本は詳細原稿ではなく、最終確定したtitle、message、blocks、section、conclusionである。noteは最後に同期生成し、本文にない新しい主張や対象を増やさない。増やす必要があるなら先にblocksへ戻す。\n\n必須要素:\n- 1枚につき原則180から320字。coverのみ120字以上でよい。\n- 冒頭で、そのスライドが扱う対象アンカーを名指しする。\n- sectionまたはconclusionがある場合は、その厚い文を入口にして話し始める。\n- 続けてcard、step、tableを表示順に説明し、最後にmessageまたはconclusionへ戻る。\n- noteだけに出る重要な主張、判断軸、対象を作らない。\n\n冒頭固定句の禁止:\n- 全スライドで「このスライドで伝えたいことは」から始めない。\n- 冒頭にスライドタイトルをそのまま読み上げない。タイトルを受けて、なぜ今その話に進むのかを述べる。"
     },
     "turn_b_no.packed.023": {
       "section": "SPEAKER_NOTES",
@@ -574,7 +574,7 @@
         "speaker_notes.002",
         "speaker_notes.003"
       ],
-      "text": "- 最後に、聴衆が何を理解すべきか、次のスライドとどうつながるかを示す。\n- スライド上の短い箇条書きをそのまま読み上げるだけにしない。\n\n冒頭固定句の禁止:\n- 全スライドで「このスライドで伝えたいことは」から始めない。\n- 連続する3枚のnoteで同じ冒頭構文を使わない。\n- 冒頭にスライドタイトルをそのまま読み上げない。タイトルを受けて、なぜ今その話に進むのかを述べる。\n\nnoteの作り方:\n1. 前スライドの結論を受け、次に見るべき論点を示す。\n2. 聴衆が抱きそうな疑問を1つ置き、その答えとして本文を説明する。\n\n3. 表やカードの項目を読み上げるだけでなく、項目間の関係、判断基準、実務上の意味を補う。\n4. 最後の一文で、次のスライドへの橋渡し、または聴衆が持ち帰る判断を示す。\n\n冒頭バリエーション:\n| 場面 | 冒頭の方向 |\n|-----|------------|\n| 導入直後 | まず押さえるべき前提は、の形で入口を作る |\n| 比較スライド | ここで混同しやすいのは、の形で注意を引く |\n| 手順スライド | 実際に進める時は、の形で行動場面へ移る |\n| 表スライド | この表は数値や項目の羅列ではなく、の形で読み方を示す |"
+      "text": "noteの作り方:\n1. titleとmessageから、説明対象とこのスライドの役割を確認する。\n2. sectionがある場合は、対象、状況、なぜ見るかを1文で受ける。conclusionがある場合は、最後に判断と次の行動へ戻る。\n3. blocksの見出し順に、項目間の関係、判断基準、実務上の意味を補う。\n4. 最後の一文で、聴衆が持ち帰る判断または次スライドへの橋渡しを示す。\n\n同期チェック:\n- note冒頭で説明対象が分かるか。\n- noteがblocksの主要要素を順番に説明しているか。\n- blocksにない対象へ話が飛んでいないか。\n- 「これ」「それ」「この仕組み」だけで対象が曖昧になっていないか。\n\nnanobanana2使用時:\n- icon_promptは読み上げ原稿の字数に含めない。\n- card系やflow系では、note本文だけで180字以上を確保する。\n- icon_promptをnoteやblocks内に重複して貼らない。"
     },
     "turn_b_no.packed.024": {
       "section": "SPEAKER_NOTES+DENSITY_REVIEW",
@@ -583,7 +583,7 @@
         "speaker_notes.005",
         "density_review.001"
       ],
-      "text": "| まとめ前 | ここまでの話を判断に変えると、の形で結論へ寄せる |\n\n聞き手を引き込むtip:\n- いきなり説明せず、聴衆が困る場面や迷う判断から入る。\n- 「なぜなら」「その結果」「一方で」「ここで注意したいのは」など、因果と対比の接続語を使う。\n- 1枚のnote内で、前提、理由、例、注意点、次の行動のうち少なくとも2つを入れる。\n- 抽象論だけで終えず、実務でどう判断が変わるかを一文入れる。\n- note全体を独立した短いナレーションにし、スライド本文がなくても意味が通るようにする。\n\nnanobanana2使用時:\n- icon_promptは読み上げ原稿の字数に含めない。\n\n- card系やflow系では、note本文だけで180字以上を確保する。\n- icon_promptをnoteやblocks内に重複して貼らない。独立フィールドだけに置く。\n- note本文にbrタグが出ていたら未完成として扱い、JSON文字列の実改行へ直す。\n\n## DENSITY_REVIEW\n\nDECK_SOURCE_JSONを書いた直後に目視で自己点検し、問題があればblocks本文を直接直してからPPTX変換へ進む。これは文字数を機械的に測る工程ではなく、スライドを見た人がその場で判断できる情報量を本文に戻す編集工程である。\n\n確認観点:\n| layout | 自己点検 |\n|-------|----------|\n| list_3card | 各カードにリード1文と3項目。文量差を小さくする |"
+      "text": "## DENSITY_REVIEW\n\nDECK_SOURCE_JSONを書いた直後に目視で自己点検し、問題があればblocks本文を直接直してからPPTX変換へ進む。これは文字数を機械的に測る工程ではなく、スライドを見た人と発表者がその場で説明対象と判断を追える情報量を本文に戻す編集工程である。\n\n確認観点:\n| layout | 自己点検 |\n|-------|----------|\n| list_3card | 各カードに対象名、リード1文、3項目。文量差を小さくする |\n| diffuse_3card、bg_3card、flow_3step | sectionは80から140字の視線アンカー。各カードはリードと2項目程度 |\n| converge_3card | 各カードはリードと2項目まで。conclusionは判断、理由、次行動を含める |\n| flow_4step | 1ステップは短いリードと1から2項目。対象名を省かない |\n| plain_2col | 各カラムに対象名、リード、3項目程度。左右密度を揃える |\n\n修正チェック:\n- noteに理由、背景、注意点が入っているのに本文が薄い場合は、noteから判断材料を抜き出してblocksへ戻す。"
     },
     "turn_b_no.packed.025": {
       "section": "DENSITY_REVIEW",
@@ -591,7 +591,7 @@
         "density_review.002",
         "density_review.003"
       ],
-      "text": "| diffuse_3card、bg_3card、flow_3step | sectionは背景と含意を1から2文で置き、各カードはリードと2項目程度 |\n| converge_3card | 各カードはリードと2項目まで。結論は理由や次の行動まで含める |\n| flow_4step | 1ステップは短いリードと1から2項目。長文を避ける |\n| plain_2col | 各カラムにリードと3項目程度。左右密度を揃える |\n\n修正チェック:\n- noteに理由、背景、注意点が入っているのに本文が薄い場合は、noteから判断材料を抜き出してblocksへ戻す。\n\n- 各カード、各step、各カラムには、背景、理由、判断基準、具体例、注意点、影響、次の行動のうち少なくとも2種類を表示本文として含める。\n- section、conclusionが短い名詞句や一文だけなら、背景と含意、結論と理由または次の行動を足す。\n- flow系でstepが短いラベルだけになった場合は、flowを維持しない。list_3card、bg_3card、table_conclusion、plain_2colへ変更して本文を載せる。\n- 余白が目立つカードには、判断基準、注意点、影響を1項目追加する。"
+      "text": "- 各カード、各step、各カラムには、対象名、背景、理由、判断基準、具体例、注意点、影響、次の行動のうち少なくとも2種類を表示本文として含める。\n- section、conclusionが短い名詞句や一文だけなら、発表者がそこを追って話せる80から140字程度の短い原稿ブロックへ直す。\n- flow系でstepが短いラベルだけになった場合は、flowを維持しない。list_3card、bg_3card、table_conclusion、plain_2colへ変更して本文を載せる。\n- noteとblocksがずれている場合はnoteを直す前に、必要な主張がblocksにあるか確認する。\n- はみ出しそうなカードは例示や修飾語を削り、必要ならplain_2colやtableへ変更する。\n- 装飾、番号、小見出しが少ないスライドは、重要語を強調して視線の入口を作る。\n- nanobanana2使用時でも、プロンプト貼り付け用途のplain_2colは使ってよい。plain_image_colとimage_label_1は完全に消す。"
     },
     "turn_b_no.packed.026": {
       "section": "DENSITY_REVIEW+FINAL_SELF_CHECK",
@@ -599,7 +599,7 @@
         "density_review.004",
         "final_self_check.001"
       ],
-      "text": "- はみ出しそうなカードは例示や修飾語を削り、必要ならplain_2colやtableへ変更する。\n- 装飾、番号、小見出しが少ないスライドは、重要語を強調して視線の入口を作る。\n- noteは読み上げ原稿だけで意味が通るよう、主張、各要素の意味、結論を含める。\n- nanobanana2使用時でも、プロンプト貼り付け用途のplain_2colは使ってよい。plain_image_colとimage_label_1は完全に消す。\n\n## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。"
+      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n- 各slideに対象アンカーがあり、title、message、blocks、noteで説明対象がずれていないかを見る。\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。\n- layoutごとの必須blocksがそろっているかを見る。"
     },
     "turn_b_no.packed.027": {
       "section": "FINAL_SELF_CHECK",
@@ -607,7 +607,7 @@
         "final_self_check.002",
         "final_self_check.003"
       ],
-      "text": "- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。そうなったらsectionを2から4個の章へ統合する。\n- layoutごとの必須blocksがそろっているかを見る。\n- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。\n\n- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。"
+      "text": "- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。\n- card、step、plainカラムの冒頭または2文目までに説明対象があるかを見る。\n- section、conclusionがある場合は、80から140字程度の視線アンカーになり、対象、状況、判断理由、次の行動のうち2つ以上を含むかを見る。\n- noteは最終blocksを正本にしており、詳細原稿や構成メモだけにある論点へ飛んでいないかを見る。\n- note冒頭で説明対象を名指しし、blocksの主要要素を表示順に説明しているかを見る。\n- noteだけに出る重要な主張がある場合は、先にblocksへ戻すかnoteから削る。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。"
     },
     "turn_b_no.packed.028": {
       "section": "FINAL_SELF_CHECK",
@@ -681,7 +681,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n- 各slideに対象アンカーがあり、title、message、blocks、noteで説明対象がずれていないかを見る。\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。\n- layoutごとの必須blocksがそろっているかを見る。"
     },
     "repair_emphasis.packed.009": {
       "section": "FINAL_SELF_CHECK",
@@ -689,7 +689,7 @@
         "final_self_check.005",
         "final_self_check.006"
       ],
-      "text": "- 表紙titleが日本語かつ18字前後に収まり、長い補足がsubtitleへ分離されているかを見る。\n- PPTX変換はstrict系全てを付ける。title、block、sectionのエラーは該当箇所を直して再実行する。\n- nanobanana2がYesの場合、slidesにplain_1colがないかを見る。\n- nanobanana2がYesの場合、plain_2colはblocks.card-bに6:5プロンプト、card/flow系はicon_promptを持つかを見る。\n- card/flow系のicon_promptに6:5が入っていないかを見る。\n\n- Markdownデッキのメタテーブル、スライド区切り、フェンス、[nanobanana2 icon prompt]行が混じっていないかを見る。"
+      "text": "- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。\n- card、step、plainカラムの冒頭または2文目までに説明対象があるかを見る。\n- section、conclusionがある場合は、80から140字程度の視線アンカーになり、対象、状況、判断理由、次の行動のうち2つ以上を含むかを見る。\n- noteは最終blocksを正本にしており、詳細原稿や構成メモだけにある論点へ飛んでいないかを見る。\n- note冒頭で説明対象を名指しし、blocksの主要要素を表示順に説明しているかを見る。\n- noteだけに出る重要な主張がある場合は、先にblocksへ戻すかnoteから削る。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。"
     },
     "repair_density.packed.001": {
       "section": "SOURCE_ENRICHMENT",
@@ -697,7 +697,7 @@
         "source_enrichment.001",
         "source_enrichment.002"
       ],
-      "text": "## SOURCE_ENRICHMENT\n\nDECK_SOURCE_JSONを書く前に、常に内部で仮想の詳細原稿へ展開する。原文の箇条書きをそのまま短く移すだけでは、スライド本文が薄くなり、noteだけが厚くなる。これはユーザーに見せない分析作業であり、事実を捏造することではない。原文の主張を、背景、理由、含意、比較、注意点、判断基準へ言い換え、スライドに入れる素材を増やす。\n\n特に補強が必要な原文:\n- 見出しと箇条書き中心で、各項目が1文未満または名詞句だけである。\n- 表やリストに整理されているが、なぜ重要か、どう使うか、何に注意するかが少ない。\n\n- 1スライド候補あたり、根拠、例、比較、注意点のいずれかが欠けている。\n- 原文の構造は明快だが、カード本文へ移すと各カードが1から2行で終わる。\n\n手順:\n1. 原文全体を、説明が長く、接続語が多く、背景や判断理由まで含む詳細原稿へ書き直す。\n2. 各見出しや箇条書きを主張へ変換する。\n3. 主張ごとに、背景、理由、例、比較、注意点、読者への示唆を少なくとも2種類補う。\n4. 原文にない固有数値、事例名、実績、専門用語を作らない。\n5. 詳細原稿から、スライド本文に載せる判断材料とnoteで話す背景を分ける。\n6. 短い項目は、単語の羅列ではなく、何がどう効くかが分かる句へ変える。"
+      "text": "## SOURCE_ENRICHMENT\n\n詳細原稿は素材であり、最終noteの正本ではない。原文の箇条書きを背景、理由、含意、比較、注意点、判断基準へ展開するが、各スライドでは対象アンカーを1つ決め、最終blocksへ戻してからnoteを作る。\n\n特に補強が必要な原文:\n- 見出しと箇条書き中心で、各項目が1文未満または名詞句だけである。\n- 表やリストに整理されているが、なぜ重要か、どう使うか、何に注意するかが少ない。\n- 1スライド候補あたり、根拠、例、比較、注意点のいずれかが欠けている。\n- 原文の構造は明快だが、カード本文へ移すと各カードが1から2行で終わる。\n\n手順:\n1. 各見出しや箇条書きを主張へ変換する。\n2. 主張ごとに背景、理由、例、比較、注意点、示唆を補う。\n3. 原文にない固有数値、事例名、実績、専門用語を作らない。\n4. 詳細原稿からblocksへ判断材料を戻し、noteは最後にblocksから作る。"
     },
     "repair_density.packed.002": {
       "section": "SOURCE_ENRICHMENT",
@@ -714,7 +714,7 @@
         "content_limits.001",
         "content_limits.002"
       ],
-      "text": "## CONTENT_LIMITS\n\nカードは件数、視覚行数、本文文字量を同時に見る。収めるために内容を薄くしない。薄くなる場合はレイアウトを変えるか分割する。PPTX変換では--strict-densityを使うため、下表の文字量目安を下回る表示本文はエラーになり、変換前にDECK_SOURCE_JSONを直す必要がある。\n\n| layout | 通常目標 | 文字量目安 |\n|-------|----------|-----------|\n| list_3card | リード1文と3から4項目 | 各カード100字以上 |\n\n| diffuse_3card、bg_3card、flow_3step | リード1文と2から3項目 | 各カード58字以上 |\n| converge_3card | リード1文と2項目、結論短め | 各カード58字以上 |\n| flow_4step | 短いリードと1から2項目 | 各ステップ40字以上 |\n| plain_1col | リード1文と4から5項目 | 本文140字以上 |\n| plain_2col | リード1文と3から4項目 | 各列115字以上 |\n| table、matrix、compare | 単語だけにしない | 各セルは意味のある句 |\n\n制約:"
+      "text": "| diffuse_3card、bg_3card、flow_3step | リード1文と2から3項目 | 各カード58字以上 |\n| converge_3card | リード1文と2項目 | 各カード58字以上 |\n| flow_4step | 短いリードと1から2項目 | 各ステップ40字以上 |\n| plain_1col | リード1文と4から5項目 | 本文140字以上 |\n| plain_2col | リード1文と3から4項目 | 各列115字以上 |\n| table、matrix、compare | 単語だけにしない | 各セルは意味のある句 |\n\n制約:\n- 箇条書きは原則20から38字程度。\n- flow系は目的、完了条件、注意点のいずれかを置けない場合は使わない。\n- section、conclusionは発表中の視線アンカーであり、ラベルではない。###見出しを使わず、原則80から140字程度にする。\n- sectionは対象、状況、なぜ今見るかを含める。conclusionは判断、理由、次の行動のうち2つ以上を含める。\n- section、conclusionには太字を1から2語句だけ入れ、そこを追えばnoteを見なくても説明しやすい厚みにする。"
     },
     "repair_density.packed.004": {
       "section": "CONTENT_LIMITS",
@@ -723,7 +723,7 @@
         "content_limits.004",
         "content_limits.005"
       ],
-      "text": "- 箇条書きは原則20から38字程度。\n- flow_4stepやconvergeの結論は短めにし、長文説明を避ける。\n- flow系は手順名を並べる装置ではない。目的、完了条件、注意点のいずれかを置けない場合は、本文量に合う別layoutへ変える。\n- converge_3cardはカード本文と結論が競合しやすいため、カード内の小見出しや長い補足段落を避ける。\n- section、conclusionは枠自体が背景や結論の役割を示すため、###見出しを入れない。見出しで1行使うと本文枠が足りなくなる。\n\n- section、conclusionで強い言葉が必要な場合は、冒頭の短い語句だけを太字にして同じ行に本文を続ける。\n- nanobanana2使用時は図解設置スペースとして約2行分を残す。\n- noteに理由、背景、注意点が入っているのにblocks本文が薄い場合は、noteから判断材料を戻す。\n- スライド表示文はである調に統一する。\n- density判定はnoteや見出しではなく、各card、step、plainカラムの表示本文で行う。見出しだけを長くしても合格にしない。\n\n- nanobanana2のplain_2colではcard-bがプロンプト欄になるためdensity判定から外す。ただしcard-aは115字以上を満たす。"
+      "text": "- 各カード、各step、各カラムには、対象名、背景、理由、判断基準、具体例、注意点、影響、次の行動のうち少なくとも2種類を表示本文として含める。\n- section、conclusionが短い名詞句や一文だけなら、発表者がそこを追って話せる80から140字程度の短い原稿ブロックへ直す。\n- flow系でstepが短いラベルだけになった場合は、flowを維持しない。list_3card、bg_3card、table_conclusion、plain_2colへ変更して本文を載せる。\n- noteとblocksがずれている場合はnoteを直す前に、必要な主張がblocksにあるか確認する。\n- はみ出しそうなカードは例示や修飾語を削り、必要ならplain_2colやtableへ変更する。\n- 装飾、番号、小見出しが少ないスライドは、重要語を強調して視線の入口を作る。\n- nanobanana2使用時でも、プロンプト貼り付け用途のplain_2colは使ってよい。plain_image_colとimage_label_1は完全に消す。"
     },
     "repair_density.packed.005": {
       "section": "CONTENT_VARIATION",
@@ -755,7 +755,7 @@
         "final_self_check.001",
         "final_self_check.002"
       ],
-      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。そうなったらsectionを2から4個の章へ統合する。\n- layoutごとの必須blocksがそろっているかを見る。\n- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。"
+      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n- 各slideに対象アンカーがあり、title、message、blocks、noteで説明対象がずれていないかを見る。\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。\n- layoutごとの必須blocksがそろっているかを見る。"
     },
     "repair_density.packed.009": {
       "section": "FINAL_SELF_CHECK",
@@ -763,7 +763,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。\n- card、step、plainカラムの冒頭または2文目までに説明対象があるかを見る。\n- section、conclusionがある場合は、80から140字程度の視線アンカーになり、対象、状況、判断理由、次の行動のうち2つ以上を含むかを見る。\n- noteは最終blocksを正本にしており、詳細原稿や構成メモだけにある論点へ飛んでいないかを見る。\n- note冒頭で説明対象を名指しし、blocksの主要要素を表示順に説明しているかを見る。\n- noteだけに出る重要な主張がある場合は、先にblocksへ戻すかnoteから削る。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。"
     },
     "repair_density.packed.010": {
       "section": "FINAL_SELF_CHECK",
@@ -853,7 +853,7 @@
         "final_self_check.001",
         "final_self_check.002"
       ],
-      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。そうなったらsectionを2から4個の章へ統合する。\n- layoutごとの必須blocksがそろっているかを見る。\n- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。"
+      "text": "## FINAL_SELF_CHECK\n\nPython検証は最終手段である。DECK_SOURCE_JSONを書いた直後に目視で短く点検する。\n\n点検順:\n- rootにtitle、date、summary、slidesがあるかを見る。\n- summary.blocks.card-aが長めの結論本文になっているかを見る。nanobanana2がYesならsummary.image_promptに6:5があるか、Noならplain_1col相当の4項目以上のMarkdown構造があるかを見る。\n- slides配列に表紙、サマリー、目次を入れていないかを見る。\n- 各slideに対象アンカーがあり、title、message、blocks、noteで説明対象がずれていないかを見る。\n- slides[].titleが空、重複、主張文、長い説明文、汎用語だけでないかを見る。示唆はmessageへ移す。\n- slides[].sectionが意味のある章名になっているかを見る。\n- 本文スライド4枚以上で全sectionが1枚ずつになっていないかを見る。\n- layoutごとの必須blocksがそろっているかを見る。"
     },
     "repair_text.packed.011": {
       "section": "FINAL_SELF_CHECK",
@@ -861,7 +861,7 @@
         "final_self_check.003",
         "final_self_check.004"
       ],
-      "text": "- card、step、plainカラムが文章だけで終わっていないかを見る。箇条書き、番号リスト、太字、斜体、コード表記、打ち消しのいずれかが必要である。\n- card、step、plainカラムの本文側に短い太字ハイライトがあるかを見る。見出しだけの太字は不可である。\n- 各スライドの太字だけを抜き出し、3から7語句程度のスキムラインとして意味が通るかを見る。plain_2colで片側が画像プロンプトの場合は2語句以上でもよい。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n\n- --strict-emphasisで太字不足や弱い太字のエラーが出たら、EMPHASIS_REPAIR_LOOPに従って該当slideのblocks本文を直してから再変換する。\n- section、conclusion、card本文の太字を合わせて、背景から結論までの読み筋が作れているかを見る。\n- section、conclusionに###見出しが入っていないかを見る。入っていたら太字インラインへ直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。混じっていたら文字化けとして作り直す。"
+      "text": "- DENSITY_REVIEWに照らし、blocks本文が短い名詞句だけになっていないかを見る。\n- card、step、plainカラムの冒頭または2文目までに説明対象があるかを見る。\n- section、conclusionがある場合は、80から140字程度の視線アンカーになり、対象、状況、判断理由、次の行動のうち2つ以上を含むかを見る。\n- noteは最終blocksを正本にしており、詳細原稿や構成メモだけにある論点へ飛んでいないかを見る。\n- note冒頭で説明対象を名指しし、blocksの主要要素を表示順に説明しているかを見る。\n- noteだけに出る重要な主張がある場合は、先にblocksへ戻すかnoteから削る。\n- 太字が「重要」「ポイント」「背景」「結論」だけの抽象語集になっていたら、本文ごと書き直す。\n- title、message、section、blocks、note、icon_promptに??????やUnicode replacement characterが混じっていないかを見る。"
     },
     "repair_text.packed.012": {
       "section": "FINAL_SELF_CHECK",
