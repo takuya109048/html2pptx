@@ -731,14 +731,16 @@ def render_cell(slide, ci):
             for i in range(num_rows):
                 tbl.rows[i].height = Inches(ch / num_rows)
             if has_head:
-                for j, ct in enumerate(head[:num_cols]):
+                for j in range(num_cols):
+                    ct = head[j] if j < len(head) else ""
                     _set_table_cell(tbl.cell(0, j), ct,
                                     F["tableHead"]["size"], True,
                                     C["tableHeadText"], C["tableHead"], C["tableBorder"])
             row_offset = 1 if has_head else 0
             for i, row in enumerate(rows):
                 bg = C["tableRowAlt"] if i % 2 == 1 else C["tableRow"]
-                for j, ct in enumerate(row[:num_cols]):
+                for j in range(num_cols):
+                    ct = row[j] if j < len(row) else ""
                     if j == 0:
                         _set_table_cell(tbl.cell(i + row_offset, j), ct,
                                         F["tableHead"]["size"], True,
