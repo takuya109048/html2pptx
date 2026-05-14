@@ -14,15 +14,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-try:
-    sys.stdout.reconfigure(encoding="utf-8")
-    sys.stderr.reconfigure(encoding="utf-8")
-except AttributeError:
-    pass
-
 MAX_OUTPUT_CHARS = 800
 STATE_NAME = "deck_context_state.json"
-LAST_OUTPUT_NAME = "deck_context_last_output.txt"
 
 
 def runtime_dir() -> Path:
@@ -36,10 +29,9 @@ def runtime_dir() -> Path:
 
 def find_data_path() -> Path:
     base = runtime_dir()
-    local = Path(__file__).resolve().with_name("context_data.json")
     candidates = [
-        local,
         base / "context_data.json",
+        Path(__file__).resolve().with_name("context_data.json"),
     ]
     candidates.extend(Path(p) for p in glob.glob(str(base / "*context_data.json")))
     for path in candidates:
@@ -50,10 +42,6 @@ def find_data_path() -> Path:
 
 def state_path() -> Path:
     return runtime_dir() / STATE_NAME
-
-
-def last_output_path() -> Path:
-    return runtime_dir() / LAST_OUTPUT_NAME
 
 
 def load_data() -> dict[str, Any]:
@@ -75,8 +63,7 @@ def load_state() -> dict[str, Any]:
 def emit(text: str) -> None:
     if len(text) > MAX_OUTPUT_CHARS:
         raise SystemExit(f"ERROR output too long len={len(text)}")
-    last_output_path().write_text(text, encoding="utf-8")
-    print(text, flush=True)
+    print(text)
 
 
 def format_chunk(data: dict[str, Any], phase: str, index: int) -> str:

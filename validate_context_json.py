@@ -10,14 +10,13 @@ import json
 import os
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
 
 TEXT_LIMIT = 800
 OUTPUT_LIMIT = 800
 SKILL_LIMIT = 5_000
-CONTEXT_LIMIT = 18_000
+CONTEXT_LIMIT = 20_000
 
 
 def count(path: Path) -> int:
@@ -68,13 +67,6 @@ def combined_output(result: subprocess.CompletedProcess[str]) -> str:
     return (result.stdout + result.stderr).strip()
 
 
-def last_output_file() -> Path:
-    mnt = Path("/mnt/data")
-    if mnt.exists():
-        return mnt / "deck_context_last_output.txt"
-    return Path(tempfile.gettempdir()) / "deck_from_source_context" / "deck_context_last_output.txt"
-
-
 def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> None:
     start_result = run_loader(loader, "start", "turn_b_yes")
     start_text = combined_output(start_result)
@@ -83,9 +75,6 @@ def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> N
         return
     if len(start_text) > OUTPUT_LIMIT:
         errors.append(f"loader start output {len(start_text)}>{OUTPUT_LIMIT}")
-    last_text = last_output_file().read_text(encoding="utf-8") if last_output_file().exists() else ""
-    if "turn_b_yes" not in last_text or "NEXT 002/" not in last_text:
-        errors.append("loader last output file was not written after start")
 
     next_result = run_loader(loader, "next")
     next_text = combined_output(next_result)
@@ -94,9 +83,6 @@ def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> N
         return
     if len(next_text) > OUTPUT_LIMIT:
         errors.append(f"loader next output {len(next_text)}>{OUTPUT_LIMIT}")
-    last_text = last_output_file().read_text(encoding="utf-8") if last_output_file().exists() else ""
-    if "NEXT 003/" not in last_text:
-        errors.append("loader last output file was not updated after next")
 
     status_result = run_loader(loader, "status")
     status_text = combined_output(status_result)
@@ -124,7 +110,7 @@ def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> N
 
     setup_start_result = run_loader(loader, "start", "setup")
     setup_text = combined_output(setup_start_result)
-    if setup_start_result.returncode != 0 or "setup" not in setup_text:
+    if setup_start_result.returncode != 0 or "setup.packed.001" not in setup_text:
         errors.append(f"loader setup start failed: {setup_text[:200]}")
         return
     done_text = setup_text

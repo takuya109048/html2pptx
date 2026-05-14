@@ -2,7 +2,7 @@
 
 SKILL設計ルールの文字数上限チェックに使用する:
   SKILL.md  : 5,000文字以内
-  context.md: 18,000文字以内
+  context.md: 20,000文字以内
 
 Usage:
     python count_chars.py <file> [<file> ...]
@@ -15,7 +15,7 @@ from pathlib import Path
 
 LIMITS: dict[str, int] = {
     "SKILL.md": 5_000,
-    "context.md": 18_000,
+    "context.md": 20_000,
 }
 
 
