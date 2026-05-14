@@ -89,7 +89,10 @@ if _m:
 * `context_data.json`の個別コンテキストは、1件あたり800文字以内にする。
 * ローダー出力は、ヘッダー、本文、進捗フッターを含めて800文字以内に収める。
 * `context_loader.py`は1回に1チャンクだけ出力する。
+* `context_loader.py`は最後の正常出力を`/mnt/data/{用途}_last_output.txt`のような復元用ファイルにも保存する。
 * 複数チャンクを読む時は、1回のcode interpreter実行につき`context_loader.py`を1回だけ起動する。
+* ローダー呼び出しでは`subprocess.run(..., capture_output=True, text=True)`でstdout/stderrを取得し、表示が空なら復元用ファイルを読む。
+* stdout/stderrと復元用ファイルの両方が空の場合は、読めた扱いにせず、作業へ進まずエラーとして停止する。
 * ループ、複数の`subprocess.run`、複数の`exec`などで、同じcode本文内からローダーを2回以上起動してはならない。
 * 続きの取得コードの冒頭コメントは固定文にせず、前回の`NEXT`値を写して進捗がGUI上でも分かるようにする。
 

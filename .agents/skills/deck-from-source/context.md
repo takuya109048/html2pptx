@@ -16,6 +16,21 @@ resolve_uploads.pyをglobで探して実行し、assistant-任意ID-元ファイ
 外部JSONの扱い:
 Turn Bでは通常生成でもcontext_data.jsonを必読にする。Yesならturn_b_yes、Noならturn_b_noをstartし、DONEまで読む。DONEを確認するまでは、ソース分析、構成決定、スライド割り、layout選択、DECK_SOURCE_JSON作成へ進まない。context.mdだけで足りると判断して省略してはならない。
 context.mdだけでは判断できない厳密修復、strictエラーの再発、実行ファイル配置の不足が起きた時は、repair_emphasis、repair_density、repair_text、setupを読む。読む場合はcontext_loader.py start phase、続けてnextを1回ずつ実行し、DONEまで読む。1回のcode interpreter実行でloaderを2回以上起動しない。出力先頭の[ctx 現在/総数 chunk_id]と末尾のNEXTまたはDONEを確認する。続きのcodeコメントには直前のNEXT値を写す。
+context_loader.pyは最後の出力を/mnt/data/deck_context_last_output.txtへ保存する。code interpreterではsubprocess.runをcapture_output=Trueで呼び、stdout/stderrが空ならdeck_context_last_output.txtを読む。標準出力と復元ファイルの両方が空なら、表示が空だったため作業を進める、とは判断しない。必ずエラーとして停止し、再実行またはstatus確認を行う。
+
+堅牢読み込みコードの型:
+import pathlib, subprocess, sys
+cmd = [sys.executable, "/mnt/data/context_loader.py", "start", "turn_b_yes"]
+result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+out = (result.stdout + result.stderr).strip()
+if not out:
+    p = pathlib.Path("/mnt/data/deck_context_last_output.txt")
+    out = p.read_text(encoding="utf-8").strip() if p.exists() else ""
+if not out:
+    raise RuntimeError("context_loader.pyの表示と復元ファイルが空です。読み込み未完了として停止します。")
+print(out)
+result.check_returncode()
+続きはcmd末尾を["next"]相当に変え、code冒頭コメントに直前のNEXT値を入れる。
 
 利用フェーズ:
 turn_b_yes: nanobanana2 Yesで生成する時、構成作成前に必ずDONEまで読む。
