@@ -108,14 +108,13 @@ skill-name/
 
 * `context_data.json`は、800文字以内の小さなコンテキスト片の集合として設計する。
 * `context_loader.py`は状態ファイルに現在フェーズと次に読む位置を保存し、次回の`next`で続きを出す。
-* ローダーの通常フローは、`start <phase>`でフェーズを開始し、出力末尾の`NEXT 002/031`などを次回の`next 002/031`引数へ写して1回ずつ実行し、`DONE`まで読む。
-* 公開コマンドは、実装に合わせて`start <phase>`、`next <expected_current/total>`、`last`、`get <chunk_id>`、`status`、`validate`に絞る。
+* ローダーの通常フローは、`start <phase>`でフェーズを開始し、`next`を1回ずつ実行して`DONE`まで読む。
+* 公開コマンドは、実装に合わせて`start <phase>`、`next`、`get <chunk_id>`、`status`、`validate`に絞る。
 * `get <chunk_id>`は個別確認用の補助コマンドであり、通常の読み込みフローでは`start`と`next`を使う。
-* `last`は表示が空だった場合や直前出力を確認したい場合だけ使う補助コマンドであり、状態を進めずに直前チャンクを再表示する。
 * フェーズを切り替える場合は、必要な作業を終えてから新しいフェーズを`start <phase>`で開始する。
 * ローダー出力の先頭には`[ctx 現在/総数 chunk_id]`を置く。
 * ローダー出力の末尾には`NEXT 次/総数`または`DONE 総数/総数`を置く。
-* 出力末尾が`NEXT`なら、そのNEXT値を次の`next`引数へ入れて次を読む。`DONE`ならそのフェーズの読み切り完了である。
+* 出力末尾が`NEXT`なら次を読む。`DONE`ならそのフェーズの読み切り完了である。
 * 必要フェーズが`DONE`になるまで、分析、生成、変換、修復の本作業へ進まない。
 * 必須コンテキストが欠落した場合、ローダーはエラーを出し、AIは作業を進めてはならない。
 
@@ -135,11 +134,11 @@ subprocess.run([sys.executable, "/mnt/data/context_loader.py", "start", "turn_b_
 ```python
 # 前回表示されたNEXT 002/031に従い、詳細コンテキスト002/031を読み込んで次のNEXT/DONE状態を確認します。
 import subprocess, sys
-subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next", "002/031"], check=True)
+subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next"], check=True)
 ```
 
 上の`002/031`は例であり、固定文のまま使い回さない。
-前回出力末尾が`NEXT 004/031`なら、次のcodeコメントと`next`引数をどちらも`004/031`に書き換える。
+前回出力末尾が`NEXT 004/031`なら、次のcodeコメントも`004/031`に書き換える。
 
 ### 生成・変換スクリプトの検証方針
 
@@ -252,7 +251,7 @@ python count_chars.py .agents/skills/<skill-name>/SKILL.md .agents/skills/<skill
 10. 外部JSONを使う場合、`context.md`にはローダーの公開コマンド、取得手順、停止条件、同一code本文内でローダーを複数回起動しないことを書く。
 11. 外部JSONの個別コンテキストとローダー実出力は800文字以内にする。
 12. `code interpreter`に渡す`code`本文の冒頭には、何のために何を実行するかが自然に分かる日本語の一文コメントを必ず入れる。
-13. 外部JSONローダーは`start <phase>` / `next <expected_current/total>`を中心にした状態機械として実装する。
+13. 外部JSONローダーは`start <phase>` / `next`を中心にした状態機械として実装する。
 14. 外部JSONローダーの出力には、`[ctx 現在/総数 chunk_id]`と`NEXT 次/総数`または`DONE 総数/総数`を必ず含める。
 15. 外部JSONローダーを続けて呼ぶcodeコメントには、直前の`NEXT`値などを含めた短い進捗文を書く。
 16. 外部JSONコンテキストはターン冒頭で一括読み込みせず、作業直前に必要フェーズだけを読む。

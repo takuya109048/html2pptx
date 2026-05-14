@@ -29,10 +29,9 @@ def runtime_dir() -> Path:
 
 def find_data_path() -> Path:
     base = runtime_dir()
-    local = Path(__file__).resolve().with_name("context_data.json")
     candidates = [
-        local,
         base / "context_data.json",
+        Path(__file__).resolve().with_name("context_data.json"),
     ]
     candidates.extend(Path(p) for p in glob.glob(str(base / "*context_data.json")))
     for path in candidates:
@@ -59,33 +58,6 @@ def load_state() -> dict[str, Any]:
     if not path.exists():
         raise SystemExit("ERROR no state. Run: context_loader.py start <phase>")
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def parse_expected(value: str) -> tuple[int, int | None]:
-    parts = value.split("/", 1)
-    try:
-        current = int(parts[0])
-        total = int(parts[1]) if len(parts) == 2 else None
-    except ValueError:
-        raise SystemExit("ERROR expected must be like 002/031")
-    if current < 1:
-        raise SystemExit("ERROR expected current must be >= 001")
-    return current, total
-
-
-def assert_expected(data: dict[str, Any], phase: str, index: int, expected: str) -> None:
-    ids = data["phases"][phase]["chunks"]
-    total = len(ids)
-    current, expected_total = parse_expected(expected)
-    actual_current = min(index + 1, total)
-    if expected_total is not None and expected_total != total:
-        raise SystemExit(
-            f"ERROR expected total mismatch expected={expected_total:03d} actual={total:03d}"
-        )
-    if current != actual_current:
-        raise SystemExit(
-            f"ERROR expected NEXT mismatch expected={current:03d}/{total:03d} actual={actual_current:03d}/{total:03d}. Run status before continuing."
-        )
 
 
 def emit(text: str) -> None:
@@ -117,9 +89,9 @@ def emit_phase_index(data: dict[str, Any], phase: str, index: int) -> None:
         raise SystemExit(f"ERROR unknown phase. phases={known}")
     ids = data["phases"][phase]["chunks"]
     if index < len(ids):
-        save_state({"phase": phase, "next_index": index + 1, "last_index": index})
+        save_state({"phase": phase, "next_index": index + 1})
     else:
-        save_state({"phase": phase, "next_index": index, "last_index": index, "done": True})
+        save_state({"phase": phase, "next_index": index, "done": True})
     emit(format_chunk(data, phase, index))
 
 
@@ -152,7 +124,7 @@ def validate(data: dict[str, Any]) -> str:
 def main(argv: list[str]) -> None:
     data = load_data()
     if len(argv) < 2:
-        emit("USAGE start <phase> | next <expected_current/total> | last | get <chunk_id> | status | validate")
+        emit("USAGE start <phase> | next | get <chunk_id> | status | validate")
         return
 
     cmd = argv[1]
@@ -161,15 +133,8 @@ def main(argv: list[str]) -> None:
             raise SystemExit("ERROR usage: start <phase>")
         emit_phase_index(data, argv[2], 0)
     elif cmd == "next":
-        if len(argv) != 3:
-            raise SystemExit("ERROR usage: next <expected_current/total>")
         state = load_state()
-        assert_expected(data, state["phase"], int(state["next_index"]), argv[2])
         emit_phase_index(data, state["phase"], int(state["next_index"]))
-    elif cmd == "last":
-        state = load_state()
-        last_index = int(state.get("last_index", max(int(state["next_index"]) - 1, 0)))
-        emit(format_chunk(data, state["phase"], last_index))
     elif cmd == "get":
         if len(argv) != 3:
             raise SystemExit("ERROR usage: get <chunk_id>")

@@ -53,10 +53,10 @@ Noの場合は最後の引数をturn_b_noにする。続きは1回のcode interp
 ```python
 # 前回表示されたNEXT 002/031に従い、詳細コンテキスト002/031を読み込んで次のNEXT/DONE状態を確認します。
 import subprocess, sys
-subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next", "002/031"], check=True)
+subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next"], check=True)
 ```
 
-上の`002/031`は例であり、固定文のまま使い回さない。前回出力末尾が`NEXT 004/031`なら、次のcodeコメントと`next`引数をどちらも`004/031`に書き換える。`next`引数が状態と合わない場合、loaderは出力せずに停止する。表示が空だった時や直前チャンクを再確認したい時は`context_loader.py last`を使い、状態を進めずに直前出力を再表示する。出力先頭の`[ctx 現在/総数 chunk_id]`で読み込み進捗を確認し、末尾がDONEになるまで生成へ進まない。途中でエラーが出たら、`status`で現在位置を確認してから再取得する。
+上の`002/031`は例であり、固定文のまま使い回さない。前回出力末尾が`NEXT 004/031`なら、次のcodeコメントも`004/031`に書き換える。出力先頭の`[ctx 現在/総数 chunk_id]`で読み込み進捗を確認し、末尾がDONEになるまで生成へ進まない。途中でエラーが出たら、欠けたファイルやフェーズを直してから再取得する。
 
 strict-emphasis失敗時はrepair_emphasis、strict-densityや本文不足はrepair_density、文字化け、markup、title、section、block系はrepair_text、実行ファイル配置が必要な時はsetupを同じstart/next方式で読む。
 

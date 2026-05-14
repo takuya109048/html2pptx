@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -68,11 +67,6 @@ def combined_output(result: subprocess.CompletedProcess[str]) -> str:
     return (result.stdout + result.stderr).strip()
 
 
-def next_value(text: str) -> str | None:
-    match = re.search(r"NEXT\s+(\d{3}/\d{3})", text)
-    return match.group(1) if match else None
-
-
 def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> None:
     start_result = run_loader(loader, "start", "turn_b_yes")
     start_text = combined_output(start_result)
@@ -82,30 +76,13 @@ def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> N
     if len(start_text) > OUTPUT_LIMIT:
         errors.append(f"loader start output {len(start_text)}>{OUTPUT_LIMIT}")
 
-    expected = next_value(start_text)
-    if not expected:
-        errors.append(f"loader start missing NEXT value: {start_text[:200]}")
-        return
-
-    next_result = run_loader(loader, "next", expected)
+    next_result = run_loader(loader, "next")
     next_text = combined_output(next_result)
     if next_result.returncode != 0 or "NEXT 003/" not in next_text:
         errors.append(f"loader next failed: {next_text[:200]}")
         return
     if len(next_text) > OUTPUT_LIMIT:
         errors.append(f"loader next output {len(next_text)}>{OUTPUT_LIMIT}")
-
-    last_result = run_loader(loader, "last")
-    last_text = combined_output(last_result)
-    if last_result.returncode != 0 or "turn_b_yes.packed.002" not in last_text:
-        errors.append(f"loader last failed: {last_text[:200]}")
-    if len(last_text) > OUTPUT_LIMIT:
-        errors.append(f"loader last output {len(last_text)}>{OUTPUT_LIMIT}")
-
-    mismatch_result = run_loader(loader, "next", expected)
-    mismatch_text = combined_output(mismatch_result)
-    if mismatch_result.returncode == 0 or "expected NEXT mismatch" not in mismatch_text:
-        errors.append(f"loader expected mismatch was not rejected: {mismatch_text[:200]}")
 
     status_result = run_loader(loader, "status")
     status_text = combined_output(status_result)
@@ -140,11 +117,7 @@ def check_loader_api(loader: Path, data: dict[str, Any], errors: list[str]) -> N
     safety = 0
     while "NEXT " in done_text and safety < 10:
         safety += 1
-        expected = next_value(done_text)
-        if not expected:
-            errors.append(f"loader setup missing NEXT value: {done_text[:200]}")
-            return
-        done_result = run_loader(loader, "next", expected)
+        done_result = run_loader(loader, "next")
         done_text = combined_output(done_result)
         if done_result.returncode != 0:
             errors.append(f"loader setup next failed: {done_text[:200]}")
