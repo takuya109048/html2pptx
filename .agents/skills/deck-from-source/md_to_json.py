@@ -316,15 +316,6 @@ def section_map(sections: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     return result
 
 
-def iter_template_cells(slide: dict[str, Any]):
-    """Yield layout cells from the paper-grid area model."""
-    areas = slide.get("areas")
-    if isinstance(areas, list):
-        for cell in areas:
-            if isinstance(cell, dict):
-                yield cell
-
-
 def normalize_note_text(value: Any) -> str:
     """Normalize markdown-table note escapes into actual speaker-note lines."""
     text = str(value)
@@ -355,9 +346,9 @@ def apply_layout_mapping(
     sections = parse_sections(body)
     tags = section_map(sections)
 
-    cells = list(iter_template_cells(slide))
-    if not cells:
-        warn(f"Layout '{layout}': no template cells found. Returning slide as-is.")
+    grid = slide.get("grid", [])
+    if not isinstance(grid, list):
+        warn(f"Layout '{layout}': grid is not a list. Returning slide as-is.")
         return slide
 
     step_head_cursor = 0
@@ -366,101 +357,106 @@ def apply_layout_mapping(
     plain_cursor = 0
     image_cursor = 1
 
-    for cell in cells:
-        cell_type = cell.get("type")
-
-        if cell_type == "step_head":
-            if step_head_cursor < len(STEP_TAGS):
-                section = tags.get(STEP_TAGS[step_head_cursor])
-                if section is not None:
-                    body_lines = section["body"].splitlines()
-                    content_start = 0
-                    for i, line in enumerate(body_lines):
-                        if line.strip().startswith("### "):
-                            cell["markdown"] = line.strip()[4:].strip()
-                            content_start = i + 1
-                            break
-                    section["body"] = "\n".join(body_lines[content_start:]).strip()
-            step_head_cursor += 1
+    for row in grid:
+        if not isinstance(row, list):
             continue
+        for cell in row:
+            if not isinstance(cell, dict):
+                continue
+            cell_type = cell.get("type")
 
-        if cell_type == "card":
-            if layout in {"flow_3step", "flow_4step"}:
-                if flow_step_cursor < len(STEP_TAGS):
-                    section = tags.get(STEP_TAGS[flow_step_cursor])
+            if cell_type == "step_head":
+                if step_head_cursor < len(STEP_TAGS):
+                    section = tags.get(STEP_TAGS[step_head_cursor])
+                    if section is not None:
+                        body_lines = section["body"].splitlines()
+                        content_start = 0
+                        for i, line in enumerate(body_lines):
+                            if line.strip().startswith("### "):
+                                cell["markdown"] = line.strip()[4:].strip()
+                                content_start = i + 1
+                                break
+                        section["body"] = "\n".join(body_lines[content_start:]).strip()
+                step_head_cursor += 1
+                continue
+
+            if cell_type == "card":
+                if layout in {"flow_3step", "flow_4step"}:
+                    if flow_step_cursor < len(STEP_TAGS):
+                        section = tags.get(STEP_TAGS[flow_step_cursor])
+                        if section is not None:
+                            cell["markdown"] = section["body"]
+                    flow_step_cursor += 1
+                else:
+                    if normal_card_cursor < len(CARD_TAGS):
+                        section = tags.get(CARD_TAGS[normal_card_cursor])
+                        if section is not None:
+                            cell["markdown"] = section["body"]
+                    normal_card_cursor += 1
+                continue
+
+            if cell_type == "plain":
+                if plain_cursor < len(CARD_TAGS):
+                    section = tags.get(CARD_TAGS[plain_cursor])
                     if section is not None:
                         cell["markdown"] = section["body"]
-                flow_step_cursor += 1
-            else:
-                if normal_card_cursor < len(CARD_TAGS):
-                    section = tags.get(CARD_TAGS[normal_card_cursor])
-                    if section is not None:
-                        cell["markdown"] = section["body"]
-                normal_card_cursor += 1
-            continue
+                plain_cursor += 1
+                continue
 
-        if cell_type == "plain":
-            if plain_cursor < len(CARD_TAGS):
-                section = tags.get(CARD_TAGS[plain_cursor])
+            if cell_type == "section":
+                section = tags.get("section")
                 if section is not None:
                     cell["markdown"] = section["body"]
-            plain_cursor += 1
-            continue
-
-        if cell_type == "section":
-            section = tags.get("section")
-            if section is not None:
-                cell["markdown"] = section["body"]
-            continue
-
-        if cell_type == "conclusion":
-            section = tags.get("conclusion")
-            if section is not None:
-                cell["markdown"] = section["body"]
-            continue
-
-        if cell_type == "table":
-            section = tags.get("table")
-            if section is None:
-                warn(f"Layout '{layout}': missing ':::table' section.")
                 continue
-            head, rows, _ = split_markdown_table(section["body"])
-            if not head:
-                warn(f"Layout '{layout}': ':::table' has no markdown table.")
-                continue
-            cell["head"] = head
-            cell["rows"] = rows
-            continue
 
-        if cell_type in ("matrix", "flow_matrix", "h_flow_matrix", "compare"):
-            tag_name = cell_type
-            section = tags.get(tag_name) or tags.get("matrix")
-            if section is None:
-                warn(f"Layout '{layout}': missing '```{tag_name}' section.")
+            if cell_type == "conclusion":
+                section = tags.get("conclusion")
+                if section is not None:
+                    cell["markdown"] = section["body"]
                 continue
-            rows = parse_markdown_matrix(section["body"])
-            if not rows:
-                warn(f"Layout '{layout}': '```{tag_name}' has no pipe-delimited rows.")
+
+            if cell_type == "table":
+                section = tags.get("table")
+                if section is None:
+                    warn(f"Layout '{layout}': missing ':::table' section.")
+                    continue
+                head, rows, _ = split_markdown_table(section["body"])
+                if not head:
+                    warn(f"Layout '{layout}': ':::table' has no markdown table.")
+                    continue
+                cell["head"] = head
+                cell["rows"] = rows
                 continue
-            # 1行目を列ヘッダー(head)、残りをデータ行(rows)として分割
-            cell["head"] = rows[0]
-            cell["rows"] = rows[1:]
-            continue
 
-        if cell_type == "image":
-            image_key = f"image_{image_cursor}"
-            image_val = front_matter.get(image_key)
-            if image_val:
-                cell["src"] = str(image_val)
-            label_key = f"image_label_{image_cursor}"
-            label_val = front_matter.get(label_key)
-            if label_val:
-                cell["markdown"] = str(label_val)
-            image_cursor += 1
-            continue
+            if cell_type in ("matrix", "flow_matrix", "h_flow_matrix", "compare"):
+                tag_name = cell_type
+                section = tags.get(tag_name) or tags.get("matrix")
+                if section is None:
+                    warn(f"Layout '{layout}': missing '```{tag_name}' section.")
+                    continue
+                rows = parse_markdown_matrix(section["body"])
+                if not rows:
+                    warn(f"Layout '{layout}': '```{tag_name}' has no pipe-delimited rows.")
+                    continue
+                # 1行目を列ヘッダー(head)、残りをデータ行(rows)として分割
+                cell["head"] = rows[0]
+                cell["rows"] = rows[1:]
+                continue
 
-        if cell_type == "arrow":
-            continue
+            if cell_type == "image":
+                image_key = f"image_{image_cursor}"
+                image_val = front_matter.get(image_key)
+                if image_val:
+                    cell["src"] = str(image_val)
+                label_key = f"image_label_{image_cursor}"
+                label_val = front_matter.get(label_key)
+                if label_val:
+                    cell["markdown"] = str(label_val)
+                image_cursor += 1
+                continue
+
+            if cell_type == "arrow":
+                continue
 
     return slide
 
@@ -570,8 +566,12 @@ def validate_agenda_slide(
         )
         return 1
     agenda_text_parts: list[str] = []
-    for cell in iter_template_cells(slides[agenda_index]):
-        agenda_text_parts.append(str(cell.get("markdown", "")))
+    for row in slides[agenda_index].get("grid", []):
+        if not isinstance(row, list):
+            continue
+        for cell in row:
+            if isinstance(cell, dict):
+                agenda_text_parts.append(str(cell.get("markdown", "")))
     agenda_text = "\n".join(agenda_text_parts)
     for label in AGENDA_FORBIDDEN_LABELS:
         if label in agenda_text:

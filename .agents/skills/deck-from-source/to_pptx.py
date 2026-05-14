@@ -631,32 +631,34 @@ def _set_box_text_frame(box, cell_text, size, bold, color_hex):
 # ── グリッド計算 ────────────────────────────────────────
 
 def compute_cells(sd):
-    paper = sd.get("paperGrid", {})
-    cols = int(paper.get("cols", 24))
-    rows = int(paper.get("rows", 12))
-    areas = sd.get("areas", [])
-    if cols <= 0 or rows <= 0 or not isinstance(areas, list):
-        return []
-    mainX = L["mainPadX"]
-    mainY = L["headerH"] + L["mainPadY"]
-    mainW = L["slideW"] - L["mainPadX"] * 2
-    mainH = L["footerY"] - mainY - L["mainPadY"]
-    gap = L["gridGap"]
-    unitW = (mainW - gap * (cols + 1)) / cols
-    unitH = (mainH - gap * (rows + 1)) / rows
+    """grid定義からセル位置を計算（JSエンジンと同一公式）"""
+    mainX  = L["mainPadX"]
+    mainY  = L["headerH"] + L["mainPadY"]
+    mainW  = L["slideW"]  - L["mainPadX"] * 2
+    mainH  = L["footerY"] - mainY - L["mainPadY"]
+    gap    = L["gridGap"]
+    grid   = sd["grid"]
+    numRows = len(grid)
+    numCols = max(sum(c.get("span", 1) for c in row) for row in grid)
+    ratios  = sd.get("rowHeightRatios", [1.0 / numRows] * numRows)
+    rowHeights = [mainH * r for r in ratios]
+
+    def rowTop(r):
+        return mainY + sum(rowHeights[:r])
+
+    unitW = (mainW - gap * (numCols + 1)) / numCols
     cells = []
-    for cell in areas:
-        if not isinstance(cell, dict):
-            continue
-        x = int(cell.get("x", 0))
-        y = int(cell.get("y", 0))
-        w = int(cell.get("w", 1))
-        h = int(cell.get("h", 1))
-        cx = mainX + gap + x * (unitW + gap)
-        cy = mainY + gap + y * (unitH + gap)
-        cw = unitW * w + gap * max(0, w - 1)
-        ch = unitH * h + gap * max(0, h - 1)
-        cells.append({"cell": cell, "x": cx, "y": cy, "w": cw, "h": ch})
+    for ri, row in enumerate(grid):
+        col = 0
+        for cell in row:
+            span = cell.get("span", 1)
+            cx = mainX + gap + col * (unitW + gap)
+            cy = rowTop(ri) + (gap if ri == 0 else gap / 2)
+            cw = unitW * span + gap * (span - 1)
+            ch = rowHeights[ri] - (gap if ri == 0 else gap / 2) \
+                                - (gap if ri == numRows - 1 else gap / 2)
+            cells.append({"cell": cell, "x": cx, "y": cy, "w": cw, "h": ch})
+            col += span
     return cells
 
 
@@ -731,16 +733,14 @@ def render_cell(slide, ci):
             for i in range(num_rows):
                 tbl.rows[i].height = Inches(ch / num_rows)
             if has_head:
-                for j in range(num_cols):
-                    ct = head[j] if j < len(head) else ""
+                for j, ct in enumerate(head[:num_cols]):
                     _set_table_cell(tbl.cell(0, j), ct,
                                     F["tableHead"]["size"], True,
                                     C["tableHeadText"], C["tableHead"], C["tableBorder"])
             row_offset = 1 if has_head else 0
             for i, row in enumerate(rows):
                 bg = C["tableRowAlt"] if i % 2 == 1 else C["tableRow"]
-                for j in range(num_cols):
-                    ct = row[j] if j < len(row) else ""
+                for j, ct in enumerate(row[:num_cols]):
                     if j == 0:
                         _set_table_cell(tbl.cell(i + row_offset, j), ct,
                                         F["tableHead"]["size"], True,
@@ -1165,7 +1165,7 @@ def main():
                     render_footer(slide, sd, total_slides)
                 else:
                     render_header(slide, sd)
-                    if "areas" in sd:
+                    if "grid" in sd:
                         for ci in compute_cells(sd):
                             render_cell(slide, ci)
                     render_footer(slide, sd, total_slides)
