@@ -1,11 +1,11 @@
 ---
 name: deck-from-source
-description: 原文ソース（テキスト、URL、ファイル）からdeck_source.jsonとPPTXを生成する。ユーザーが資料化、スライド化、PPTX作成、deck_source.json生成、発表資料への変換を求めたら使う。初回は生成へ進まずnanobanana2画像を使うかYes/Noだけを確認し、回答後はcontext.mdを読んだうえで分析、JSON生成、PPTX変換、json/pptxリンク提示まで完了する。context_data.jsonは通常生成では必読にせず、修復や例外時だけ読む。スキル自体の修正依頼では生成フローに入らない。
+description: 原文ソース（テキスト、URL、ファイル）からdeck_source.jsonとPPTXを生成する。ユーザーが資料化、スライド化、PPTX作成、deck_source.json生成、発表資料への変換を求めたら使う。初回は生成へ進まずnanobanana2画像を使うかYes/Noだけを確認し、回答後はcontext.mdを読み、さらに該当context_data.jsonフェーズをDONEまで読んでから分析、JSON生成、PPTX変換、json/pptxリンク提示まで完了する。スキル自体の修正依頼では生成フローに入らない。
 ---
 
 # deck-from-source
 
-原文ソースから発表用のdeck_source.jsonとPPTXを生成する。Markdownデッキは作らない。context.mdを毎ターン読む司令塔兼コンテキスト保存領域として扱い、通常生成に必要なルールはcontext.mdだけで満たす。context_data.jsonは修復、例外、詳細確認の補助としてだけcontext_loader.pyで読む。
+原文ソースから発表用のdeck_source.jsonとPPTXを生成する。Markdownデッキは作らない。context.mdを毎ターン読む司令塔兼コンテキスト保存領域として扱う。Turn Bの生成では、スライド構成やDECK_SOURCE_JSON作成へ進む前に、必ず該当するcontext_data.jsonフェーズをcontext_loader.pyでDONEまで読む。
 
 ## 適用条件
 
@@ -33,19 +33,21 @@ if _m:
 
 ## 外部JSONの扱い
 
-通常生成ではcontext_data.jsonを読まない。context.mdだけでは修復不能なstrictエラー、文字化け、JSON構造エラー、実行ファイル不足が起きた時だけ、context_loader.pyで該当フェーズをDONEまで読む。
+Turn Bの通常生成では、DECK_SOURCE_JSONを書く前だけでなく、ソース分析、構成決定、スライド割り、layout選択へ進む前に、必ずcontext_loader.pyで該当フェーズをDONEまで読む。Yesならturn_b_yes、Noならturn_b_noを読む。context.mdは主要ルールの保存領域だが、context_data.json読了ゲートの代替にはしない。
+
+strictエラー、文字化け、JSON構造エラー、実行ファイル不足が起きた時も、該当するrepair_emphasis、repair_density、repair_text、setupをDONEまで読む。
 
 code interpreterのログは800文字超で中間省略される前提で扱う。context_loader.pyは1回に1チャンクだけ出し、先頭に`[ctx 現在/総数 chunk_id]`、末尾に`NEXT 次/総数`または`DONE 総数/総数`を出す。複数チャンクをループ出力しない。続きの取得では、直前の`NEXT 004/031`などを次のcode冒頭コメントにも写す。
 
 取得コードの型:
 
 ```python
-# repair_emphasis用の詳細コンテキスト読み込みを開始し、何件中何件目まで読めたかとNEXT/DONE状態を表示します。
+# turn_b_yes用の詳細コンテキスト読み込みを開始し、何件中何件目まで読めたかとNEXT/DONE状態を表示します。
 import glob, subprocess, sys
 _m = glob.glob("/mnt/data/*resolve_uploads.py")
 if _m:
     exec(open(_m[0], encoding="utf-8").read())
-subprocess.run([sys.executable, "/mnt/data/context_loader.py", "start", "repair_emphasis"], check=True)
+subprocess.run([sys.executable, "/mnt/data/context_loader.py", "start", "turn_b_yes"], check=True)
 ```
 
 続き:
@@ -68,7 +70,7 @@ subprocess.run([sys.executable, "/mnt/data/context_loader.py", "next"], check=Tr
 スライド枚数、発表者名、対象者は追加質問しない。必要ならターンBで自然に推定する。
 
 ターンB:
-直近のユーザー返答でYes/No方針を受け取ったら、前ターンのソースを使う。context.mdのルールに従い、ソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、リンク提示まで1ターンで完了する。思考過程、分析メモ、構成案はユーザーに出さない。
+直近のユーザー返答でYes/No方針を受け取ったら、前ターンのソースを使う。最初に該当フェーズをDONEまで読む。DONEを確認するまでは、ソース分析、構成決定、スライド割り、layout選択、DECK_SOURCE_JSON生成へ進まない。読了後、分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、リンク提示まで1ターンで完了する。思考過程、分析メモ、構成案はユーザーに出さない。
 
 ## 生成の不変条件
 

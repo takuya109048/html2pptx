@@ -1,24 +1,25 @@
 # context.md deck-from-source 司令塔兼コンテキスト保存領域
 
 目的:
-このファイルは毎ターンfile searchで読む唯一のコンテキストである。司令塔であると同時に、通常生成に必要な主要ルールの保存領域でもある。通常のdeck_source.json生成はこのcontext.mdだけで完結させ、context_data.jsonの読み取りは例外、修復、詳細確認が必要な時だけ使う。
+このファイルは毎ターンfile searchで読む唯一のコンテキストである。司令塔であると同時に、通常生成に必要な主要ルールの保存領域でもある。ただしTurn Bの生成では、ソース分析、スライド構成作成、DECK_SOURCE_JSON作成へ進む前に、必ず該当するcontext_data.jsonフェーズをDONEまで読む。context.mdは読了ゲートの代替ではない。
 
 毎ターン最初:
 file searchではqueriesだけを使い、次を実行する。
 { "queries": ["context.mdのmd全文をfile search"] }
 
 上限:
-context.mdは18000文字以内に収める。SKILL.mdは5000文字以内に収める。context.mdには、毎回必要な前提、生成判断、JSON構造、layout選択、密度、太字、自己点検を置く。context_data.jsonには、読み直しが発生しても痛みが小さい補助ルール、修復ループ、例外対応、セットアップ手順だけを置く。
+context.mdは18000文字以内に収める。SKILL.mdは5000文字以内に収める。context.mdには、毎回必要な前提、生成判断、JSON構造、layout選択、密度、太字、自己点検を置く。context_data.jsonには、Turn B生成前に必ず読む短い確認フェーズと、修復ループ、例外対応、セットアップ手順を置く。読み込み回数は省略で減らさず、チャンク数を小さくして減らす。
 
 code interpreter初回:
 resolve_uploads.pyをglobで探して実行し、assistant-任意ID-元ファイル名を元ファイル名へコピーする。以降は/mnt/data/元ファイル名で参照する。code本文の先頭には、何のために何を実行するかが分かる日本語の一文コメントを必ず置く。GUIのアクティビティに表示されるため、秘密情報や長い仕様説明は書かない。
 
 外部JSONの扱い:
-context_data.jsonは通常生成で必読にしない。context.mdだけでは判断できない厳密修復、strictエラーの再発、実行ファイル配置の不足が起きた時にだけ読む。読む場合はcontext_loader.py start phase、続けてnextを1回ずつ実行し、DONEまで読む。1回のcode interpreter実行でloaderを2回以上起動しない。出力先頭の[ctx 現在/総数 chunk_id]と末尾のNEXTまたはDONEを確認する。続きのcodeコメントには直前のNEXT値を写す。
+Turn Bでは通常生成でもcontext_data.jsonを必読にする。Yesならturn_b_yes、Noならturn_b_noをstartし、DONEまで読む。DONEを確認するまでは、ソース分析、構成決定、スライド割り、layout選択、DECK_SOURCE_JSON作成へ進まない。context.mdだけで足りると判断して省略してはならない。
+context.mdだけでは判断できない厳密修復、strictエラーの再発、実行ファイル配置の不足が起きた時は、repair_emphasis、repair_density、repair_text、setupを読む。読む場合はcontext_loader.py start phase、続けてnextを1回ずつ実行し、DONEまで読む。1回のcode interpreter実行でloaderを2回以上起動しない。出力先頭の[ctx 現在/総数 chunk_id]と末尾のNEXTまたはDONEを確認する。続きのcodeコメントには直前のNEXT値を写す。
 
 利用フェーズ:
-turn_b_yes: context.mdで足りない時だけ、nanobanana2 Yes生成の補助を読む。
-turn_b_no: context.mdで足りない時だけ、nanobanana2 No生成の補助を読む。
+turn_b_yes: nanobanana2 Yesで生成する時、構成作成前に必ずDONEまで読む。
+turn_b_no: nanobanana2 Noで生成する時、構成作成前に必ずDONEまで読む。
 repair_emphasis: strict-emphasis、太字不足、弱い太字、スキムライン失敗を直す時に読む。
 repair_density: strict-density、本文不足、noteだけ厚い、カードが薄い時に読む。
 repair_text: 文字化け、markup、title、section、block key、JSON構造エラーを直す時に読む。
@@ -31,7 +32,7 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 スライド枚数、発表者名、対象者は追加質問しない。
 
 ターンB:
-直近の返答でYesまたはNo方針を受け取ったら、前ターンのソースを使う。context.mdのルールで内部的にソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、リンク提示まで完了する。思考過程、分析メモ、構成案はユーザーに出さない。context_data.jsonは、context.mdだけでは修復不能な時だけ読む。
+直近の返答でYesまたはNo方針を受け取ったら、前ターンのソースを使う。最初に該当フェーズをDONEまで読む。Yesならturn_b_yes、Noならturn_b_noである。DONEを確認するまで、ソース分析、構成決定、スライド割り、layout選択、DECK_SOURCE_JSON作成へ進まない。読了後、内部的にソース分析、構成決定、DECK_SOURCE_JSON生成、自己点検、PPTX変換、リンク提示まで完了する。思考過程、分析メモ、構成案はユーザーに出さない。
 
 生成対象:
 AIが作るのはdeck_source.jsonだけである。Markdownデッキ、メタテーブル、フェンス、HTML改行タグは作らない。
