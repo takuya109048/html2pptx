@@ -17,8 +17,8 @@ SKILLを作成・更新する際の共通ルールを定義する。
 * SKILLはカスタムGPTsへ流用できる形で設計する。
 * `SKILL.md`はカスタムGPTsのシステムプロンプトとして使用する前提で書く。
 * カスタムGPTsのシステムプロンプト上限に合わせ、`SKILL.md`は必ず5000文字以内に収める。
-* `SKILL.md`は肥大化させず、毎ターン`context.md`を読む責任だけを持たせる。
-* `SKILL.md`はブートローダーとして扱い、詳細な運用判断、生成方針、検証、修復、出力手順は`context.md`へ委任する。
+* `SKILL.md`は肥大化させず、毎ターン`context.md`を読む責任と、カスタムGPTs用アプリ共通レイヤーの安定化責任を持たせる。
+* `SKILL.md`はブートローダーとして扱い、詳細な運用判断、生成方針、検証、修復、出力手順は`context.md`へ委任する。ただし、file search、code interpreter、アップロード解決、ログ制限、外部JSON読込ゲートなど、スキルの本質ではなく実行基盤の安定性に関わる内容は`SKILL.md`へ書く。
 * `context.md`はfile searchで読む唯一のコンテキストにし、ターン判定と運用手順の司令塔にする。詳細ルール本文は必要に応じて`context_data.json`へ分離する。
 * 外部JSONを使う場合、AIは`context.md`でフェーズを判定し、`context_loader.py`で必要な詳細を1件ずつ読む。
 * 外部JSONコンテキストはターン冒頭で一括読み込みせず、作業へ入る直前に必須フェーズ群をすべて`DONE`まで読む。
@@ -26,13 +26,13 @@ SKILLを作成・更新する際の共通ルールを定義する。
 
 ### SKILL.md と context.md の責務分離
 
-* `SKILL.md`には、スキルの用途、毎ターン`context.md`をfile searchで読むこと、以後は`context.md`に従うことだけを書く。
+* `SKILL.md`には、スキルの用途、毎ターン`context.md`をfile searchで読むこと、以後は`context.md`に従うことを書く。
+* `SKILL.md`には、カスタムGPTs用アプリ共通レイヤーとして、file searchの実行クエリ、code interpreter冒頭コメント、resolve_uploads.pyの初回実行、ログ800字制限、外部JSONローダーの1チャンク実行、`next <KEY>`方式、DONE確認前の生成禁止を書く。
 * `SKILL.md`には、ターンA/B判定、外部JSONフェーズ名、生成方針、JSON構造、変換コード、strict修復手順などの詳細ルールを書かない。
-* 例外として、外部JSONコンテキストの読了が品質や安全性に直結するSKILLでは、分割コンテキスト読込ゲートだけは`SKILL.md`へ書いてよい。
 * 分割コンテキスト読込ゲートには、読込開始宣言、DONE確認前の生成禁止、`next <KEY>`方式、エラー時に生成へ進まないことを書く。生成方針の詳細は書かない。
 * `SKILL.md`へ詳細ルールを追加したくなった場合は、原則として`context.md`または`context_data.json`へ移す。
 * スキル自体の修正、リファクタリング、検証を依頼された場合に生成フローへ入らないことは、`SKILL.md`と`context.md`の両方で分かるようにする。
-* `resolve_uploads.py`の実行手順やcode interpreter用コード例は、原則として`context.md`に置く。`SKILL.md`には詳細コードを置かない。
+* `resolve_uploads.py`の初回実行手順は、カスタムGPTs共通レイヤーとして`SKILL.md`にも置く。生成や変換の詳細コードは`context.md`に置く。
 
 ### 原文変換系SKILLの忠実性
 
