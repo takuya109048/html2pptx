@@ -42,7 +42,7 @@ if _m:
 
 code interpreterログは先頭400文字と末尾400文字の合計800文字だけが安定して渡る前提で扱う。長いコンテキストを一括printしてはならない。
 
-context_loader.pyは1回に1チャンクだけ出力する。複数チャンクを読む時は、1回のcode interpreter実行につきcontext_loader.pyを1回だけ起動する。ループ、複数のsubprocess.run、複数のexecで同じcode本文内からローダーを2回以上起動してはならない。
+context_loader.pyは1回に1チャンクだけ出力する。複数チャンクを読む時は、1回のcode interpreter実行につきcontext_loader.pyを1回だけ起動する。
 
 ## 分割コンテキスト読込ゲート
 
@@ -64,9 +64,9 @@ DONE確認前は禁止:
 - PPTX変換
 - 成果物リンク提示
 
-context_loader.pyの続き取得は、前回出力末尾の `NEXT ... KEY ...` のKEYを使って `next <KEY>` で読む。無引数nextは使わない。前回出力末尾のNEXT値とKEY値を、次回code本文の冒頭コメントとコマンドの両方に写す。
+context_loader.pyの読み込みは、最初だけ `start <phase>`、続きは `next` で進める。出力末尾が `NEXT` なら次回も `next` を実行する。出力末尾が `DONE` なら、そのフェーズは読了である。
 
-`ERROR invalid key` が出た場合、そのエラー出力を新しい前回出力として扱ってはならない。同じKEYで再試行してはならない。直前の正常な `NEXT ... KEY ...` 行の最新KEYが明確に残っている場合だけそれを使う。最新KEYが不明な場合は、現在フェーズを `start <phase>` から読み直す。`status` ではKEY本体を復元できない。
+code interpreterの出力が空、または直前のチャンク表示を見失った場合は、同じ処理を再実行せず `last` を1回実行して直前の正常出力を再表示する。`last` でも戻らない場合だけ、現在フェーズを `start <phase>` から読み直す。
 
 分割コンテキスト読込でエラーが出た場合は、生成へ進まず、setupまたはファイル配置を修正してから再度読み込む。
 
