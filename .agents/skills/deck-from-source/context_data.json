@@ -277,7 +277,7 @@
         "layout_rules.007",
         "layout_rules.008"
       ],
-      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
+      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。headは3列、rowsは3行、各rowは[観点, 左, 右]の3列で、右列を空にしない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
     },
     "turn_b_yes.packed.015": {
       "section": "NANOBANANA_RULES",
@@ -534,7 +534,7 @@
         "layout_rules.007",
         "layout_rules.008"
       ],
-      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。matrixではない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
+      "text": "5. 3つの根拠から1結論へ収束するならconverge_3card。\n6. 背景説明と3ポイントならbg_3card。\n7. 表データと重要な示唆があるならtable_conclusion。表データのみならtable。\n8. 2対象3観点ならcompare_2col_3row。\n9. グリッド型ならmatrixまたはflow_matrix系を使う。\n10. 2概念の対立や比較ならplain_2col。\n11. 単一説明ならplain_2colを優先する。nanobanana2 Yesではplain_1colを使わない。\n\n重要:\n\n- compare_2col_3rowのblocks keyはcompareである。headは3列、rowsは3行、各rowは[観点, 左, 右]の3列で、右列を空にしない。\n- 横フローマトリックスはh_flow_matrixを使う。\n- flow系で各stepが名詞句だけ、または説明を入れると窮屈になる場合はflowを使わない。判断基準、理由、注意点まで見せる必要がある内容はlist_3card、bg_3card、table_conclusion、plain_2colへ変更する。\n- plain_1colにtextは使わずcard-aだけを使う。flow_3stepにstepは使わずstep-a、step-b、step-cを使う。"
     },
     "turn_b_no.packed.015": {
       "section": "CONTENT_LIMITS",

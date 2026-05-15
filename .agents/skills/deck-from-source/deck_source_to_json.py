@@ -220,7 +220,77 @@ def table_payload(value: Any) -> tuple[list[str], list[list[str]]]:
         rows = value[1:]
     else:
         head, rows = [], []
-    return [str(c) for c in head], [[str(c) for c in row] for row in rows]
+    normalized_head = [str(c) for c in head] if isinstance(head, list) else [str(head)]
+    normalized_rows: list[list[str]] = []
+    if isinstance(rows, list):
+        for row in rows:
+            if isinstance(row, list):
+                normalized_rows.append([str(c) for c in row])
+            else:
+                normalized_rows.append([str(row)])
+    return normalized_head, normalized_rows
+
+
+STRUCTURED_GRID_SHAPES: dict[str, tuple[str, int, int]] = {
+    "compare_2col_3row": ("compare", 3, 3),
+    "matrix_3x3": ("matrix", 4, 3),
+    "flow_matrix_3x3": ("flow_matrix", 4, 3),
+    "h_flow_matrix_3x2": ("h_flow_matrix", 4, 2),
+    "h_flow_matrix_3x3": ("h_flow_matrix", 4, 3),
+    "h_flow_matrix_4x2": ("h_flow_matrix", 5, 2),
+}
+
+
+def validate_structured_grid(
+    index: int,
+    title: str,
+    layout: str,
+    blocks: dict[str, Any],
+) -> int:
+    spec = STRUCTURED_GRID_SHAPES.get(layout)
+    if not spec:
+        return 0
+    block_key, expected_cols, expected_rows = spec
+    head, rows = table_payload(blocks.get(block_key))
+    suffix = f" Title: {title}" if title else ""
+    errors = 0
+    if len(head) != expected_cols:
+        warn(
+            f"Slide #{index} layout '{layout}' block '{block_key}.head' must have exactly "
+            f"{expected_cols} columns, but has {len(head)}.{suffix}"
+        )
+        errors += 1
+    if len(rows) != expected_rows:
+        warn(
+            f"Slide #{index} layout '{layout}' block '{block_key}.rows' must have exactly "
+            f"{expected_rows} rows, but has {len(rows)}.{suffix}"
+        )
+        errors += 1
+    for row_index, row in enumerate(rows, start=1):
+        if len(row) != expected_cols:
+            warn(
+                f"Slide #{index} layout '{layout}' block '{block_key}.rows[{row_index}]' must have exactly "
+                f"{expected_cols} columns, but has {len(row)}.{suffix}"
+            )
+            errors += 1
+            continue
+        for col_index, value in enumerate(row, start=1):
+            if not value.strip():
+                warn(
+                    f"Slide #{index} layout '{layout}' block '{block_key}.rows[{row_index}][{col_index}]' "
+                    f"must not be blank.{suffix}"
+                )
+                errors += 1
+    for col_index, value in enumerate(head, start=1):
+        if col_index == 1:
+            continue
+        if not value.strip():
+            warn(
+                f"Slide #{index} layout '{layout}' block '{block_key}.head[{col_index}]' "
+                f"must not be blank.{suffix}"
+            )
+            errors += 1
+    return errors
 
 
 def visible_density_text(markdown: str) -> str:
@@ -897,6 +967,7 @@ def validate_source(
                 if tag not in blocks:
                     warn(f"Slide #{index} layout '{layout}' is missing block '{tag}'." + (f" Title: {title}" if title else ""))
                     errors += 1
+            errors += validate_structured_grid(index, title, layout, blocks)
         if strict_density:
             errors += validate_density(index, title, layout, blocks, nanobanana2)
             errors += validate_compact_density(index, title, layout, blocks)

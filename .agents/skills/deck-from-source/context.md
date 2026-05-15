@@ -76,6 +76,7 @@ root.titleは日本語の表紙タイトルにする。保存名は短い英語s
 root.summaryを必ず書く。slides配列には本文スライドだけを書く。表紙、サマリー、目次はdeck_source_to_json.pyが自動生成する。
 slides[].titleは目次小見出しであり、名詞句か体言止めにする。主張や示唆はmessageへ移す。
 layoutごとの必須blocks名を守る。独自keyは作らない。
+compare_2col_3rowはblocks.compareにhead 3列、rows 3行、各row 3列を必ず入れる。各rowは[観点ラベル, 左側内容, 右側内容]であり、右側内容を空欄にしない。matrix、flow_matrix、h_flow_matrixもテンプレートの列数と行数を崩さず、空セルを作らない。
 nanobanana2 Yesでは本文slidesにplain_1colを使わない。
 Markdownデッキ記法、メタテーブル、フェンス、HTML改行タグ、文字化けを入れない。
 
