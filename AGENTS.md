@@ -17,10 +17,30 @@ SKILLを作成・更新する際の共通ルールを定義する。
 * SKILLはカスタムGPTsへ流用できる形で設計する。
 * `SKILL.md`はカスタムGPTsのシステムプロンプトとして使用する前提で書く。
 * カスタムGPTsのシステムプロンプト上限に合わせ、`SKILL.md`は必ず5000文字以内に収める。
-* `SKILL.md`は肥大化させず、毎ターン`context.md`を読む責任と最低限の運用手順だけを持たせる。
-* `context.md`はfile searchで読む唯一のコンテキストにし、詳細ルール本文は必要に応じて`context_data.json`へ分離する。
+* `SKILL.md`は肥大化させず、毎ターン`context.md`を読む責任だけを持たせる。
+* `SKILL.md`はブートローダーとして扱い、詳細な運用判断、生成方針、検証、修復、出力手順は`context.md`へ委任する。
+* `context.md`はfile searchで読む唯一のコンテキストにし、ターン判定と運用手順の司令塔にする。詳細ルール本文は必要に応じて`context_data.json`へ分離する。
 * 外部JSONを使う場合、AIは`context.md`でフェーズを判定し、`context_loader.py`で必要な詳細を1件ずつ読む。
 * 外部JSONコンテキストはターン冒頭で一括読み込みせず、作業へ入る直前に必要フェーズを`DONE`まで読む。
+
+### SKILL.md と context.md の責務分離
+
+* `SKILL.md`には、スキルの用途、毎ターン`context.md`をfile searchで読むこと、以後は`context.md`に従うことだけを書く。
+* `SKILL.md`には、ターンA/B判定、外部JSONフェーズ名、生成方針、JSON構造、変換コード、strict修復手順などの詳細ルールを書かない。
+* `SKILL.md`へ詳細ルールを追加したくなった場合は、原則として`context.md`または`context_data.json`へ移す。
+* スキル自体の修正、リファクタリング、検証を依頼された場合に生成フローへ入らないことは、`SKILL.md`と`context.md`の両方で分かるようにする。
+* `resolve_uploads.py`の実行手順やcode interpreter用コード例は、原則として`context.md`に置く。`SKILL.md`には詳細コードを置かない。
+
+### 原文変換系SKILLの忠実性
+
+原文ソースを資料化、スライド化、要約、再構成、読み上げ原稿化するSKILLでは、見栄えのために原文のストーリーを作り替えない。
+
+* 生成前に、原文の論理順、主張、根拠、例、注意点、結論を内部的な`source_spine`として固定する。
+* スライドや本文の順序は、原則として`source_spine`の順序に従う。PREP、SDSなどの型に合わせるために原文の話順を大きく並べ替えない。
+* 厚み付けは、原文から自然に導ける背景、理由、含意、注意点、判断基準に限定する。
+* 原文にない固有数値、事例名、成果、専門用語、新しい主張を作らない。
+* noteや話者原稿は、スライド本文と原文参照から乖離させない。noteにしかない重要情報が出た場合は、noteではなく本文側を修正する。
+* noteを読み上げ原稿にする場合も、材料はスライドの`title`、`message`、`blocks`、原文参照に限定する。
 
 ### file search の利用方針
 
@@ -242,8 +262,8 @@ python count_chars.py .agents/skills/<skill-name>/SKILL.md .agents/skills/<skill
 1. カスタムGPTsへの流用を前提にする。
 2. `SKILL.md`をシステムプロンプトとして使う前提で設計する。
 3. `SKILL.md`は5000文字以内に収める。
-4. `SKILL.md`には最小限の指示のみを書き、`context.md`読込を担保する責任を持たせる。
-5. `context.md`は外部JSONコンテキスト読込の司令塔にし、詳細本文は必要に応じて`context_data.json`へ分離する。
+4. `SKILL.md`には最小限の指示のみを書き、`context.md`読込を担保する責任だけを持たせる。
+5. `context.md`はターン判定、生成方針、検証、修復、外部JSONコンテキスト読込の司令塔にし、詳細本文は必要に応じて`context_data.json`へ分離する。
 6. 各ターン開始時に必ず`file search`で`context.md`を再読込する。
 7. `file search`では`queries`のみを使う。
 8. `context.md`は1ファイルに絞り、20000文字以内にする。
@@ -260,5 +280,6 @@ python count_chars.py .agents/skills/<skill-name>/SKILL.md .agents/skills/<skill
 19. `code interpreter`で使う`.py`および関連ファイルは`/mnt/data`直下に置く。
 20. SKILLフォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
 21. 各SKILLフォルダ直下には`resolve_uploads.py`を必ずコピー配置する。
-22. SKILL.mdには、チャット冒頭で`resolve_uploads.py`をcode interpreterで実行する指示を必ず記載する。
+22. `resolve_uploads.py`をcode interpreterで実行する指示は、原則として`context.md`へ記載する。
 23. 生成・変換スクリプトには、実装済みのstrict検証オプションを本番手順で使わせる。
+24. 原文変換系SKILLでは、原文の論理順、主張、根拠、結論を固定してから厚み付けし、noteや話者原稿が本文と乖離しないように設計する。
