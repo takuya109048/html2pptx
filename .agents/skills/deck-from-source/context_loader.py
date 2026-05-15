@@ -50,7 +50,27 @@ def state_path() -> Path:
 
 def load_data() -> dict[str, Any]:
     path = find_data_path()
-    return json.loads(path.read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
+    add_composite_phases(data)
+    return data
+
+
+def add_composite_phases(data: dict[str, Any]) -> None:
+    phases = data.setdefault("phases", {})
+    preflight = phases.get("preflight_quality", {}).get("chunks")
+    if not preflight:
+        return
+    composites = {
+        "turn_b_yes_all": ("turn_b_yes", "nanobanana2 Yes用の生成ルールと初回品質・修復ルールをまとめて読むフェーズ。"),
+        "turn_b_no_all": ("turn_b_no", "nanobanana2 No用の生成ルールと初回品質・修復ルールをまとめて読むフェーズ。"),
+    }
+    for composite, (base, description) in composites.items():
+        base_chunks = phases.get(base, {}).get("chunks")
+        if base_chunks and composite not in phases:
+            phases[composite] = {
+                "description": description,
+                "chunks": list(base_chunks) + list(preflight),
+            }
 
 
 def save_state(state: dict[str, Any]) -> None:

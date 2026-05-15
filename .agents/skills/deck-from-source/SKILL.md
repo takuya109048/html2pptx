@@ -50,7 +50,7 @@ Yes/No方針を受け取った直後、スライド構成、source_spine、DECK_
 
 「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」
 
-その直後にcode interpreterでcontext_loader.pyを実行し、context.mdが指定する必須フェーズ群をすべてDONEまで読む。
+その直後にcode interpreterでcontext_loader.pyを実行し、context.mdが指定するまとめ読みフェーズをDONEまで読む。ターンBではturn_b_yesまたはturn_b_no単体のDONEで止まってはならない。修復用コンテキストを含むturn_b_yes_allまたはturn_b_no_allのDONEまで読む。
 
 DONE確認前は禁止:
 - 原文分析

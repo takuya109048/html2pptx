@@ -2,7 +2,7 @@
   "version": "deck-from-source-context-v1",
   "max_chunk_chars": 800,
   "max_console_chars": 800,
-  "usage": "Run the required generation phase, then preflight_quality, with context_loader.py start <phase> and next <KEY> until DONE before analysis or generation.",
+  "usage": "Run turn_b_yes_all or turn_b_no_all with context_loader.py start <phase> and next <KEY> until DONE before analysis or generation. These composite phases include preflight_quality.",
   "phases": {
     "turn_b_yes": {
       "description": "nanobanana2 Yesでdeck_source.jsonとPPTXを生成する前に読む全詳細ルール。",
