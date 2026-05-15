@@ -74,12 +74,13 @@ def hash_key(key: str) -> str:
 
 def require_key(state: dict[str, Any], provided: str | None) -> None:
     expected = state.get("unlock_hash")
+    phase = state.get("phase", "<phase>")
     if not expected:
-        raise SystemExit("ERROR no pending key. Run: context_loader.py start <phase>")
+        raise SystemExit(f"ERROR no pending key. Restart: context_loader.py start {phase}")
     if not provided:
-        raise SystemExit("ERROR missing key. Use: context_loader.py next <KEY>")
+        raise SystemExit(f"ERROR missing key. Use the latest KEY from the previous NEXT line, or restart: context_loader.py start {phase}")
     if hash_key(provided) != expected:
-        raise SystemExit("ERROR invalid key. Use the KEY shown in the previous NEXT line.")
+        raise SystemExit(f"ERROR invalid key. Do not retry the same KEY. Use the latest KEY from the last successful NEXT line, or restart: context_loader.py start {phase}")
 
 
 def emit(text: str) -> None:

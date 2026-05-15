@@ -29,6 +29,7 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 ターンB開始時は、構成やsource_spineを考え始める前、かつ最初のcode interpreterを開始する前に、必ずチャットへ所要時間の見通しだけを独立して出す。「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」これは分析メモではなく、処理開始の合図である。ユーザーに分割コンテキスト、DONE、NEXT、KEYなどの内部処理名を説明しない。code interpreter内の冒頭コメントだけで、このチャット通知を省略してはならない。
 最初の取得は、処理開始時刻をdeck_generation_timer.jsonへ保存し、resolve_uploads.pyを実行したうえで context_loader.py start フェーズ名 をsubprocessで実行する。
 続きは、前回出力末尾のKEYを使って context_loader.py next KEY値 を実行する。1回のcode interpreter実行につき1回だけ実行する。出力末尾がNEXTなら、そこに表示された新しいKEYを次回へ使う。DONEならそのフェーズは読了である。
+ERROR invalid keyが出た場合、そのエラー出力を新しい前回出力として扱わない。同じKEYで再試行しない。直前の正常なNEXT行の最新KEYが明確に残っている場合だけそれを使う。最新KEYが不明なら現在フェーズをstart フェーズ名から読み直す。statusではKEY本体を復元できない。
 生成フェーズとpreflight_qualityの両方がDONEになるまで、ソース分析、source_spine作成、スライド構成決定、DECK_SOURCE_JSON生成、PPTX変換へ進まない。読み取り途中でユーザーへ分析メモや構成案を出さない。
 
 ターンA:
