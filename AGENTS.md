@@ -18,7 +18,7 @@ SKILLを作成・更新する際の共通ルールを定義する。
 * `SKILL.md`はカスタムGPTsのシステムプロンプトとして使用する前提で書く。
 * カスタムGPTsのシステムプロンプト上限に合わせ、`SKILL.md`は必ず5000文字以内に収める。
 * `SKILL.md`は肥大化させず、毎ターン`context.md`を読む責任と、カスタムGPTs用アプリ共通レイヤーの安定化責任を持たせる。
-* `SKILL.md`はブートローダーとして扱い、詳細な運用判断、生成方針、検証、修復、出力手順は`context.md`へ委任する。ただし、file search、code interpreter、アップロード解決、ログ制限、外部JSON読込ゲートなど、スキルの本質ではなく実行基盤の安定性に関わる内容は`SKILL.md`へ書く。
+* `SKILL.md`はブートローダーとして扱い、詳細な運用判断、生成方針、検証、修復、出力手順は`context.md`へ委任する。ただし、file search、code interpreter、アップロード解決、ログ制限、外部JSON読込ゲート、処理時間計測など、スキルの本質ではなく実行基盤の安定性に関わる内容は`SKILL.md`へ書く。
 * `context.md`はfile searchで読む唯一のコンテキストにし、ターン判定と運用手順の司令塔にする。詳細ルール本文は必要に応じて`context_data.json`へ分離する。
 * 外部JSONを使う場合、AIは`context.md`でフェーズを判定し、`context_loader.py`で必要な詳細を1件ずつ読む。
 * 外部JSONコンテキストはターン冒頭で一括読み込みせず、作業へ入る直前に必須フェーズ群をすべて`DONE`まで読む。
@@ -27,9 +27,9 @@ SKILLを作成・更新する際の共通ルールを定義する。
 ### SKILL.md と context.md の責務分離
 
 * `SKILL.md`には、スキルの用途、毎ターン`context.md`をfile searchで読むこと、以後は`context.md`に従うことを書く。
-* `SKILL.md`には、カスタムGPTs用アプリ共通レイヤーとして、file searchの実行クエリ、code interpreter冒頭コメント、resolve_uploads.pyの初回実行、ログ800字制限、外部JSONローダーの1チャンク実行、`next <KEY>`方式、DONE確認前の生成禁止を書く。
+* `SKILL.md`には、カスタムGPTs用アプリ共通レイヤーとして、file searchの実行クエリ、code interpreter冒頭コメント、resolve_uploads.pyの初回実行、ログ800字制限、外部JSONローダーの1チャンク実行、`next <KEY>`方式、DONE確認前の生成禁止、処理時間計測を書く。
 * `SKILL.md`には、ターンA/B判定、外部JSONフェーズ名、生成方針、JSON構造、変換コード、strict修復手順などの詳細ルールを書かない。
-* 分割コンテキスト読込ゲートには、読込開始宣言、DONE確認前の生成禁止、`next <KEY>`方式、エラー時に生成へ進まないことを書く。生成方針の詳細は書かない。
+* 分割コンテキスト読込ゲートには、ユーザー向け所要時間の宣言、DONE確認前の生成禁止、`next <KEY>`方式、エラー時に生成へ進まないことを書く。生成方針の詳細は書かない。ユーザーへは`DONE`、`NEXT`、`KEY`などの内部処理名を説明せず、必要な待ち時間の目安を出す。
 * `SKILL.md`へ詳細ルールを追加したくなった場合は、原則として`context.md`または`context_data.json`へ移す。
 * スキル自体の修正、リファクタリング、検証を依頼された場合に生成フローへ入らないことは、`SKILL.md`と`context.md`の両方で分かるようにする。
 * `resolve_uploads.py`の初回実行手順は、カスタムGPTs共通レイヤーとして`SKILL.md`にも置く。生成や変換の詳細コードは`context.md`に置く。
@@ -102,6 +102,17 @@ if _m:
     exec(open(_m[0], encoding="utf-8").read())
 ```
 
+#### 処理時間の通知と計測
+
+カスタムGPTsで資料化、スライド化、PPTX生成など数分かかる生成処理を行うSKILLでは、ユーザーに内部の分割コンテキスト読込を意識させず、処理時間の見通しと実測結果を出す。
+
+* 生成開始時のチャットでは、`DONE`、`NEXT`、`KEY`などの内部処理名ではなく、おおよその所要時間を伝える。
+* `deck-from-source`の資料化処理は、おおよそ5分程度かかるものとして案内する。
+* 分割コンテキストを読む前の最初のcode interpreterで現在時刻を取得し、`/mnt/data/{skill_name}_timer.json`などの状態ファイルへ開始時刻を保存する。
+* スライドや成果物の出力が完了したら、code interpreterで再度現在時刻を取得し、開始時刻との差分を計算する。
+* 最終チャットでは、成果物リンクとあわせて、開始時刻、完了時刻、所要時間を短くコメントする。
+* 時刻計測は共通レイヤーの処理であり、各SKILLの生成方針や品質ルール本文へ埋め込まない。実装コードの詳細は`context.md`へ置いてよい。
+
 #### code interpreter のコンソールログ制限
 
 カスタムGPTs環境では、code interpreterのコンソールログとしてAIに安定して渡る文字数は、先頭400文字と末尾400文字の合計800文字である。
@@ -147,8 +158,11 @@ skill-name/
 最初の取得コードの型:
 
 ```python
-# turn_b_yes用の詳細コンテキスト読み込みを開始し、何件中何件目まで読めたかとNEXT/DONE状態を表示します。
-import glob, subprocess, sys
+# turn_b_yes用の詳細コンテキスト読み込みを開始する前に処理開始時刻を記録します。
+import glob, json, subprocess, sys
+from datetime import datetime
+with open("/mnt/data/skill_timer.json", "w", encoding="utf-8") as f:
+    json.dump({"started_at": datetime.now().astimezone().isoformat(timespec="seconds")}, f, ensure_ascii=False)
 _m = glob.glob("/mnt/data/*resolve_uploads.py")
 if _m:
     exec(open(_m[0], encoding="utf-8").read())
@@ -278,17 +292,19 @@ python count_chars.py .agents/skills/<skill-name>/SKILL.md .agents/skills/<skill
 10. 外部JSONを使う場合、`context.md`にはローダーの公開コマンド、取得手順、停止条件、同一code本文内でローダーを複数回起動しないことを書く。
 11. 外部JSONの個別コンテキストとローダー実出力は800文字以内にする。
 12. `code interpreter`に渡す`code`本文の冒頭には、何のために何を実行するかが自然に分かる日本語の一文コメントを必ず入れる。
-13. 外部JSONローダーは`start <phase>` / `next <KEY>`を中心にした状態機械として実装する。
-14. 外部JSONローダーの出力には、`[ctx 現在/総数 chunk_id]`と`NEXT 次/総数 KEY 値`または`DONE 総数/総数`を必ず含める。
-15. 外部JSONローダーを続けて呼ぶcodeコメントとコマンドには、直前の`NEXT`値と`KEY`値を含める。
-16. 外部JSONローダーは、無引数`next`と古いKEYの再利用を拒否することを検証する。
-17. 外部JSONコンテキストはターン冒頭で一括読み込みせず、作業直前に必須フェーズ群をすべて読む。
-18. 初回品質に必要な修復系・検証系コンテキストは、`preflight_quality`などの生成前必須フェーズに含める。
-19. 各作業フェーズでは、そのフェーズの必要コンテキストを`DONE`まで読み切ってから作業へ進む。
-20. 後続フェーズや修復フェーズへ移る場合は、現在の作業を終えてから新しいフェーズを`start <phase>`で開始する。
-21. `code interpreter`で使う`.py`および関連ファイルは`/mnt/data`直下に置く。
-22. SKILLフォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
-23. 各SKILLフォルダ直下には`resolve_uploads.py`を必ずコピー配置する。
-24. `resolve_uploads.py`をcode interpreterで実行する指示は、原則として`context.md`へ記載する。
-25. 生成・変換スクリプトには、実装済みのstrict検証オプションを本番手順で使わせる。
-26. 原文変換系SKILLでは、原文の論理順、主張、根拠、結論を固定してから厚み付けし、noteや話者原稿が本文と乖離しないように設計する。
+13. 数分かかる生成処理では、開始前に所要時間の目安をユーザーへ伝え、code interpreterで開始時刻と完了時刻を取得し、最終チャットで実測所要時間をコメントする。
+14. ユーザー向け進行宣言では、`DONE`、`NEXT`、`KEY`などの内部処理名を説明しない。
+15. 外部JSONローダーは`start <phase>` / `next <KEY>`を中心にした状態機械として実装する。
+16. 外部JSONローダーの出力には、`[ctx 現在/総数 chunk_id]`と`NEXT 次/総数 KEY 値`または`DONE 総数/総数`を必ず含める。
+17. 外部JSONローダーを続けて呼ぶcodeコメントとコマンドには、直前の`NEXT`値と`KEY`値を含める。
+18. 外部JSONローダーは、無引数`next`と古いKEYの再利用を拒否することを検証する。
+19. 外部JSONコンテキストはターン冒頭で一括読み込みせず、作業直前に必須フェーズ群をすべて読む。
+20. 初回品質に必要な修復系・検証系コンテキストは、`preflight_quality`などの生成前必須フェーズに含める。
+21. 各作業フェーズでは、そのフェーズの必要コンテキストを`DONE`まで読み切ってから作業へ進む。
+22. 後続フェーズや修復フェーズへ移る場合は、現在の作業を終えてから新しいフェーズを`start <phase>`で開始する。
+23. `code interpreter`で使う`.py`および関連ファイルは`/mnt/data`直下に置く。
+24. SKILLフォルダ配下ではサブディレクトリを作らず、すべて直下配置にする。
+25. 各SKILLフォルダ直下には`resolve_uploads.py`を必ずコピー配置する。
+26. `resolve_uploads.py`をcode interpreterで実行する指示は、原則として`context.md`へ記載する。
+27. 生成・変換スクリプトには、実装済みのstrict検証オプションを本番手順で使わせる。
+28. 原文変換系SKILLでは、原文の論理順、主張、根拠、結論を固定してから厚み付けし、noteや話者原稿が本文と乖離しないように設計する。
