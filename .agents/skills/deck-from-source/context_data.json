@@ -2,7 +2,7 @@
   "version": "deck-from-source-context-v1",
   "max_chunk_chars": 800,
   "max_console_chars": 800,
-  "usage": "Before any analysis or generation, send the 5-minute notice in chat, then read the generation phase, preflight_quality, repair_emphasis, repair_density, and repair_text with context_loader.py start <phase> and next <KEY> until DONE.",
+  "usage": "Before any analysis or generation, send the 5-minute notice in chat before the first code interpreter call, then read the generation phase and preflight_quality with context_loader.py start <phase> and next <KEY> until DONE. preflight_quality contains all repair contexts.",
   "phases": {
     "turn_b_yes": {
       "description": "nanobanana2 Yesでdeck_source.jsonとPPTXを生成する前に読む全詳細ルール。",
@@ -127,7 +127,7 @@
       ]
     },
     "preflight_quality": {
-      "description": "初回生成前に必ず読む品質・修復系ルール。strictエラー後ではなく、最初のdeck_source.json生成前に本文密度、太字、文字構造、note整合性を先読みする。",
+      "description": "初回生成前に必ず読む修正用統合フェーズ。repair_emphasis、repair_density、repair_textの全チャンクを含むため、DONEまで読むことで修正用コンテキストをすべて先読みした扱いにする。",
       "chunks": [
         "repair_emphasis.packed.001",
         "repair_emphasis.packed.002",
@@ -170,7 +170,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言する。\n3. その後、開始時刻を保存し、生成フェーズ、preflight_quality、repair_emphasis、repair_density、repair_textをすべてDONEまで読む。読了前にsource_spineやスライド構成を考えない。\n4. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言する。\n3. その後、開始時刻を保存し、生成フェーズとpreflight_qualityをDONEまで読む。preflight_qualityはrepair_emphasis、repair_density、repair_textを束ねた修正用統合フェーズである。読了前にsource_spineやスライド構成を考えない。\n4. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_yes.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -427,7 +427,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言する。\n3. その後、開始時刻を保存し、生成フェーズ、preflight_quality、repair_emphasis、repair_density、repair_textをすべてDONEまで読む。読了前にsource_spineやスライド構成を考えない。\n4. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言する。\n3. その後、開始時刻を保存し、生成フェーズとpreflight_qualityをDONEまで読む。preflight_qualityはrepair_emphasis、repair_density、repair_textを束ねた修正用統合フェーズである。読了前にsource_spineやスライド構成を考えない。\n4. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_no.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
