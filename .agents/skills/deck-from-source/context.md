@@ -25,7 +25,7 @@ setup: /mnt/dataに実行ファイル群が見つからない時に読む。
 取得方法:
 ターンBではDECK_SOURCE_JSONを書く前に必ず該当フェーズをstartする。Yesならturn_b_yes、Noならturn_b_noを指定する。
 最初の取得は、resolve_uploads.pyを実行したうえで context_loader.py start フェーズ名 をsubprocessで実行する。
-続きは context_loader.py next を1回のcode interpreter実行につき1回だけ実行する。出力末尾がNEXTなら次を読む。DONEならそのフェーズは読了である。
+続きは、前回出力末尾のKEYを使って context_loader.py next KEY値 を実行する。1回のcode interpreter実行につき1回だけ実行する。出力末尾がNEXTなら、そこに表示された新しいKEYを次回へ使う。DONEならそのフェーズは読了である。
 必要フェーズがDONEになるまで、ソース分析、構成決定、DECK_SOURCE_JSON生成、PPTX変換へ進まない。読み取り途中でユーザーへ分析メモや構成案を出さない。
 
 ターンA:
