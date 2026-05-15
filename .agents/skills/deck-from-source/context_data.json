@@ -2,7 +2,7 @@
   "version": "deck-from-source-context-v1",
   "max_chunk_chars": 800,
   "max_console_chars": 800,
-  "usage": "Run the required generation phase, then preflight_quality, with context_loader.py start <phase> and next <KEY> until DONE before analysis or generation.",
+  "usage": "Before any analysis or generation, send the 5-minute notice in chat, then read the generation phase, preflight_quality, repair_emphasis, repair_density, and repair_text with context_loader.py start <phase> and next <KEY> until DONE.",
   "phases": {
     "turn_b_yes": {
       "description": "nanobanana2 Yesでdeck_source.jsonとPPTXを生成する前に読む全詳細ルール。",
@@ -170,7 +170,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言し、開始時刻を保存して生成フェーズとpreflight_qualityをDONEまで読む。\n3. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言する。\n3. その後、開始時刻を保存し、生成フェーズ、preflight_quality、repair_emphasis、repair_density、repair_textをすべてDONEまで読む。読了前にsource_spineやスライド構成を考えない。\n4. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_yes.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -187,7 +187,7 @@
         "story_analysis.002",
         "story_analysis.003"
       ],
-      "text": "## SOURCE_FIDELITY_LOCK\n\nDECK_SOURCE_JSONを書く前に、内部でsource_spineを作る。source_spineは原文順の、主張、根拠、例、注意点、結論の並びである。スライド構成はこの順序を守る。\n\n手順:\n1. 原文を意味の塊に分け、S01、S02のようにIDを振る。\n2. 各IDへ主張、根拠、例、注意点、結論の役割を付ける。\n3. 本文スライドはsource_spineの連続範囲に対応させる。\n4. PREPやSDSなどの型に合わせるために原文順を大きく並べ替えない。\n5. 原文にない固有数値、事例名、実績、専門用語、新しい主張を作らない。\n"
+      "text": "## SOURCE_FIDELITY_LOCK\n\nDECK_SOURCE_JSONを書く前に、内部でsource_spineを作る。source_spineは原文順の、章、見出し、主張、根拠、例、注意点、結論の並びである。スライド構成はこの順序と章立てを守る。\n\n手順:\n1. 原文を意味の塊に分け、S01、S02のようにIDを振る。\n2. 各IDへ章、見出し、主張、根拠、例、注意点、結論の役割を付ける。\n3. 本文スライドはsource_spineの連続範囲に対応させる。\n4. PREPやSDSなどの型に合わせるために原文順、章立て、見出し立てを大きく並べ替えない。\n5. 原文にない固有数値、事例名、実績、専門用語、新しい主張を作らない。\n"
     },
     "turn_b_yes.packed.004": {
       "section": "STORY_ANALYSIS+SOURCE_ENRICHMENT",
@@ -195,7 +195,7 @@
         "story_analysis.004",
         "source_enrichment.001"
       ],
-      "text": "section設計:\n- slides[].sectionは目次の大見出しであり、スライド単位の分類名ではない。原則として同じsectionを連続する2から4枚で再利用する。\n- sectionは原文の流れに沿った章名にする。背景、判断軸、設計方針、実行手順、運用改善など意味を持つ章名にする。\n- 本文スライドが4枚以上なのに全sectionが1枚だけで終わる構成は禁止である。隣接スライドを原文順のまま2から4章へ束ねる。\n\n## SOURCE_ENRICHMENT\n\n厚みは原文の意味を広げるのではなく、原文から自然に導ける説明を足すことで作る。短い見出しや箇条書きには、理由、背景、含意、注意点、判断基準を補ってよい。ただし、足した内容が原文のどこから導けるか説明できない場合は入れない。\n"
+      "text": "section設計:\n- slides[].sectionは目次の大見出しであり、スライド単位の分類名ではない。原文に章見出しがある場合は、原則としてその章名と順序をsectionへ写す。\n- slides[].titleは原文の小見出しや段落見出しを短く整えて使う。見栄えのために章の親子関係を作り替えない。\n- 本文スライドが4枚以上なのに全sectionが1枚だけで終わる構成は禁止である。必要な統合は隣接章だけに限定し、原文順のまま2から4章へ束ねる。\n\n## SOURCE_ENRICHMENT\n\n厚みは原文の意味を広げるのではなく、原文から自然に導ける説明を足すことで作る。短い見出しや箇条書きには、理由、背景、含意、注意点、判断基準を補ってよい。ただし、足した内容が原文のどこから導けるか説明できない場合は入れない。\n"
     },
     "turn_b_yes.packed.005": {
       "section": "SOURCE_ENRICHMENT",
@@ -427,7 +427,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言し、開始時刻を保存して生成フェーズとpreflight_qualityをDONEまで読む。\n3. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初のcode interpreter前に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」とチャットで宣言する。\n3. その後、開始時刻を保存し、生成フェーズ、preflight_quality、repair_emphasis、repair_density、repair_textをすべてDONEまで読む。読了前にsource_spineやスライド構成を考えない。\n4. スライド修正まで終えたら終了時刻を取得し、最終チャットで所要時間だけを短く出す。内部の読込状況や構成案は出さない。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_no.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -444,7 +444,7 @@
         "story_analysis.002",
         "story_analysis.003"
       ],
-      "text": "## SOURCE_FIDELITY_LOCK\n\nDECK_SOURCE_JSONを書く前に、内部でsource_spineを作る。source_spineは原文順の、主張、根拠、例、注意点、結論の並びである。スライド構成はこの順序を守る。\n\n手順:\n1. 原文を意味の塊に分け、S01、S02のようにIDを振る。\n2. 各IDへ主張、根拠、例、注意点、結論の役割を付ける。\n3. 本文スライドはsource_spineの連続範囲に対応させる。\n4. PREPやSDSなどの型に合わせるために原文順を大きく並べ替えない。\n5. 原文にない固有数値、事例名、実績、専門用語、新しい主張を作らない。\n"
+      "text": "## SOURCE_FIDELITY_LOCK\n\nDECK_SOURCE_JSONを書く前に、内部でsource_spineを作る。source_spineは原文順の、章、見出し、主張、根拠、例、注意点、結論の並びである。スライド構成はこの順序と章立てを守る。\n\n手順:\n1. 原文を意味の塊に分け、S01、S02のようにIDを振る。\n2. 各IDへ章、見出し、主張、根拠、例、注意点、結論の役割を付ける。\n3. 本文スライドはsource_spineの連続範囲に対応させる。\n4. PREPやSDSなどの型に合わせるために原文順、章立て、見出し立てを大きく並べ替えない。\n5. 原文にない固有数値、事例名、実績、専門用語、新しい主張を作らない。\n"
     },
     "turn_b_no.packed.004": {
       "section": "STORY_ANALYSIS+SOURCE_ENRICHMENT",
@@ -452,7 +452,7 @@
         "story_analysis.004",
         "source_enrichment.001"
       ],
-      "text": "section設計:\n- slides[].sectionは目次の大見出しであり、スライド単位の分類名ではない。原則として同じsectionを連続する2から4枚で再利用する。\n- sectionは原文の流れに沿った章名にする。背景、判断軸、設計方針、実行手順、運用改善など意味を持つ章名にする。\n- 本文スライドが4枚以上なのに全sectionが1枚だけで終わる構成は禁止である。隣接スライドを原文順のまま2から4章へ束ねる。\n\n## SOURCE_ENRICHMENT\n\n厚みは原文の意味を広げるのではなく、原文から自然に導ける説明を足すことで作る。短い見出しや箇条書きには、理由、背景、含意、注意点、判断基準を補ってよい。ただし、足した内容が原文のどこから導けるか説明できない場合は入れない。\n"
+      "text": "section設計:\n- slides[].sectionは目次の大見出しであり、スライド単位の分類名ではない。原文に章見出しがある場合は、原則としてその章名と順序をsectionへ写す。\n- slides[].titleは原文の小見出しや段落見出しを短く整えて使う。見栄えのために章の親子関係を作り替えない。\n- 本文スライドが4枚以上なのに全sectionが1枚だけで終わる構成は禁止である。必要な統合は隣接章だけに限定し、原文順のまま2から4章へ束ねる。\n\n## SOURCE_ENRICHMENT\n\n厚みは原文の意味を広げるのではなく、原文から自然に導ける説明を足すことで作る。短い見出しや箇条書きには、理由、背景、含意、注意点、判断基準を補ってよい。ただし、足した内容が原文のどこから導けるか説明できない場合は入れない。\n"
     },
     "turn_b_no.packed.005": {
       "section": "SOURCE_ENRICHMENT",
