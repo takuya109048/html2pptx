@@ -170,7 +170,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初に「分割コンテキストをcode interpreterでDONEまで読み切ってから、スライド構成とPPTX生成に進みます。」と宣言し、生成フェーズに続いてpreflight_qualityもDONEまで読む。\n3. DONE前にソース分析、構成決定、DECK_SOURCE_JSON生成へ進まない。ユーザーにスライド枚数、発表者名、対象者を追加質問しない。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」と宣言し、開始時刻を保存して生成フェーズとpreflight_qualityをDONEまで読む。\n3. 完了後は終了時刻を取得し、最終チャットで所要時間を短く出す。ユーザーに内部の読込状況や構成案は出さない。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_yes.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
@@ -427,7 +427,7 @@
         "overview.001",
         "overview.002"
       ],
-      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初に「分割コンテキストをcode interpreterでDONEまで読み切ってから、スライド構成とPPTX生成に進みます。」と宣言し、生成フェーズに続いてpreflight_qualityもDONEまで読む。\n3. DONE前にソース分析、構成決定、DECK_SOURCE_JSON生成へ進まない。ユーザーにスライド枚数、発表者名、対象者を追加質問しない。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
+      "text": "# context_data.json deck-from-source 詳細ルール\n\n目的:\nこのJSONはcontext.mdに収まらない詳細ルールを800文字以内の小片として保持する。AIはcontext.mdでフェーズを選び、context_loader.py start フェーズ名を実行し、出力末尾のNEXTに出るKEYを次のnext <KEY>へ渡してDONEまで読む。\n\n全体フロー:\n1. ターンAではソースを受け取っても分析や生成を始めず、nanobanana2画像を使うかYesまたはNoで確認する。\n\n2. ターンBでは最初に「資料化を開始します。スライド構成、検証、PPTX出力までおおよそ5分程度かかります。」と宣言し、開始時刻を保存して生成フェーズとpreflight_qualityをDONEまで読む。\n3. 完了後は終了時刻を取得し、最終チャットで所要時間を短く出す。ユーザーに内部の読込状況や構成案は出さない。\n4. root.summaryにサマリーを書く。deck_source_to_json.pyは表紙、サマリー、目次の順で自動生成する。\n5. slides配列には本文スライドだけを書く。保存名は日本語タイトルとは別に短い英語slugにする。"
     },
     "turn_b_no.packed.002": {
       "section": "OUTPUT_FILES+STORY_ANALYSIS",
