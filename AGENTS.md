@@ -28,6 +28,8 @@ SKILLを作成・更新する際の共通ルールを定義する。
 
 * `SKILL.md`には、スキルの用途、毎ターン`context.md`をfile searchで読むこと、以後は`context.md`に従うことだけを書く。
 * `SKILL.md`には、ターンA/B判定、外部JSONフェーズ名、生成方針、JSON構造、変換コード、strict修復手順などの詳細ルールを書かない。
+* 例外として、外部JSONコンテキストの読了が品質や安全性に直結するSKILLでは、分割コンテキスト読込ゲートだけは`SKILL.md`へ書いてよい。
+* 分割コンテキスト読込ゲートには、読込開始宣言、DONE確認前の生成禁止、`next <KEY>`方式、エラー時に生成へ進まないことを書く。生成方針の詳細は書かない。
 * `SKILL.md`へ詳細ルールを追加したくなった場合は、原則として`context.md`または`context_data.json`へ移す。
 * スキル自体の修正、リファクタリング、検証を依頼された場合に生成フローへ入らないことは、`SKILL.md`と`context.md`の両方で分かるようにする。
 * `resolve_uploads.py`の実行手順やcode interpreter用コード例は、原則として`context.md`に置く。`SKILL.md`には詳細コードを置かない。
